@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { type ReactNode } from 'react';
 
 interface BadgeProps {
   variant?: 'primary' | 'success' | 'warning' | 'danger' | 'info';

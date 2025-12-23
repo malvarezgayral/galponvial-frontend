@@ -1,17 +1,14 @@
-@import "tailwindcss/preflight";
-@import "tailwindcss/utilities";
+@import "tailwindcss";
 
 
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  
-  background-color: #f3f4f6; 
-  
+    
   color-scheme: light;
-  color: #1f2937; 
 }
 
 body {
+  color: #1f2937;
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
