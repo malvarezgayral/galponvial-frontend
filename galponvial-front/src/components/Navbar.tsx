@@ -1,4 +1,6 @@
-import logoMunicipio from '../assets/logos/municipio-logo.png'; 
+import { Link } from "react-router-dom";
+import logoMunicipio from "../assets/logos/municipio-logo.png";
+import { ROUTES } from "../app/routes";
 
 interface NavItem {
   name: string;
@@ -7,56 +9,44 @@ interface NavItem {
 
 const Navbar = () => {
   const navLinks: NavItem[] = [
-    { name: 'Almacén', href: '#' },
-    { name: 'Vehículos', href: '#' },
-    { name: 'Servicios', href: '#' },
-    { name: 'Proveedores', href: '#' },
-    { name: 'Usuarios', href: '#' },
+    { name: "Almacén", href: ROUTES.almacen },
+    { name: "Vehículos", href: ROUTES.vehiculos },
+    { name: "Servicios", href: "#" },
+    { name: "Proveedores", href: "#" },
+    { name: "Usuarios", href: ROUTES.usuarios },
   ];
 
   return (
-    <>
-      <style>{`
-        .custom-nav-link {
-          color: white !important;
-          font-size: 22px !important; 
-          font-weight: 600 !important;
-          transition: all 0.3s ease;
-        }
-        .custom-nav-link:hover {
-          color: #001b42 !important;
-          transform: scale(1.05); 
-        }
-      `}</style>
+    <header className="navbar-header">
+      <div className="w-full flex justify-center">
+        <img
+          src={logoMunicipio}
+          alt="Lobería Gobierno Local"
+          className="h-20 object-contain"
+        />
+      </div>
 
-      <header className="w-full h-[265px] bg-[#242424] flex flex-col items-center justify-evenly shadow-md relative z-50">
-        
-        <div className="w-full flex justify-center">
-          <img 
-            src={logoMunicipio} 
-            alt="Lobería Gobierno Local" 
-            className="h-20 object-contain" 
-          />
-        </div>
-
-        <nav className="bg-[#0062e3] w-[95%] max-w-[1400px] h-[68px] rounded-full shadow-lg flex items-center px-4">
-          
-          <ul className="w-full flex flex-row items-center justify-around m-0 p-0 list-none h-full">
-            {navLinks.map((link) => (
-              <li key={link.name} className="flex-1 text-center h-full flex items-center justify-center">
-                <a 
-                  href={link.href}
-                  className="custom-nav-link no-underline block w-full"
-                >
+      <nav className="navbar-nav">
+        <ul className="w-full flex flex-row items-center justify-around m-0 p-0 h-full">
+          {navLinks.map((link) => (
+            <li
+              key={link.name}
+              className="h-full text-center flex items-center justify-center"
+            >
+              {link.href !== "#" ? (
+                <Link to={link.href} className="navbar-link">
+                  {link.name}
+                </Link>
+              ) : (
+                <a href={link.href} className="navbar-link">
                   {link.name}
                 </a>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        
-      </header>
-    </>
+              )}
+            </li>
+          ))}
+        </ul>
+      </nav>
+    </header>
   );
 };
 
