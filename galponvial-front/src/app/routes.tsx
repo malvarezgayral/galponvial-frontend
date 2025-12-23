@@ -1,12 +1,8 @@
-import { RouteObject } from 'react-router-dom';
-
-// Import feature pages
-// import VehiculosPages from '@/features/vehiculos/pages';
-
-export const routes: RouteObject[] = [
-  // {
-  //   path: '/vehiculos',
-  //   children: VehiculosPages,
-  // },
-  // Add more routes here
-];
+export const ROUTES = {
+  home: "/",
+  vehiculos: "/vehiculos",
+  almacen: "/almacen",
+  usuarios: "/usuarios",
+  auditoria: "/auditoria",
+  login: "/login",
+} as const;

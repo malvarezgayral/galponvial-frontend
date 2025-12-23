@@ -1,15 +1,47 @@
 @import "tailwindcss";
 
-
-:root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+@layer theme {
+  :root {
+    /* Brand Colors */
+    --color-navbar-bg: #242424;
+    --color-navbar-nav: #0062e3;
+    --color-navbar-text: #ffffff;
+    --color-navbar-hover: #001b42;
     
-  color-scheme: light;
+    /* Semantic Colors */
+    --color-text-primary: #1f2937;
+    --color-bg-light: #f3f4f6;
+    
+    /* Neutral Colors */
+    --color-white: #ffffff;
+  }
 }
 
-body {
-  color: #1f2937;
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
+@layer base {
+  :root {
+    font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+    background-color: #f3f4f6;
+    color-scheme: light;
+  }
+
+  body {
+    color: var(--color-text-primary);
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+  }
+}
+
+@layer components {
+  .navbar-header {
+    @apply w-full h-[265px] bg-[var(--color-navbar-bg)] flex flex-col items-center justify-evenly shadow-md;
+  }
+
+  .navbar-nav {
+    @apply bg-[var(--color-navbar-nav)] w-3/4 max-w-[1400px] h-[68px] rounded-full shadow-lg flex items-center px-4;
+  }
+
+  .navbar-link {
+    @apply text-[var(--color-navbar-text)] text-[22px] font-bold transition-all duration-300 ease-in-out hover:text-[var(--color-navbar-hover)] hover:scale-105 block w-full;
+  }
 }
