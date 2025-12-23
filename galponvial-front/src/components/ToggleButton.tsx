@@ -1,17 +1,27 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface ToggleViewProps {
   entity: "almacén" | "vehículos";
-  onChange?: (value: "admin" | "view") => void;
+  adminUrl: string;
+  viewUrl: string;
+  defaultView?: "admin" | "view";
 }
 
-const ToggleView = ({ entity, onChange }: ToggleViewProps) => {
-  const [active, setActive] = useState<"admin" | "view">("view");
+const ToggleView = ({
+  entity,
+  adminUrl,
+  viewUrl,
+  defaultView = "view",
+}: ToggleViewProps) => {
+  const [active, setActive] = useState<"admin" | "view">(defaultView);
+  const navigate = useNavigate();
 
   const handleToggle = (value: "admin" | "view") => {
     if (value === active) return;
+
     setActive(value);
-    onChange?.(value);
+    navigate(value === "admin" ? adminUrl : viewUrl);
   };
 
   return (

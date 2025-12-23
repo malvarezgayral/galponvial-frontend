@@ -1,19 +1,23 @@
+import { Link } from "react-router-dom";
+
 interface ActionButtonProps {
   text: string;
-  onClick?: () => void;
+  to: string;
 }
 
-const ActionButton = ({ text, onClick }: ActionButtonProps) => {
+const ViewButton = ({ text, to }: ActionButtonProps) => {
   return (
-    <button
-      onClick={onClick}
+    <Link
+      to={to}
       className="
+        inline-flex items-center justify-center
         w-70 h-17.5
         bg-orange-500
         border-4 border-black
         rounded-full
 
         text-black text-xl font-bold tracking-wide
+        no-underline
 
         transition-all duration-300 ease-out
 
@@ -26,8 +30,8 @@ const ActionButton = ({ text, onClick }: ActionButtonProps) => {
       "
     >
       {text}
-    </button>
+    </Link>
   );
 };
 
-export default ActionButton;
+export default ViewButton;
