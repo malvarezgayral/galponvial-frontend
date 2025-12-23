@@ -17,7 +17,7 @@ const Navbar = () => {
   ];
 
   return (
-    <header className="w-full h-[265px] bg-[#242424] flex flex-col items-center justify-evenly shadow-md">
+    <header className="navbar-header">
       <div className="w-full flex justify-center">
         <img
           src={logoMunicipio}
@@ -26,7 +26,7 @@ const Navbar = () => {
         />
       </div>
 
-      <nav className="bg-[#0062e3] w-3/4 max-w-[1400px] h-[68px] rounded-full shadow-lg flex items-center px-4">
+      <nav className="navbar-nav">
         <ul className="w-full flex flex-row items-center justify-around m-0 p-0 h-full">
           {navLinks.map((link) => (
             <li
@@ -34,17 +34,11 @@ const Navbar = () => {
               className="h-full text-center flex items-center justify-center"
             >
               {link.href !== "#" ? (
-                <Link
-                  to={link.href}
-                  className="text-white text-[22px] font-bold transition-all duration-300 ease-in-out hover:text-[#001b42] hover:scale-105 block w-full"
-                >
+                <Link to={link.href} className="navbar-link">
                   {link.name}
                 </Link>
               ) : (
-                <a
-                  href={link.href}
-                  className="text-white text-[22px] font-bold transition-all duration-300 ease-in-out hover:text-[#001b42] hover:scale-105 block w-full"
-                >
+                <a href={link.href} className="navbar-link">
                   {link.name}
                 </a>
               )}
