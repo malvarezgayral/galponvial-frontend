@@ -1,4 +1,6 @@
+import { Link } from "react-router-dom";
 import logoMunicipio from "../assets/logos/municipio-logo.png";
+import { ROUTES } from "../app/routes";
 
 interface NavItem {
   name: string;
@@ -7,11 +9,11 @@ interface NavItem {
 
 const Navbar = () => {
   const navLinks: NavItem[] = [
-    { name: "Almacén", href: "#" },
-    { name: "Vehículos", href: "#" },
+    { name: "Almacén", href: ROUTES.almacen },
+    { name: "Vehículos", href: ROUTES.vehiculos },
     { name: "Servicios", href: "#" },
     { name: "Proveedores", href: "#" },
-    { name: "Usuarios", href: "#" },
+    { name: "Usuarios", href: ROUTES.usuarios },
   ];
 
   return (
@@ -31,12 +33,21 @@ const Navbar = () => {
               key={link.name}
               className="h-full text-center flex items-center justify-center"
             >
-              <a
-                href={link.href}
-                className="text-white text-[22px] font-bold transition-all duration-300 ease-in-out hover:text-[#001b42] hover:scale-105 block w-full"
-              >
-                {link.name}
-              </a>
+              {link.href !== "#" ? (
+                <Link
+                  to={link.href}
+                  className="text-white text-[22px] font-bold transition-all duration-300 ease-in-out hover:text-[#001b42] hover:scale-105 block w-full"
+                >
+                  {link.name}
+                </Link>
+              ) : (
+                <a
+                  href={link.href}
+                  className="text-white text-[22px] font-bold transition-all duration-300 ease-in-out hover:text-[#001b42] hover:scale-105 block w-full"
+                >
+                  {link.name}
+                </a>
+              )}
             </li>
           ))}
         </ul>
