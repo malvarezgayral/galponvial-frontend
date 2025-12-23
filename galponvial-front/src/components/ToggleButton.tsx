@@ -18,7 +18,7 @@ const ToggleView = ({ entity, onChange }: ToggleViewProps) => {
     <div
       className="
         relative
-        w-[562px] h-[63px]
+        w-140.5 h-15.75
         bg-gray-200
         rounded-xl
         p-1
@@ -26,20 +26,15 @@ const ToggleView = ({ entity, onChange }: ToggleViewProps) => {
         items-center
       "
     >
-      {/* SLIDER */}
       <div
-        className={`
-    absolute top-1 bottom-1
-    rounded-lg
-    bg-[#9BE29B]
-    transition-all duration-300 ease-out
-
-    w-[calc(50%-0.25rem)]
-    ${active === "admin" ? "left-1" : "left-[calc(50%+0.115rem)]"}
-  `}
+        className={`absolute top-1 bottom-1
+                    rounded-lg bg-[#9BE29B]
+                    transition-all duration-300 ease-out
+                    w-[calc(50%-0.25rem)]
+        ${active === "admin" ? "left-1" : "left-[calc(50%+0rem)]"}
+                    `}
       />
 
-      {/* ADMIN */}
       <button
         onClick={() => handleToggle("admin")}
         className={`
@@ -57,7 +52,6 @@ const ToggleView = ({ entity, onChange }: ToggleViewProps) => {
         Administrar {entity}
       </button>
 
-      {/* VIEW */}
       <button
         onClick={() => handleToggle("view")}
         className={`
