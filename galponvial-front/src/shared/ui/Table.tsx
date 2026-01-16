@@ -15,6 +15,7 @@ interface TableProps<T> {
 
 export const Table = React.forwardRef<HTMLTableElement, TableProps<any>>(
   ({ data, columns, className = '', rowClassName = '' }, ref) => {
+    console.log('Rendering Table with data:', data);
     return (
       <div className="overflow-x-auto">
         <table

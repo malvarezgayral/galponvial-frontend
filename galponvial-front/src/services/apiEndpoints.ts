@@ -20,14 +20,19 @@ export const API_ENDPOINTS = {
     DELETE: (id: string) => `/almacen/${id}`,
   },
   USUARIOS: {
-    LIST: '/usuarios',
-    DETAIL: (id: string) => `/usuarios/${id}`,
-    CREATE: '/usuarios',
-    UPDATE: (id: string) => `/usuarios/${id}`,
-    DELETE: (id: string) => `/usuarios/${id}`,
+    LIST: '/usuario',
+    DETAIL: (id: string) => `/usuario/${id}`,
+    CREATE: '/usuario',
+    UPDATE: (id: string) => `/usuario/${id}`,
+    DELETE: (id: string) => `/usuario/${id}`,
   },
   AUDITORIA: {
     LIST: '/auditoria',
     DETAIL: (id: string) => `/auditoria/${id}`,
   },
 } as const;
+
+//BASE URL CONSTANT
+
+export const BASE_API_URL_DEVELOPMENT = 'http://localhost:3000';
+export const BASE_API_URL_PRODUCTION = 'https://api.galponvial.com/v1';

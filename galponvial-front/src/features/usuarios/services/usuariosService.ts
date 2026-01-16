@@ -1,11 +1,11 @@
 import { apiClient } from '@/services/api';
-import { API_ENDPOINTS } from '@/services/apiEndpoints';
+import { API_ENDPOINTS, BASE_API_URL_DEVELOPMENT } from '@/services/apiEndpoints';
 import type { User, Role, Permission, CreateUserDto, UpdateUserDto, PaginatedResponse } from '../types';
 
 export const usuariosService = {
   // User Management
-  getAll: async (page: number = 1, pageSize: number = 10): Promise<PaginatedResponse<User>> => {
-    const { data } = await apiClient.get(API_ENDPOINTS.USUARIOS.LIST, {
+  getAll: async (page?: number, pageSize?: number): Promise<PaginatedResponse<User>> => {
+    const { data } = await apiClient.get(BASE_API_URL_DEVELOPMENT + API_ENDPOINTS.USUARIOS.LIST, {
       params: { page, pageSize },
     });
     return data;

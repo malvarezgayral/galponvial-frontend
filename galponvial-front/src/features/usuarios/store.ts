@@ -65,13 +65,15 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
   modoEdicion: false,
 
   // Users Actions
-  fetchUsuarios: async (page = 1, pageSize = 10) => {
+  fetchUsuarios: async (page, pageSize) => {
     try {
       set({ isLoading: true, error: null });
       const result = await usuariosService.getAll(page, pageSize);
+      const total = Array.isArray(result) ? result.length : 0;
+
       set({
-        usuarios: result.data,
-        usuariosTotal: result.total,
+        usuarios: Array.isArray(result) ? result : [],
+        usuariosTotal: total,
         usuariosPagina: page,
         usuariosPageSize: pageSize,
       });

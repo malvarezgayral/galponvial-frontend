@@ -1,10 +1,10 @@
-import React, { useEffect } from 'react';
-import { useUsuariosStore } from '../store';
-import { Button } from '@/shared/ui/Button';
-import { Table } from '@/shared/ui/Table';
-import UserFormModal from './UserFormModal';
-import UserActionMenu from './UserActionMenu';
-import type { User } from '../types';
+import React, { useEffect } from "react";
+import { useUsuariosStore } from "../store";
+import { Button } from "@/shared/ui/Button";
+import { Table } from "@/shared/ui/Table";
+import UserFormModal from "./UserFormModal";
+import UserActionMenu from "./UserActionMenu";
+import type { User } from "../types";
 
 const AdminDashboard: React.FC = () => {
   const {
@@ -22,7 +22,10 @@ const AdminDashboard: React.FC = () => {
   } = useUsuariosStore();
 
   useEffect(() => {
-    fetchUsuarios(usuariosPagina, usuariosPageSize);
+    async function loadUsuarios() {
+      await fetchUsuarios(usuariosPagina, usuariosPageSize);
+    }
+    loadUsuarios();
   }, [usuariosPagina, usuariosPageSize, fetchUsuarios]);
 
   const handleCrearUsuario = () => {
@@ -35,41 +38,29 @@ const AdminDashboard: React.FC = () => {
 
   const columns = [
     {
-      key: 'nombre' as const,
-      label: 'Nombre',
+      key: "nombre" as const,
+      label: "Nombre",
       render: (_value: string, row: User) => `${row.nombre} ${row.apellido}`,
     },
     {
-      key: 'email' as const,
-      label: 'Email',
+      key: "email" as const,
+      label: "Email",
     },
     {
-      key: 'rol' as const,
-      label: 'Rol',
-      render: (value: string) => (
-        <span className="px-3 py-1 text-sm font-medium rounded-full bg-[var(--color-navbar-nav)] text-white">
-          {value}
-        </span>
-      ),
-    },
-    {
-      key: 'activo' as const,
-      label: 'Estado',
+      key: "isActive" as const,
+      label: "Estado",
       render: (value: boolean) => (
-        <span className={`px-3 py-1 text-sm font-medium rounded-full ${value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-          {value ? 'Activo' : 'Inactivo'}
+        <span
+          className={`px-3 py-1 text-sm font-medium rounded-full ${
+            value ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+          }`}
+        >
+          {value ? "Activo" : "Inactivo"}
         </span>
-      ),
-    },
-    {
-      key: 'id' as const,
-      label: 'Acciones',
-      render: (_value: string, row: User) => (
-        <UserActionMenu usuario={row} />
       ),
     },
   ];
-
+  console.log('usuarios: ',usuarios)
   return (
     <div className="w-full h-full bg-white rounded-lg shadow-md p-6">
       {/* Header */}
@@ -79,7 +70,7 @@ const AdminDashboard: React.FC = () => {
             Gestión de Usuarios
           </h1>
           <p className="text-gray-600 mt-1">
-            Total: {usuariosTotal} usuario{usuariosTotal !== 1 ? 's' : ''}
+            Total: {usuariosTotal} usuario{usuariosTotal !== 1 ? "s" : ""}
           </p>
         </div>
         <Button
@@ -107,7 +98,7 @@ const AdminDashboard: React.FC = () => {
       )}
 
       {/* Table */}
-      {!isLoading && usuarios.length > 0 && (
+      {!isLoading && usuarios && usuarios.length > 0 && (
         <>
           <Table
             data={usuarios}
@@ -126,7 +117,11 @@ const AdminDashboard: React.FC = () => {
                 variant="secondary"
                 size="sm"
                 disabled={usuariosPagina <= 1}
-                onClick={() => useUsuariosStore.setState({ usuariosPagina: usuariosPagina - 1 })}
+                onClick={() =>
+                  useUsuariosStore.setState({
+                    usuariosPagina: usuariosPagina - 1,
+                  })
+                }
               >
                 Anterior
               </Button>
@@ -134,7 +129,11 @@ const AdminDashboard: React.FC = () => {
                 variant="secondary"
                 size="sm"
                 disabled={usuariosPagina >= totalPages}
-                onClick={() => useUsuariosStore.setState({ usuariosPagina: usuariosPagina + 1 })}
+                onClick={() =>
+                  useUsuariosStore.setState({
+                    usuariosPagina: usuariosPagina + 1,
+                  })
+                }
               >
                 Siguiente
               </Button>
@@ -144,7 +143,7 @@ const AdminDashboard: React.FC = () => {
       )}
 
       {/* Empty State */}
-      {!isLoading && usuarios.length === 0 && (
+      {!isLoading && usuarios && usuarios.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-600 text-lg">No hay usuarios registrados</p>
           <p className="text-gray-500 mt-2">
