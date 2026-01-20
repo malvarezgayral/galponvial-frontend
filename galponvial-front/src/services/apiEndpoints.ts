@@ -1,9 +1,9 @@
 // Centralized API endpoint constants
 export const API_ENDPOINTS = {
   AUTH: {
-    LOGIN: '/auth/login',
-    LOGOUT: '/auth/logout',
-    REFRESH: '/auth/refresh',
+    LOGIN: '/usuario/login',
+    LOGOUT: '/usuario/logout',
+    REFRESH: '/usuario/refresh',
   },
   VEHICULOS: {
     LIST: '/vehiculos',

@@ -4,12 +4,17 @@ import { MainLayout } from "./layouts/MainLayout";
 import AlmacenPage from "../features/almacen/pages/AlmacenPage";
 import VehiculosPage from "../features/vehiculos/pages/VehiculosPage";
 import UsuariosPage from "../features/usuarios/pages/UsuariosPage";
+import LoginPage from "../features/auth/pages/LoginPage";
 
 // Placeholder pages for routes without implementation yet
 const HomePage = () => <h1 className="text-3xl font-bold">Inicio</h1>;
 const AuditoriaPage = () => <h1 className="text-3xl font-bold">Auditoría</h1>;
 
 export const router = createBrowserRouter([
+  {
+    path: ROUTES.login,
+    element: <LoginPage />,
+  },
   {
     element: <MainLayout />,
     children: [

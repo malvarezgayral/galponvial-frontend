@@ -3,7 +3,6 @@ import { useUsuariosStore } from "../store";
 import { Button } from "@/shared/ui/Button";
 import { Table } from "@/shared/ui/Table";
 import UserFormModal from "./UserFormModal";
-import UserActionMenu from "./UserActionMenu";
 import type { User } from "../types";
 
 const AdminDashboard: React.FC = () => {
