@@ -4,6 +4,7 @@
 
 export interface User {
   id: string;
+  dni: number;
   email: string;
   nombre: string;
   apellido: string;
@@ -31,11 +32,11 @@ export interface Permission {
 }
 
 export interface CreateUserDto {
+  dni: number;
   email: string;
   nombre: string;
   apellido: string;
   password: string;
-  rol: 'usuario' | 'admin' | 'super-admin';
 }
 
 export interface UpdateUserDto {

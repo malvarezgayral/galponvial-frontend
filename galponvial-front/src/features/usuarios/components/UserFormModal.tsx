@@ -16,12 +16,14 @@ const UserFormModal: React.FC = () => {
   } = useUsuariosStore();
 
   const [formData, setFormData] = useState<{
+    dni: string;
     nombre: string;
     apellido: string;
     email: string;
     password: string;
     rol: 'usuario' | 'admin' | 'super-admin';
   }>({
+    dni: '',
     nombre: '',
     apellido: '',
     email: '',
@@ -38,6 +40,7 @@ const UserFormModal: React.FC = () => {
   useEffect(() => {
     if (modoEdicion && usuarioSeleccionado) {
       setFormData({
+        dni: usuarioSeleccionado.dni ? String(usuarioSeleccionado.dni) : '',
         nombre: usuarioSeleccionado.nombre,
         apellido: usuarioSeleccionado.apellido,
         email: usuarioSeleccionado.email,
@@ -46,6 +49,7 @@ const UserFormModal: React.FC = () => {
       });
     } else {
       setFormData({
+        dni: '',
         nombre: '',
         apellido: '',
         email: '',
@@ -65,6 +69,13 @@ const UserFormModal: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate DNI
+    const dniNum = parseInt(formData.dni, 10);
+    if (!formData.dni || dniNum < 1000000 || dniNum > 99999999) {
+      alert('DNI debe ser un número entre 1000000 y 99999999');
+      return;
+    }
 
     if (modoEdicion && usuarioSeleccionado) {
       const updateData: UpdateUserDto = {
@@ -87,11 +98,11 @@ const UserFormModal: React.FC = () => {
       }
 
       const createData: CreateUserDto = {
+        dni: dniNum,
         nombre: formData.nombre,
         apellido: formData.apellido,
         email: formData.email,
         password: formData.password,
-        rol: formData.rol,
       };
 
       await crearUsuario(createData);
@@ -109,6 +120,26 @@ const UserFormModal: React.FC = () => {
         </h2>
 
         <form onSubmit={handleSubmit}>
+          {/* DNI */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              DNI
+            </label>
+            <input
+              type="number"
+              name="dni"
+              value={formData.dni}
+              onChange={handleChange}
+              required
+              disabled={modoEdicion}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-navbar-nav)] focus:border-transparent disabled:bg-gray-100"
+              placeholder="37766524"
+              min="1000000"
+              max="99999999"
+            />
+            <p className="text-xs text-gray-500 mt-1">Debe ser un número entre 1000000 y 99999999</p>
+          </div>
+
           {/* Nombre */}
           <div className="mb-4">
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -184,25 +215,27 @@ const UserFormModal: React.FC = () => {
             </div>
           </div>
 
-          {/* Rol */}
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Rol
-            </label>
-            <select
-              name="rol"
-              value={formData.rol}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-navbar-nav)] focus:border-transparent"
-            >
-              <option value="usuario">Usuario</option>
-              <option value="admin">Admin</option>
-              <option value="super-admin">Super Admin</option>
-            </select>
-            <p className="text-xs text-gray-500 mt-1">
-              * Solo super-admins pueden crear otros super-admins
-            </p>
-          </div>
+          {/* Rol - Only show in edit mode */}
+          {modoEdicion && (
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Rol
+              </label>
+              <select
+                name="rol"
+                value={formData.rol}
+                onChange={handleChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-navbar-nav)] focus:border-transparent"
+              >
+                <option value="usuario">Usuario</option>
+                <option value="admin">Admin</option>
+                <option value="super-admin">Super Admin</option>
+              </select>
+              <p className="text-xs text-gray-500 mt-1">
+                * Solo super-admins pueden crear otros admins
+              </p>
+            </div>
+          )}
 
           {/* Buttons */}
           <div className="flex gap-3">

@@ -22,7 +22,7 @@ export const API_ENDPOINTS = {
   USUARIOS: {
     LIST: '/usuario',
     DETAIL: (id: string) => `/usuario/${id}`,
-    CREATE: '/usuario',
+    CREATE: '/usuario/register',
     UPDATE: (id: string) => `/usuario/${id}`,
     DELETE: (id: string) => `/usuario/${id}`,
   },
