@@ -56,7 +56,7 @@ const UserActionMenu: React.FC<UserActionMenuProps> = ({ usuario }) => {
             onClick={handleToggleActivo}
             className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-t"
           >
-            {usuario.activo ? '🔒 Desactivar' : '🔓 Activar'}
+            {usuario.isActive ? '🔒 Desactivar' : '🔓 Activar'}
           </button>
           <button
             onClick={handleEliminar}

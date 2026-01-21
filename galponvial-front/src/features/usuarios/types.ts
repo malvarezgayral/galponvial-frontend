@@ -10,7 +10,7 @@ export interface User {
   apellido: string;
   rol: 'usuario' | 'admin' | 'super-admin';
   permisos: Permission[];
-  activo: boolean;
+  isActive: boolean;
   fechaCreacion: string;
   ultimaModificacion: string;
 }

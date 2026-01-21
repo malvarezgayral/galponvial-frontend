@@ -70,7 +70,7 @@ const AdminDashboard: React.FC = () => {
     setConfirmModal({
       visible: true,
       usuario,
-      newStatus: !usuario.activo,
+      newStatus: !usuario.isActive,
       isLoading: false,
       error: null,
     });
@@ -261,9 +261,9 @@ const AdminDashboard: React.FC = () => {
               <p className="text-sm text-gray-600 mb-3">Estado actual:</p>
               <div className="flex items-center justify-between">
                 <span className={`px-3 py-1 text-sm font-medium rounded-full ${
-                  confirmModal.usuario.activo ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                  confirmModal.usuario.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
                 }`}>
-                  {confirmModal.usuario.activo ? "Activo" : "Inactivo"}
+                  {confirmModal.usuario.isActive ? "Activo" : "Inactivo"}
                 </span>
                 <span className="text-gray-600">→</span>
                 <span className={`px-3 py-1 text-sm font-medium rounded-full ${
