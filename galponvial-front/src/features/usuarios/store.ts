@@ -30,6 +30,8 @@ interface UsuariosState {
   fetchUsuarioById: (id: string) => Promise<void>;
   crearUsuario: (data: CreateUserDto) => Promise<User | null>;
   actualizarUsuario: (id: string, data: UpdateUserDto) => Promise<User | null>;
+  actualizarPorDni: (dni: number, data: UpdateUserDto) => Promise<User | null>;
+  actualizarRol: (dni: number, rol: 'usuario' | 'admin' | 'super-admin') => Promise<User | null>;
   eliminarUsuario: (id: string) => Promise<boolean>;
   toggleUsuarioActivo: (id: string) => Promise<void>;
   resetearPassword: (id: string, newPassword: string) => Promise<void>;
@@ -41,7 +43,7 @@ interface UsuariosState {
   // Roles Actions
   fetchRoles: () => Promise<void>;
   crearRol: (data: Omit<Role, 'id'>) => Promise<Role | null>;
-  actualizarRol: (id: string, data: Partial<Role>) => Promise<Role | null>;
+  actualizarRolGestion: (id: string, data: Partial<Role>) => Promise<Role | null>;
   eliminarRol: (id: string) => Promise<boolean>;
 
   // Permissions Actions
@@ -122,6 +124,42 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
       const usuario = await usuariosService.update(id, data);
       set((state: UsuariosState) => ({
         usuarios: state.usuarios.map((u: User) => (u.id === id ? usuario : u)),
+        usuarioSeleccionado: usuario,
+      }));
+      return usuario;
+    } catch (error) {
+      const apiError = handleApiError(error);
+      set({ error: apiError.message });
+      return null;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  actualizarPorDni: async (dni: number, data: UpdateUserDto) => {
+    try {
+      set({ isLoading: true, error: null });
+      const usuario = await usuariosService.updateByDni(dni, data);
+      set((state: UsuariosState) => ({
+        usuarios: state.usuarios.map((u: User) => (u.dni === dni ? usuario : u)),
+        usuarioSeleccionado: usuario,
+      }));
+      return usuario;
+    } catch (error) {
+      const apiError = handleApiError(error);
+      set({ error: apiError.message });
+      return null;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  actualizarRol: async (dni: number, rol: 'usuario' | 'admin' | 'super-admin') => {
+    try {
+      set({ isLoading: true, error: null });
+      const usuario = await usuariosService.updateRol(dni, rol);
+      set((state: UsuariosState) => ({
+        usuarios: state.usuarios.map((u: User) => (u.dni === dni ? usuario : u)),
         usuarioSeleccionado: usuario,
       }));
       return usuario;
@@ -215,7 +253,7 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
     }
   },
 
-  actualizarRol: async (id: string, data: Partial<Role>) => {
+  actualizarRolGestion: async (id: string, data: Partial<Role>) => {
     try {
       set({ isLoading: true, error: null });
       const rol = await usuariosService.updateRole(id, data);

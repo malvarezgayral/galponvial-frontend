@@ -30,6 +30,29 @@ export const usuariosService = {
     await apiClient.delete(API_ENDPOINTS.USUARIOS.DELETE(id));
   },
 
+  updateByDni: async (dni: number, data: UpdateUserDto): Promise<User> => {
+    const { data: response } = await apiClient.put(`/usuario/${dni}`, data);
+    return response.data || response;
+  },
+
+  updateRol: async (dni: number, rol: 'usuario' | 'admin' | 'super-admin'): Promise<User> => {
+    const { data: response } = await apiClient.patch(`/usuario/addRol/${dni}`, { rol });
+    return response.data || response;
+  },
+
+  updateStatus: async (dni: number, isActive: boolean): Promise<User> => {
+    // Ensure dni is a number
+    const dniNumber = Number(dni);
+    if (isNaN(dniNumber)) {
+      throw new Error('DNI must be a valid number');
+    }
+    const { data: response } = await apiClient.put('/usuario', { 
+      dni: dniNumber, 
+      isActive 
+    });
+    return response.data || response;
+  },
+
   toggleActive: async (id: string): Promise<User> => {
     const { data } = await apiClient.patch(`/usuarios/${id}/toggle-active`);
     return data;

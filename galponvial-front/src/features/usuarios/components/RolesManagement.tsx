@@ -5,7 +5,7 @@ import { Table } from '@/shared/ui/Table';
 import type { Role, Permission } from '../types';
 
 const RolesManagement: React.FC = () => {
-  const { roles, isLoading, error, fetchRoles, crearRol, actualizarRol, eliminarRol } =
+  const { roles, isLoading, error, fetchRoles, crearRol, actualizarRolGestion, eliminarRol } =
     useUsuariosStore();
 
   const [modalAbierto, setModalAbierto] = useState(false);
@@ -43,7 +43,7 @@ const RolesManagement: React.FC = () => {
     e.preventDefault();
 
     if (rolSeleccionado) {
-      await actualizarRol(rolSeleccionado.id, formData);
+      await actualizarRolGestion(rolSeleccionado.id, formData);
     } else {
       await crearRol(formData);
     }

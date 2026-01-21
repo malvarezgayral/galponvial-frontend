@@ -11,7 +11,8 @@ const UserFormModal: React.FC = () => {
     setModalAbierto,
     setUsuarioSeleccionado,
     crearUsuario,
-    actualizarUsuario,
+    actualizarPorDni,
+    actualizarRol,
     fetchRoles,
   } = useUsuariosStore();
 
@@ -78,20 +79,58 @@ const UserFormModal: React.FC = () => {
     }
 
     if (modoEdicion && usuarioSeleccionado) {
-      const updateData: UpdateUserDto = {
-        nombre: formData.nombre,
-        apellido: formData.apellido,
-        email: formData.email,
-        rol: formData.rol,
-      };
+      // Edit mode with dual-endpoint logic
+      const nombreChanged = usuarioSeleccionado.nombre !== formData.nombre;
+      const apellidoChanged = usuarioSeleccionado.apellido !== formData.apellido;
+      const emailChanged = usuarioSeleccionado.email !== formData.email;
+      const passwordChanged = formData.password.length > 0;
+      const rolChanged = usuarioSeleccionado.rol !== formData.rol;
 
-      if (formData.password) {
-        // If password is provided, include it (only for super-admin)
-        updateData.password = formData.password;
+      // Check if non-rol fields changed
+      const otherFieldsChanged = nombreChanged || apellidoChanged || emailChanged || passwordChanged;
+
+      let updateSuccess = true;
+      let roleUpdateSuccess = true;
+
+      try {
+        // Call updateByDni if other fields changed
+        if (otherFieldsChanged) {
+          const updateData: UpdateUserDto = {};
+
+          if (nombreChanged) updateData.nombre = formData.nombre;
+          if (apellidoChanged) updateData.apellido = formData.apellido;
+          if (emailChanged) updateData.email = formData.email;
+          if (passwordChanged) updateData.password = formData.password;
+
+          const result = await actualizarPorDni(dniNum, updateData);
+          updateSuccess = result !== null;
+
+          if (!updateSuccess) {
+            alert('Error al actualizar los datos del usuario');
+          }
+        }
+
+        // Call updateRol if rol changed
+        if (rolChanged) {
+          const result = await actualizarRol(dniNum, formData.rol);
+          roleUpdateSuccess = result !== null;
+
+          if (!roleUpdateSuccess) {
+            alert('Error al actualizar el rol del usuario');
+          }
+        }
+
+        // Close modal only if at least one update was successful
+        if (updateSuccess || roleUpdateSuccess) {
+          setModalAbierto(false);
+          setUsuarioSeleccionado(null);
+        }
+      } catch (error) {
+        console.error('Error updating user:', error);
+        alert('Error al actualizar el usuario');
       }
-
-      await actualizarUsuario(usuarioSeleccionado.id, updateData);
     } else {
+      // Create mode
       if (!formData.password) {
         alert('La contraseña es requerida para crear un nuevo usuario');
         return;
@@ -105,11 +144,12 @@ const UserFormModal: React.FC = () => {
         password: formData.password,
       };
 
-      await crearUsuario(createData);
+      const result = await crearUsuario(createData);
+      if (result) {
+        setModalAbierto(false);
+        setUsuarioSeleccionado(null);
+      }
     }
-
-    setModalAbierto(false);
-    setUsuarioSeleccionado(null);
   };
 
   return (
