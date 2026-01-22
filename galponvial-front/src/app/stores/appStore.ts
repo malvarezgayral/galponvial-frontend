@@ -1,12 +1,12 @@
 import { create } from 'zustand';
 import { authService } from '@/services/auth';
-import type { User } from '@/features/usuarios/types';
+import type { User, UserAuth } from '@/features/usuarios/types';
 
 interface AppState {
-  user: User | null;
+  user: User | UserAuth | null;
   isLoading: boolean;
   error: string | null;
-  setUser: (user: User | null) => void;
+  setUser: (user: User | UserAuth | null) => void;
   logout: () => Promise<void>;
 }
 

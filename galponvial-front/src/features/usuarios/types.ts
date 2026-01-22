@@ -3,7 +3,6 @@
  */
 
 export interface User {
-  id: string;
   dni: number;
   email: string;
   nombre: string;
@@ -12,7 +11,10 @@ export interface User {
   permisos: Permission[];
   isActive: boolean;
   fechaCreacion: string;
-  ultimaModificacion: string;
+}
+
+export interface UserAuth {
+  email: string;
 }
 
 export interface Role {

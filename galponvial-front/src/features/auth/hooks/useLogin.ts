@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { authService } from '../services/authService';
 import type { JwtLoginResponse } from '../types';
+import { useAppStore } from '@/app/stores/appStore';
 
 interface UseLoginReturn {
   loading: boolean;
@@ -18,13 +19,13 @@ export const useLogin = (): UseLoginReturn => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const { setUser } = useAppStore();
 
   const login = async (email: string, password: string): Promise<void> => {
     setLoading(true);
     setError(null);
 
     try {
-        console.log({email, password});
       const response = await authService.login(email, password);
 
       if (!response.success) {
@@ -36,6 +37,7 @@ export const useLogin = (): UseLoginReturn => {
       const userData: JwtLoginResponse = response.data;
       localStorage.setItem('accessToken', userData.accessToken);
       localStorage.setItem('user', JSON.stringify(userData));
+      setUser({ email: userData.email });
 
       // Store refresh token in HttpOnly cookie (sent by backend via Set-Cookie header)
       // This is handled automatically by axios

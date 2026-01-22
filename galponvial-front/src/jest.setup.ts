@@ -2,6 +2,14 @@ import '@testing-library/jest-dom';
 
 declare global {
   var localStorage: Storage;
+  namespace jest {
+    interface Matchers<R> {
+      toBeInTheDocument(): R;
+      toBeVisible(): R;
+      toBeDisabled(): R;
+      toBeEnabled(): R;
+    }
+  }
 }
 
 // Mock localStorage
