@@ -12,7 +12,11 @@ export const vehiculosService = {
    */
   getAll: async (): Promise<Vehiculo[]> => {
     const { data } = await apiClient.get(API_ENDPOINTS.VEHICULOS.LIST);
-    return data;
+    // Handle both wrapped response and direct array response
+    if (data && typeof data === 'object' && 'data' in data) {
+      return Array.isArray(data.data) ? data.data : [data.data];
+    }
+    return Array.isArray(data) ? data : [];
   },
 
   /**
@@ -36,13 +40,17 @@ export const vehiculosService = {
   },
 
   /**
-   * Update an existing vehicle
+   * Update an existing vehicle (PATCH)
    * @param id - Vehicle ID
-   * @param vehiculo - Vehicle data to update
+   * @param vehiculo - Vehicle data to update (partial)
    * @returns Updated vehicle
    */
   update: async (id: string, vehiculo: Partial<Vehiculo>): Promise<Vehiculo> => {
-    const { data } = await apiClient.put(API_ENDPOINTS.VEHICULOS.UPDATE(id), vehiculo);
+    const { data } = await apiClient.patch(API_ENDPOINTS.VEHICULOS.UPDATE(id), vehiculo);
+    // Handle both wrapped response and direct object response
+    if (data && typeof data === 'object' && 'data' in data) {
+      return data.data;
+    }
     return data;
   },
 

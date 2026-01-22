@@ -37,7 +37,7 @@ export const useLogin = (): UseLoginReturn => {
       const userData: JwtLoginResponse = response.data;
       localStorage.setItem('accessToken', userData.accessToken);
       localStorage.setItem('user', JSON.stringify(userData));
-      setUser({ email: userData.email });
+      setUser({ email: userData.email, rol: userData.rol });
 
       // Store refresh token in HttpOnly cookie (sent by backend via Set-Cookie header)
       // This is handled automatically by axios

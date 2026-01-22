@@ -12,7 +12,6 @@ interface ProtectedRouteProps {
  */
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { user } = useAppStore();
-    console.log('ProtectedRoute - user:', user);
   // Not authenticated - redirect to login
   if (!user) {
     return <Navigate to="/login" replace />;

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useVehiculosStore } from '../store';
 import { CreateVehiculoForm } from '../components/CreateVehiculoForm';
+import { VehiculosView } from '../components/VehiculosView';
 
 type VehiculosSection = 'administrar' | 'visualizar';
 
@@ -64,11 +65,7 @@ export default function VehiculosPage() {
         </div>
       )}
 
-      {activeSection === 'visualizar' && (
-        <div className="bg-gray-100 p-8 rounded-lg">
-          <p className="text-gray-600">Próximamente: Sección de visualización de vehículos</p>
-        </div>
-      )}
+      {activeSection === 'visualizar' && <VehiculosView />}
     </div>
   );
 }

@@ -9,7 +9,7 @@ export interface InfoAdicional {
 }
 
 export interface Vehiculo {
-  id: string;
+  id_vehiculo: number;
   codigo: string;
   nombre: string;
   marca: string;
