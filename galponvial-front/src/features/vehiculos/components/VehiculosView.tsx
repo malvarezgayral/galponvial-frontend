@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useVehiculosStore } from "../store";
 import { useAppStore } from "@/app/stores/appStore";
+import { ROUTES } from "@/app/routes";
 import { VehiculoCard } from "./VehiculoCard";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { EditVehiculoModal } from "./EditVehiculoModal";
@@ -10,6 +12,7 @@ import type { Vehiculo } from "../types";
  * View component for displaying and filtering vehicles
  */
 export const VehiculosView: React.FC = () => {
+  const navigate = useNavigate();
   const {
     vehiculos,
     filteredVehiculos,
@@ -98,8 +101,7 @@ export const VehiculosView: React.FC = () => {
    * Handle view details
    */
   const handleViewDetails = (vehiculo: Vehiculo) => {
-    console.log("View details:", vehiculo);
-    // TODO: Navigate to detail page or open modal
+    navigate(ROUTES.vehiculoDetalles(vehiculo.id_vehiculo));
   };
 
   return (

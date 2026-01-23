@@ -55,11 +55,11 @@ export const vehiculosService = {
   },
 
   /**
-   * Delete a vehicle
+   * Soft delete a vehicle (logical deletion)
    * @param id - Vehicle ID
    */
-  delete: async (id: string): Promise<void> => {
-    await apiClient.delete(API_ENDPOINTS.VEHICULOS.DELETE(id));
+  softDelete: async (id: string): Promise<void> => {
+    await apiClient.put(`${API_ENDPOINTS.VEHICULOS.DELETE(id)}/eliminar`, { eliminado: true });
   },
 
   /**

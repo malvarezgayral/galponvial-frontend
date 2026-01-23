@@ -179,10 +179,10 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
   /**
    * Update a vehicle
    */
-  updateVehiculo: async (id: string, vehiculo: Partial<Vehiculo>) => {
+  updateVehiculo: async (id: number, vehiculo: Partial<Vehiculo>) => {
     try {
-      const updated = await vehiculosService.update(id, vehiculo);
-      const vehiculos = get().vehiculos.map((v) => (v.id === id ? updated : v));
+      const updated = await vehiculosService.update(String(id), vehiculo);
+      const vehiculos = get().vehiculos.map((v) => (v.id_vehiculo === id ? updated : v));
       const filtered = applyFilters(vehiculos, get().filters);
       set({ vehiculos, filteredVehiculos: filtered });
     } catch (error) {
@@ -192,14 +192,13 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
   },
 
   /**
-   * Delete a vehicle
+   * Soft delete a vehicle (logical deletion)
    */
-  deleteVehiculo: async (id: string) => {
+  deleteVehiculo: async (id: number) => {
     try {
-      await vehiculosService.delete(id);
-      const vehiculos = get().vehiculos.filter((v) => v.id !== id);
-      const filtered = applyFilters(vehiculos, get().filters);
-      set({ vehiculos, filteredVehiculos: filtered });
+      await vehiculosService.softDelete(String(id));
+      // Refetch vehicles after soft delete
+      await get().fetchAllVehiculos();
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Error al eliminar vehículo';
       throw new Error(message);

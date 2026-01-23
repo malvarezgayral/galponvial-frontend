@@ -4,6 +4,7 @@ import { MainLayout } from "./layouts/MainLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AlmacenPage from "../features/almacen/pages/AlmacenPage";
 import VehiculosPage from "../features/vehiculos/pages/VehiculosPage";
+import VehiculoDetallesPage from "../features/vehiculos/pages/VehiculoDetallesPage";
 import UsuariosPage from "../features/usuarios/pages/UsuariosPage";
 import LoginPage from "../features/auth/pages/LoginPage";
 
@@ -27,6 +28,14 @@ export const router = createBrowserRouter([
             <VehiculosPage />
           </ProtectedRoute>
         ) 
+      },
+      {
+        path: "/vehiculos/:id",
+        element: (
+          <ProtectedRoute>
+            <VehiculoDetallesPage />
+          </ProtectedRoute>
+        ),
       },
       { path: ROUTES.almacen, element: <AlmacenPage /> },
       { path: ROUTES.usuarios, element: <UsuariosPage /> },

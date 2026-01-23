@@ -62,6 +62,8 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
    */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!vehiculo) return;
+
     setLoading(true);
     setError(null);
     setSuccess(false);
