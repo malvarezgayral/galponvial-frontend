@@ -1,6 +1,14 @@
 import { apiClient } from '@/services/api';
 import { API_ENDPOINTS } from '@/services/apiEndpoints';
-import type { Vehiculo, CreateVehiculoPayload, DropdownData } from '../types';
+import type {
+  Vehiculo,
+  CreateVehiculoPayload,
+  DropdownData,
+  RecordatoriosResponse,
+  StatusUpdatesResponse,
+  IncidentesResponse,
+  CargasCombustibleResponse,
+} from '../types';
 
 /**
  * Service for vehicle-related API calls
@@ -90,5 +98,77 @@ export const vehiculosService = {
         { id: 4, label: 'Sector Costa', value: 4 },
       ],
     };
+  },
+
+  /**
+   * Fetch reminders for a vehicle
+   * @param vehiculoId - Vehicle ID
+   * @param page - Page number (default: 1)
+   * @param pageSize - Items per page (default: 5)
+   * @returns Paginated recordatorios
+   */
+  getRecordatorios: async (
+    vehiculoId: number,
+    page: number = 1,
+    pageSize: number = 5
+  ): Promise<RecordatoriosResponse> => {
+    const { data } = await apiClient.get(
+      `/vehiculos/${vehiculoId}/recordatorios-paginado?page=${page}&pageSize=${pageSize}`
+    );
+    return data.data || data;
+  },
+
+  /**
+   * Fetch status updates for a vehicle
+   * @param vehiculoId - Vehicle ID
+   * @param page - Page number (default: 1)
+   * @param pageSize - Items per page (default: 5)
+   * @returns Paginated status updates
+   */
+  getStatusUpdates: async (
+    vehiculoId: number,
+    page: number = 1,
+    pageSize: number = 5
+  ): Promise<StatusUpdatesResponse> => {
+    const { data } = await apiClient.get(
+      `/vehiculos/${vehiculoId}/status-updates?page=${page}&pageSize=${pageSize}`
+    );
+    return data.data || data;
+  },
+
+  /**
+   * Fetch incidents for a vehicle
+   * @param vehiculoId - Vehicle ID
+   * @param page - Page number (default: 1)
+   * @param pageSize - Items per page (default: 10)
+   * @returns Paginated incidentes
+   */
+  getIncidentes: async (
+    vehiculoId: number,
+    page: number = 1,
+    pageSize: number = 10
+  ): Promise<IncidentesResponse> => {
+    const { data } = await apiClient.get(
+      `/vehiculos/${vehiculoId}/incidentes?page=${page}&pageSize=${pageSize}`
+    );
+    return data.data || data;
+  },
+
+  /**
+   * Fetch fuel charges for a vehicle
+   * @param vehiculoId - Vehicle ID
+   * @param page - Page number (default: 1)
+   * @param pageSize - Items per page (default: 5)
+   * @returns Paginated cargas de combustible
+   */
+  getCargasCombustible: async (
+    vehiculoId: number,
+    page: number = 1,
+    pageSize: number = 5
+  ): Promise<CargasCombustibleResponse> => {
+    const { data } = await apiClient.get(
+      `/vehiculos/${vehiculoId}/combustible-cargas?page=${page}&pageSize=${pageSize}`
+    );
+    return data.data || data;
   },
 };

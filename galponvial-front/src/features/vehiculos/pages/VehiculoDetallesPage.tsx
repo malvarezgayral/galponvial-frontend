@@ -1,7 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 import { useVehiculosStore } from '../store';
 import { Badge } from '@/shared/ui/Badge';
 import { Button } from '@/shared/ui/Button';
+import { vehiculosService } from '../services/vehiculosService';
+import type { Recordatorio, StatusUpdate, Incidente, CargaCombustible } from '../types';
 
 /**
  * Page for displaying vehicle details
@@ -13,6 +16,88 @@ const VehiculoDetallesPage: React.FC = () => {
 
   // Find the vehicle by ID
   const vehiculo = id ? vehiculos.find((v) => v.id_vehiculo === parseInt(id)) : null;
+  const vehiculoId = vehiculo?.id_vehiculo;
+
+  // Local state for recordatorios
+  const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]);
+  const [recordatoriosLoading, setRecordatoriosLoading] = useState(false);
+  const [recordatoriosError, setRecordatoriosError] = useState<Error | null>(null);
+
+  // Local state for status updates
+  const [statusUpdates, setStatusUpdates] = useState<StatusUpdate[]>([]);
+  const [statusUpdatesLoading, setStatusUpdatesLoading] = useState(false);
+  const [statusUpdatesError, setStatusUpdatesError] = useState<Error | null>(null);
+
+  // Local state for incidentes
+  const [incidentes, setIncidentes] = useState<Incidente[]>([]);
+  const [incidentesLoading, setIncidentesLoading] = useState(false);
+  const [incidentesError, setIncidentesError] = useState<Error | null>(null);
+
+  // Local state for combustible
+  const [combustible, setCombustible] = useState<CargaCombustible[]>([]);
+  const [combustibleLoading, setCombustibleLoading] = useState(false);
+  const [combustibleError, setCombustibleError] = useState<Error | null>(null);
+
+  // Fetch all data on component mount
+  useEffect(() => {
+    if (!vehiculoId) return;
+
+    const fetchAllData = async () => {
+      // Fetch recordatorios
+      try {
+        setRecordatoriosLoading(true);
+        const recordatoriosData = await vehiculosService.getRecordatorios(vehiculoId, 1, 5);
+        setRecordatorios(recordatoriosData.data);
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Error al cargar recordatorios');
+        setRecordatoriosError(error);
+        console.error('Error fetching recordatorios:', error);
+      } finally {
+        setRecordatoriosLoading(false);
+      }
+
+      // Fetch status updates
+      try {
+        setStatusUpdatesLoading(true);
+        const statusData = await vehiculosService.getStatusUpdates(vehiculoId, 1, 5);
+        setStatusUpdates(statusData.data);
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Error al cargar cambios de estado');
+        setStatusUpdatesError(error);
+        console.error('Error fetching status updates:', error);
+      } finally {
+        setStatusUpdatesLoading(false);
+      }
+
+      // Fetch incidentes
+      try {
+        setIncidentesLoading(true);
+        const incidentesData = await vehiculosService.getIncidentes(vehiculoId, 1, 10);
+        setIncidentes(incidentesData.data);
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Error al cargar incidentes');
+        setIncidentesError(error);
+        console.error('Error fetching incidentes:', error);
+      } finally {
+        setIncidentesLoading(false);
+      }
+
+      // Fetch cargas de combustible
+      try {
+        setCombustibleLoading(true);
+        const combustibleData = await vehiculosService.getCargasCombustible(vehiculoId, 1, 5);
+        setCombustible(combustibleData.data);
+      } catch (err) {
+        const error = err instanceof Error ? err : new Error('Error al cargar cargas de combustible');
+        setCombustibleError(error);
+        console.error('Error fetching combustible:', error);
+      } finally {
+        setCombustibleLoading(false);
+      }
+    };
+
+    void fetchAllData();
+  }, [vehiculoId]);
 
   // Status color mapping
   const getStatusColor = (status: string) => {
@@ -264,6 +349,216 @@ const VehiculoDetallesPage: React.FC = () => {
           Volver
         </Button>
       </div>
+
+      {vehiculoId && (
+        <>
+          {/* Recordatorios Table */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Recordatorios</h2>
+            {recordatoriosError && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                <p className="font-medium">Error al cargar datos</p>
+                <p className="text-sm">{recordatoriosError.message}</p>
+              </div>
+            )}
+            {recordatoriosLoading && (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Cargando...</span>
+              </div>
+            )}
+            {!recordatoriosLoading && recordatorios.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No hay recordatorios registrados para este vehículo</p>
+              </div>
+            )}
+            {!recordatoriosLoading && recordatorios.length > 0 && (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '20%' }}>Fecha</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '80%' }}>Descripción</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {recordatorios.map((item, idx) => (
+                      <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm text-gray-700">{item.fecha}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{item.descripcion}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Status Updates Table */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Cambios de Estado</h2>
+            {statusUpdatesError && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                <p className="font-medium">Error al cargar datos</p>
+                <p className="text-sm">{statusUpdatesError.message}</p>
+              </div>
+            )}
+            {statusUpdatesLoading && (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Cargando...</span>
+              </div>
+            )}
+            {!statusUpdatesLoading && statusUpdates.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No hay cambios de estado registrados para este vehículo</p>
+              </div>
+            )}
+            {!statusUpdatesLoading && statusUpdates.length > 0 && (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '25%' }}>Tipo</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '25%' }}>Fecha Desde</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '25%' }}>Fecha Hasta</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {statusUpdates.map((item, idx) => (
+                      <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm text-gray-700">{item.tipo}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{item.fecha_desde}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{item.fecha_hasta}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Incidentes Table */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Incidentes</h2>
+            {incidentesError && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                <p className="font-medium">Error al cargar datos</p>
+                <p className="text-sm">{incidentesError.message}</p>
+              </div>
+            )}
+            {incidentesLoading && (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Cargando...</span>
+              </div>
+            )}
+            {!incidentesLoading && incidentes.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No hay incidentes registrados para este vehículo</p>
+              </div>
+            )}
+            {!incidentesLoading && incidentes.length > 0 && (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '12%' }}>Fecha</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '15%' }}>Tipo</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '30%' }}>Descripción</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '20%' }}>Usuario</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '10%' }}>Falla</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '13%' }}>Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {incidentes.map((item, idx) => {
+                      const fallaColor =
+                        item.falla === 'alta'
+                          ? 'bg-red-100 text-red-800'
+                          : item.falla === 'media'
+                            ? 'bg-yellow-100 text-yellow-800'
+                            : 'bg-green-100 text-green-800';
+                      const estadoColor =
+                        item.estado === 'resuelto'
+                          ? 'bg-green-100 text-green-800'
+                          : item.estado === 'en_proceso'
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-yellow-100 text-yellow-800';
+                      return (
+                        <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
+                          <td className="px-4 py-3 text-sm text-gray-700">{item.fecha}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">{item.tipo}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">{item.descripcion}</td>
+                          <td className="px-4 py-3 text-sm text-gray-700">
+                            {item.usuario ? `${item.usuario.nombre} ${item.usuario.apellido}` : '-'}
+                          </td>
+                          <td className="px-4 py-3 text-sm">
+                            <Badge variant="primary" className={fallaColor}>
+                              {item.falla}
+                            </Badge>
+                          </td>
+                          <td className="px-4 py-3 text-sm">
+                            <Badge variant="primary" className={estadoColor}>
+                              {item.estado}
+                            </Badge>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+
+          {/* Combustible Table */}
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Cargas de Combustible</h2>
+            {combustibleError && (
+              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
+                <p className="font-medium">Error al cargar datos</p>
+                <p className="text-sm">{combustibleError.message}</p>
+              </div>
+            )}
+            {combustibleLoading && (
+              <div className="flex justify-center items-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <span className="ml-3 text-gray-600">Cargando...</span>
+              </div>
+            )}
+            {!combustibleLoading && combustible.length === 0 && (
+              <div className="text-center py-8">
+                <p className="text-gray-500">No hay cargas de combustible registradas para este vehículo</p>
+              </div>
+            )}
+            {!combustibleLoading && combustible.length > 0 && (
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b-2 border-gray-200">
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '20%' }}>Fecha</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '25%' }}>Despachante</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '18%' }}>KM Actual</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '18%' }}>Combustible (Ltrs)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {combustible.map((item, idx) => (
+                      <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="px-4 py-3 text-sm text-gray-700">{item.fecha_carga}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{item.despachante}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{item.km_actual}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{item.cant_combustible_despachado}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };
