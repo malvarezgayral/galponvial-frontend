@@ -4,6 +4,9 @@ import { useVehiculosStore } from '../store';
 import { Badge } from '@/shared/ui/Badge';
 import { Button } from '@/shared/ui/Button';
 import { vehiculosService } from '../services/vehiculosService';
+import { AddRecordatorioModal } from '../components/AddRecordatorioModal';
+import { AddCargaCombustibleModal } from '../components/AddCargaCombustibleModal';
+import { AddIncidenteModal } from '../components/AddIncidenteModal';
 import type { Recordatorio, StatusUpdate, Incidente, CargaCombustible } from '../types';
 
 /**
@@ -38,65 +41,74 @@ const VehiculoDetallesPage: React.FC = () => {
   const [combustibleLoading, setCombustibleLoading] = useState(false);
   const [combustibleError, setCombustibleError] = useState<Error | null>(null);
 
+  // Modal states
+  const [showRecordatorioModal, setShowRecordatorioModal] = useState(false);
+  const [showCargaCombustibleModal, setShowCargaCombustibleModal] = useState(false);
+  const [showIncidenteModal, setShowIncidenteModal] = useState(false);
+
+  // Function to refetch all data
+  const refetchAllData = async () => {
+    if (!vehiculoId) return;
+
+    // Fetch recordatorios
+    try {
+      setRecordatoriosLoading(true);
+      const recordatoriosData = await vehiculosService.getRecordatorios(vehiculoId, 1, 5);
+      setRecordatorios(recordatoriosData.data);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Error al cargar recordatorios');
+      setRecordatoriosError(error);
+      console.error('Error fetching recordatorios:', error);
+    } finally {
+      setRecordatoriosLoading(false);
+    }
+
+    // Fetch status updates
+    try {
+      setStatusUpdatesLoading(true);
+      const statusData = await vehiculosService.getStatusUpdates(vehiculoId, 1, 5);
+      setStatusUpdates(statusData.data);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Error al cargar cambios de estado');
+      setStatusUpdatesError(error);
+      console.error('Error fetching status updates:', error);
+    } finally {
+      setStatusUpdatesLoading(false);
+    }
+
+    // Fetch incidentes
+    try {
+      setIncidentesLoading(true);
+      const incidentesData = await vehiculosService.getIncidentes(vehiculoId, 1, 10);
+      setIncidentes(incidentesData.data);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Error al cargar incidentes');
+      setIncidentesError(error);
+      console.error('Error fetching incidentes:', error);
+    } finally {
+      setIncidentesLoading(false);
+    }
+
+    // Fetch cargas de combustible
+    try {
+      setCombustibleLoading(true);
+      const combustibleData = await vehiculosService.getCargasCombustible(vehiculoId, 1, 5);
+      setCombustible(combustibleData.data);
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Error al cargar cargas de combustible');
+      setCombustibleError(error);
+      console.error('Error fetching combustible:', error);
+    } finally {
+      setCombustibleLoading(false);
+    }
+  };
+
   // Fetch all data on component mount
   useEffect(() => {
     if (!vehiculoId) return;
 
-    const fetchAllData = async () => {
-      // Fetch recordatorios
-      try {
-        setRecordatoriosLoading(true);
-        const recordatoriosData = await vehiculosService.getRecordatorios(vehiculoId, 1, 5);
-        setRecordatorios(recordatoriosData.data);
-      } catch (err) {
-        const error = err instanceof Error ? err : new Error('Error al cargar recordatorios');
-        setRecordatoriosError(error);
-        console.error('Error fetching recordatorios:', error);
-      } finally {
-        setRecordatoriosLoading(false);
-      }
-
-      // Fetch status updates
-      try {
-        setStatusUpdatesLoading(true);
-        const statusData = await vehiculosService.getStatusUpdates(vehiculoId, 1, 5);
-        setStatusUpdates(statusData.data);
-      } catch (err) {
-        const error = err instanceof Error ? err : new Error('Error al cargar cambios de estado');
-        setStatusUpdatesError(error);
-        console.error('Error fetching status updates:', error);
-      } finally {
-        setStatusUpdatesLoading(false);
-      }
-
-      // Fetch incidentes
-      try {
-        setIncidentesLoading(true);
-        const incidentesData = await vehiculosService.getIncidentes(vehiculoId, 1, 10);
-        setIncidentes(incidentesData.data);
-      } catch (err) {
-        const error = err instanceof Error ? err : new Error('Error al cargar incidentes');
-        setIncidentesError(error);
-        console.error('Error fetching incidentes:', error);
-      } finally {
-        setIncidentesLoading(false);
-      }
-
-      // Fetch cargas de combustible
-      try {
-        setCombustibleLoading(true);
-        const combustibleData = await vehiculosService.getCargasCombustible(vehiculoId, 1, 5);
-        setCombustible(combustibleData.data);
-      } catch (err) {
-        const error = err instanceof Error ? err : new Error('Error al cargar cargas de combustible');
-        setCombustibleError(error);
-        console.error('Error fetching combustible:', error);
-      } finally {
-        setCombustibleLoading(false);
-      }
-    };
-
-    void fetchAllData();
+    void refetchAllData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [vehiculoId]);
 
   // Status color mapping
@@ -343,18 +355,20 @@ const VehiculoDetallesPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex gap-4 justify-end">
-        <Button variant="secondary" size="md" onClick={() => navigate(-1)}>
-          Volver
-        </Button>
-      </div>
-
       {vehiculoId && (
         <>
           {/* Recordatorios Table */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Recordatorios</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Recordatorios</h2>
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => setShowRecordatorioModal(true)}
+              >
+                + Añadir Recordatorio
+              </Button>
+            </div>
             {recordatoriosError && (
               <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                 <p className="font-medium">Error al cargar datos</p>
@@ -440,7 +454,16 @@ const VehiculoDetallesPage: React.FC = () => {
 
           {/* Incidentes Table */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Incidentes</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Incidentes</h2>
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => setShowIncidenteModal(true)}
+              >
+                + Reportar Incidente
+              </Button>
+            </div>
             {incidentesError && (
               <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                 <p className="font-medium">Error al cargar datos</p>
@@ -514,7 +537,16 @@ const VehiculoDetallesPage: React.FC = () => {
 
           {/* Combustible Table */}
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Cargas de Combustible</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-lg font-semibold text-gray-900">Cargas de Combustible</h2>
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => setShowCargaCombustibleModal(true)}
+              >
+                + Añadir Carga
+              </Button>
+            </div>
             {combustibleError && (
               <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
                 <p className="font-medium">Error al cargar datos</p>
@@ -557,6 +589,37 @@ const VehiculoDetallesPage: React.FC = () => {
               </div>
             )}
           </div>
+        </>
+      )}
+
+      {/* Action buttons */}
+      <div className="flex gap-4 justify-end">
+        <Button variant="secondary" size="md" onClick={() => navigate(-1)}>
+          Volver
+        </Button>
+      </div>
+
+      {/* Modals */}
+      {vehiculoId && (
+        <>
+          <AddRecordatorioModal
+            vehiculoId={vehiculoId}
+            isOpen={showRecordatorioModal}
+            onClose={() => setShowRecordatorioModal(false)}
+            onSuccess={refetchAllData}
+          />
+          <AddCargaCombustibleModal
+            vehiculoId={vehiculoId}
+            isOpen={showCargaCombustibleModal}
+            onClose={() => setShowCargaCombustibleModal(false)}
+            onSuccess={refetchAllData}
+          />
+          <AddIncidenteModal
+            vehiculoId={vehiculoId}
+            isOpen={showIncidenteModal}
+            onClose={() => setShowIncidenteModal(false)}
+            onSuccess={refetchAllData}
+          />
         </>
       )}
     </div>

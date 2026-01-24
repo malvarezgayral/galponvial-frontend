@@ -1,4 +1,5 @@
 export interface JwtLoginResponse {
+  dni: number;
   email: string;
   rol: string;
   accessToken: string;

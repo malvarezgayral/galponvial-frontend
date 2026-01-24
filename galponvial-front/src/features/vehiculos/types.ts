@@ -97,7 +97,7 @@ export interface Incidente {
   descripcion: string;
   falla: 'baja' | 'media' | 'alta';
   estado: 'pendiente' | 'en_proceso' | 'resuelto';
-  id_usuario: string;
+  id_usuario: number;
   id_vehiculo: number;
   usuario: Usuario;
   vehiculo: Vehiculo;

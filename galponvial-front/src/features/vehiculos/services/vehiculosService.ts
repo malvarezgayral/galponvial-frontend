@@ -8,7 +8,11 @@ import type {
   StatusUpdatesResponse,
   IncidentesResponse,
   CargasCombustibleResponse,
+  CargaCombustible,
+  Incidente,
+  Recordatorio,
 } from '../types';
+import { data } from 'react-router-dom';
 
 /**
  * Service for vehicle-related API calls
@@ -168,6 +172,76 @@ export const vehiculosService = {
   ): Promise<CargasCombustibleResponse> => {
     const { data } = await apiClient.get(
       `/vehiculos/${vehiculoId}/combustible-cargas?page=${page}&pageSize=${pageSize}`
+    );
+    return data.data || data;
+  },
+
+  /**
+   * Create a new recordatorio for a vehicle
+   * @param vehiculoId - Vehicle ID
+   * @param payload - Recordatorio data
+   * @returns Created recordatorio
+   */
+  createRecordatorio: async (
+    vehiculoId: number,
+    payload: { fecha: string; descripcion: string }
+  ): Promise<Recordatorio> => {
+    const { data } = await apiClient.post(
+      `/vehiculos/${vehiculoId}/recordatorios`,
+      payload
+    );
+    return data.data || data;
+  },
+
+  /**
+   * Create a new carga de combustible for a vehicle
+   * @param vehiculoId - Vehicle ID
+   * @param payload - Carga data
+   * @returns Created carga
+   */
+  createCargaCombustible: async (
+    vehiculoId: number,
+    payload: {
+      fecha_carga: string;
+      despachante: string;
+      km_actual: number;
+      cant_combustible_despachado: number;
+    }
+  ): Promise<CargaCombustible> => {
+    const { data } = await apiClient.post(
+      `/vehiculos/${vehiculoId}/combustible-cargas`,
+      payload
+    );
+    return data.data || data;
+  },
+
+  /**
+   * Create a new incidente for a vehicle
+   * @param vehiculoId - Vehicle ID
+   * @param payload - Incidente data
+   * @returns Created incidente
+   */
+  createIncidente: async (
+    vehiculoId: number,
+    payload: {
+      fecha: string;
+      tipo: string;
+      descripcion: string;
+      falla: 'baja' | 'media' | 'alta';
+      id_usuario: number;
+    }
+  ): Promise<Incidente> => {
+    const { id_usuario } = payload;
+    console.log(id_usuario)
+    const dniNumber = Number(id_usuario);
+    console.log('Creating incidente with DNI:', dniNumber);
+    if (isNaN(dniNumber)) {
+      throw new Error('DNI must be a valid number');
+    }
+    payload.id_usuario = dniNumber;
+    const { data } = await apiClient.post(
+      `/vehiculos/${vehiculoId}/incidentes`,
+      payload
     );
     return data.data || data;
   },

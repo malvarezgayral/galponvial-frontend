@@ -14,6 +14,7 @@ export interface User {
 }
 
 export interface UserAuth {
+  dni: number;
   email: string;
   rol: string;
 }
