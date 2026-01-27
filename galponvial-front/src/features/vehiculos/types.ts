@@ -138,3 +138,18 @@ export interface PaginatedResponse<T> {
   };
   message: string;
 }
+
+// Enums response from API
+export interface VehiculosEnums {
+  VehiculoStatus: string[];
+  TipoVehiculo: string[];
+  TipoIncidente: string[];
+  StatusIncidente: string[];
+  TipoServicio: string[];
+}
+
+export interface EnumsApiResponse {
+  success: boolean;
+  data: VehiculosEnums;
+  message: string;
+}

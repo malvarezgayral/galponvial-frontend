@@ -22,6 +22,7 @@ export const VehiculosView: React.FC = () => {
     filters,
     fetchAllVehiculos,
     fetchDropdownOptions,
+    fetchEnums,
     setFilter,
     resetFilters,
     deleteVehiculo,
@@ -53,7 +54,8 @@ export const VehiculosView: React.FC = () => {
   useEffect(() => {
     fetchAllVehiculos();
     fetchDropdownOptions();
-  }, [fetchAllVehiculos, fetchDropdownOptions]);
+    fetchEnums();
+  }, [fetchAllVehiculos, fetchDropdownOptions, fetchEnums]);
 
   /**
    * Handle edit vehicle
