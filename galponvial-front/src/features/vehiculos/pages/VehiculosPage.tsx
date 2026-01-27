@@ -11,14 +11,15 @@ type VehiculosSection = 'administrar' | 'visualizar';
  */
 export default function VehiculosPage() {
   const [activeSection, setActiveSection] = useState<VehiculosSection>('administrar');
-  const { dropdownData, dropdownLoading, fetchDropdownOptions } = useVehiculosStore();
+  const { dropdownData, dropdownLoading, fetchDropdownOptions, fetchEnums } = useVehiculosStore();
 
   /**
    * Fetch dropdown options on component mount
    */
   useEffect(() => {
     fetchDropdownOptions();
-  }, [fetchDropdownOptions]);
+    fetchEnums();
+  }, [fetchDropdownOptions, fetchEnums]);
 
   return (
     <div className="space-y-6">

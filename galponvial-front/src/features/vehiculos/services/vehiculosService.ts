@@ -11,13 +11,38 @@ import type {
   CargaCombustible,
   Incidente,
   Recordatorio,
+  VehiculosEnums,
+  EnumsApiResponse,
 } from '../types';
-import { data } from 'react-router-dom';
 
 /**
  * Service for vehicle-related API calls
  */
 export const vehiculosService = {
+  /**
+   * Convert enums to DropdownData format
+   */
+  enumsToDropdownData: (enums: VehiculosEnums): DropdownData => {
+    return {
+      tiposVehiculo: enums.TipoVehiculo.map((tipo, index) => ({
+        id: index + 1,
+        label: tipo.charAt(0).toUpperCase() + tipo.slice(1).replace(/_/g, ' '),
+        value: tipo,
+      })),
+      estados: enums.VehiculoStatus.map((status, index) => ({
+        id: index + 1,
+        label: status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' '),
+        value: status,
+      })),
+      // Keep sectoresPertenencia as mock data since it's not in the API response
+      sectoresPertenencia: [
+        { id: 1, label: 'Sector Centro', value: 1 },
+        { id: 2, label: 'Sector Puerto', value: 2 },
+        { id: 3, label: 'Sector Rural', value: 3 },
+        { id: 4, label: 'Sector Costa', value: 4 },
+      ],
+    };
+  },
   /**
    * Fetch all vehicles
    * @returns Array of vehicles
@@ -102,6 +127,24 @@ export const vehiculosService = {
         { id: 4, label: 'Sector Costa', value: 4 },
       ],
     };
+  },
+
+  /**
+   * Fetch enums from API for vehicle-related entities
+   * @returns Object with arrays of enum values
+   */
+  getEnums: async (): Promise<VehiculosEnums> => {
+    try {
+      const { data } = await apiClient.get('/vehiculos/enums/estructura');
+      // Handle both wrapped response and direct data response
+      if (data && typeof data === 'object' && 'data' in data) {
+        return (data as EnumsApiResponse).data;
+      }
+      return data;
+    } catch (error) {
+      console.error('Error fetching enums:', error);
+      throw error;
+    }
   },
 
   /**

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { vehiculosService } from './services/vehiculosService';
-import type { CreateVehiculoPayload, DropdownData, Vehiculo } from './types';
+import type { CreateVehiculoPayload, DropdownData, Vehiculo, VehiculosEnums } from './types';
 
 interface VehiculosFilters {
   estado: string | null;
@@ -14,6 +14,11 @@ interface VehiculosState {
   dropdownData: DropdownData | null;
   dropdownLoading: boolean;
   dropdownError: string | null;
+
+  // Enums data
+  enums: VehiculosEnums | null;
+  enumsLoading: boolean;
+  enumsError: string | null;
 
   // Create vehicle
   createLoading: boolean;
@@ -31,10 +36,11 @@ interface VehiculosState {
 
   // Actions
   fetchDropdownOptions: () => Promise<void>;
+  fetchEnums: () => Promise<void>;
   createVehiculo: (vehiculo: CreateVehiculoPayload) => Promise<void>;
   resetCreateState: () => void;
   fetchAllVehiculos: () => Promise<void>;
-  setFilter: (filterKey: keyof VehiculosFilters, value: any) => void;
+  setFilter: (filterKey: keyof VehiculosFilters, value: string | null) => void;
   resetFilters: () => void;
   updateVehiculo: (id: number, vehiculo: Partial<Vehiculo>) => Promise<void>;
   deleteVehiculo: (id: number) => Promise<void>;
@@ -79,6 +85,10 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
   dropdownLoading: false,
   dropdownError: null,
 
+  enums: null,
+  enumsLoading: false,
+  enumsError: null,
+
   createLoading: false,
   createError: null,
   createSuccess: false,
@@ -93,6 +103,26 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
     tipo: null,
     sector: null,
     searchTerm: '',
+  },
+
+  /**
+   * Fetch enums from API
+   */
+  fetchEnums: async () => {
+    set({ enumsLoading: true, enumsError: null });
+    try {
+      const data = await vehiculosService.getEnums();
+      set({ enums: data });
+      // Also update dropdownData with enum values
+      const dropdownData = vehiculosService.enumsToDropdownData(data);
+      set({ dropdownData });
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Error al cargar enums';
+      set({ enumsError: message });
+      console.error('Error fetching enums:', error);
+    } finally {
+      set({ enumsLoading: false });
+    }
   },
 
   /**
@@ -156,7 +186,7 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
   /**
    * Set a filter and apply all filters
    */
-  setFilter: (filterKey: keyof VehiculosFilters, value: any) => {
+  setFilter: (filterKey: keyof VehiculosFilters, value: string | null) => {
     const newFilters = { ...get().filters, [filterKey]: value };
     const filtered = applyFilters(get().vehiculos, newFilters);
     set({ filters: newFilters, filteredVehiculos: filtered });
