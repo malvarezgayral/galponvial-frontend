@@ -3,6 +3,7 @@ import { ROUTES } from "./routes";
 import { MainLayout } from "./layouts/MainLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AlmacenPage from "../features/almacen/pages/AlmacenPage";
+import ArticuloDetallesPage from "../features/almacen/pages/ArticuloDetallesPage";
 import VehiculosPage from "../features/vehiculos/pages/VehiculosPage";
 import VehiculoDetallesPage from "../features/vehiculos/pages/VehiculoDetallesPage";
 import UsuariosPage from "../features/usuarios/pages/UsuariosPage";
@@ -38,6 +39,14 @@ export const router = createBrowserRouter([
         ),
       },
       { path: ROUTES.almacen, element: <AlmacenPage /> },
+      {
+        path: "/almacen/:id",
+        element: (
+          <ProtectedRoute>
+            <ArticuloDetallesPage />
+          </ProtectedRoute>
+        ),
+      },
       { path: ROUTES.usuarios, element: <UsuariosPage /> },
       { path: ROUTES.auditoria, element: <AuditoriaPage /> },
     ],

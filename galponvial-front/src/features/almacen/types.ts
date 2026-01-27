@@ -1,0 +1,59 @@
+/**
+ * Almacén (Warehouse) Types
+ */
+
+export interface Articulo {
+  id_articulo: number;
+  cod_proveedor: string;
+  nombre: string;
+  modelo: string;
+  descripcion: string;
+  img?: string;
+  unidad_tipo: 'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg';
+  stock?: number; // Solo aplica para ciertos tipos de unidad
+  fechaCreacion?: string;
+  ultimaModificacion?: string;
+}
+
+export interface CreateArticuloPayload {
+  cod_proveedor: string;
+  nombre: string;
+  modelo: string;
+  descripcion: string;
+  img?: string;
+  unidad_tipo: 'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg';
+  stock?: number;
+}
+
+export interface ArticuloResponse {
+  id_articulo: number;
+  cod_proveedor: string;
+  nombre: string;
+  modelo: string;
+  descripcion: string;
+  img?: string;
+  unidad_tipo: 'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg';
+  stock?: number;
+  fechaCreacion: string;
+  ultimaModificacion: string;
+}
+
+export interface ArticulosListResponse {
+  data: Articulo[];
+  total: number;
+  page: number;
+  pageSize: number;
+}
+
+// Dropdown options
+export interface DropdownOption {
+  id: string | number;
+  label: string;
+  value: string;
+}
+
+export interface UnidadTipoOption {
+  value: 'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg';
+  label: string;
+  requiresStock: boolean; // Si true, el campo stock es obligatorio
+}
