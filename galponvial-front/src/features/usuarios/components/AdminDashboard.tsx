@@ -4,7 +4,9 @@ import { usuariosService } from "../services/usuariosService";
 import { Button } from "@/shared/ui/Button";
 import { Table } from "@/shared/ui/Table";
 import UserFormModal from "./UserFormModal";
+import LogoutConfirmModal from "./LogoutConfirmModal";
 import type { User } from "../types";
+import type { ObjectServiceResponse } from "@/shared/types/common-types";
 
 const AdminDashboard: React.FC = () => {
   const {
@@ -35,6 +37,20 @@ const AdminDashboard: React.FC = () => {
     error: null,
   });
 
+  const [logoutModal, setLogoutModal] = useState<{
+    visible: boolean;
+    usuario: User | null;
+    isLoading: boolean;
+    error: string | null;
+    successMessage: string | null;
+  }>({
+    visible: false,
+    usuario: null,
+    isLoading: false,
+    error: null,
+    successMessage: null,
+  });
+
   useEffect(() => {
     async function loadUsuarios() {
       await fetchUsuarios(usuariosPagina, usuariosPageSize);
@@ -50,7 +66,7 @@ const AdminDashboard: React.FC = () => {
       }
       reloadUsuarios();
     }
-  }, [modalAbierto]);
+  }, [modalAbierto, fetchUsuarios, usuariosPagina, usuariosPageSize]);
 
   const handleCrearUsuario = () => {
     setUsuarioSeleccionado(null);
@@ -76,13 +92,93 @@ const AdminDashboard: React.FC = () => {
     });
   };
 
+  const handleLogoutUser = (usuario: User) => {
+    setLogoutModal({
+      visible: true,
+      usuario,
+      isLoading: false,
+      error: null,
+      successMessage: null,
+    });
+  };
+
+  const handleConfirmLogout = async () => {
+    if (!logoutModal.usuario) return;
+
+    setLogoutModal((prev) => ({
+      ...prev,
+      isLoading: true,
+      error: null,
+      successMessage: null,
+    }));
+
+    try {
+      const response: ObjectServiceResponse<{
+        revoked: boolean
+      }> = await usuariosService.logoutUser(
+        logoutModal.usuario.email,
+      );
+      if (response.success) {
+        setLogoutModal((prev) => ({
+          ...prev,
+          isLoading: false,
+          successMessage: `${logoutModal.usuario?.nombre} ha sido deslogueado correctamente.`,
+        }));
+      } else {
+        setLogoutModal((prev) => ({
+          ...prev,
+          isLoading: false,
+          error: response.message || "Error al desloguear al usuario",
+        }));
+      }
+
+      // Close modal and refresh after 2 seconds
+      setTimeout(() => {
+        setLogoutModal({
+          visible: false,
+          usuario: null,
+          isLoading: false,
+          error: null,
+          successMessage: null,
+        });
+        fetchUsuarios(usuariosPagina, usuariosPageSize);
+      }, 2000);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error al desloguear al usuario";
+      console.error("Error logging out user:", error);
+
+      setLogoutModal((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: errorMessage,
+      }));
+
+      // Close modal after 3 seconds
+      setTimeout(() => {
+        setLogoutModal({
+          visible: false,
+          usuario: null,
+          isLoading: false,
+          error: null,
+          successMessage: null,
+        });
+      }, 3000);
+    }
+  };
+
   const handleConfirmStatus = async () => {
     if (!confirmModal.usuario) return;
 
     setConfirmModal((prev) => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      await usuariosService.updateStatus(confirmModal.usuario.dni, confirmModal.newStatus);
+      await usuariosService.updateStatus(
+        confirmModal.usuario.dni,
+        confirmModal.newStatus,
+      );
       setConfirmModal({
         visible: false,
         usuario: null,
@@ -93,11 +189,18 @@ const AdminDashboard: React.FC = () => {
       // Refresh users by triggering the effect
       await fetchUsuarios(usuariosPagina, usuariosPageSize);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Error al actualizar el estado del usuario';
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Error al actualizar el estado del usuario";
       console.error("Error updating user status:", error);
-      
+
       // Show error for 3 seconds then close modal
-      setConfirmModal((prev) => ({ ...prev, isLoading: false, error: errorMessage }));
+      setConfirmModal((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: errorMessage,
+      }));
       setTimeout(() => {
         setConfirmModal({
           visible: false,
@@ -128,8 +231,8 @@ const AdminDashboard: React.FC = () => {
           onClick={() => handleToggleStatus(row)}
           className="px-3 py-1 text-sm font-medium rounded-full cursor-pointer transition-all duration-200 hover:opacity-80"
           style={{
-            backgroundColor: value ? '#dcfce7' : '#fee2e2',
-            color: value ? '#166534' : '#991b1b',
+            backgroundColor: value ? "#dcfce7" : "#fee2e2",
+            color: value ? "#166534" : "#991b1b",
           }}
         >
           {value ? "Activo" : "Inactivo"}
@@ -140,14 +243,24 @@ const AdminDashboard: React.FC = () => {
       key: "acciones" as const,
       label: "Acciones",
       render: (_value: unknown, row: User) => (
-        <button
-          onClick={() => handleEditarUsuario(row)}
-          className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors duration-200"
-          title="Editar usuario"
-          aria-label="Editar usuario"
-        >
-          ✏️
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleEditarUsuario(row)}
+            className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors duration-200"
+            title="Editar usuario"
+            aria-label="Editar usuario"
+          >
+            ✏️
+          </button>
+          <button
+            onClick={() => handleLogoutUser(row)}
+            className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-orange-100 hover:bg-orange-200 text-orange-600 transition-colors duration-200"
+            title="Cerrar sesión del usuario"
+            aria-label="Cerrar sesión"
+          >
+            🚪
+          </button>
+        </div>
       ),
     },
   ];
@@ -251,24 +364,42 @@ const AdminDashboard: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg shadow-xl p-8 max-w-sm w-full">
             <h2 className="text-xl font-bold text-[var(--color-text-primary)] mb-4">
-              {confirmModal.newStatus ? "Activar Usuario" : "Desactivar Usuario"}
+              {confirmModal.newStatus
+                ? "Activar Usuario"
+                : "Desactivar Usuario"}
             </h2>
             <p className="text-gray-700 mb-4">
-              ¿Deseas <strong>{confirmModal.newStatus ? "activar" : "desactivar"}</strong> a <strong>{confirmModal.usuario.nombre} {confirmModal.usuario.apellido}</strong>?
+              ¿Deseas{" "}
+              <strong>
+                {confirmModal.newStatus ? "activar" : "desactivar"}
+              </strong>{" "}
+              a{" "}
+              <strong>
+                {confirmModal.usuario.nombre} {confirmModal.usuario.apellido}
+              </strong>
+              ?
             </p>
-            
+
             <div className="bg-gray-50 rounded-lg p-4 mb-6">
               <p className="text-sm text-gray-600 mb-3">Estado actual:</p>
               <div className="flex items-center justify-between">
-                <span className={`px-3 py-1 text-sm font-medium rounded-full ${
-                  confirmModal.usuario.isActive ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                }`}>
+                <span
+                  className={`px-3 py-1 text-sm font-medium rounded-full ${
+                    confirmModal.usuario.isActive
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
                   {confirmModal.usuario.isActive ? "Activo" : "Inactivo"}
                 </span>
                 <span className="text-gray-600">→</span>
-                <span className={`px-3 py-1 text-sm font-medium rounded-full ${
-                  confirmModal.newStatus ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                }`}>
+                <span
+                  className={`px-3 py-1 text-sm font-medium rounded-full ${
+                    confirmModal.newStatus
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
                   {confirmModal.newStatus ? "Activo" : "Inactivo"}
                 </span>
               </div>
@@ -315,6 +446,25 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* Logout Confirmation Modal */}
+      <LogoutConfirmModal
+        visible={logoutModal.visible}
+        usuario={logoutModal.usuario}
+        isLoading={logoutModal.isLoading}
+        error={logoutModal.error}
+        successMessage={logoutModal.successMessage}
+        onConfirm={handleConfirmLogout}
+        onCancel={() =>
+          setLogoutModal({
+            visible: false,
+            usuario: null,
+            isLoading: false,
+            error: null,
+            successMessage: null,
+          })
+        }
+      />
     </div>
   );
 };

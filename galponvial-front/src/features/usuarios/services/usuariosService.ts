@@ -1,10 +1,21 @@
-import { apiClient } from '@/services/api';
-import { API_ENDPOINTS } from '@/services/apiEndpoints';
-import type { User, Role, Permission, CreateUserDto, UpdateUserDto, PaginatedResponse } from '../types';
+import { apiClient } from "@/services/api";
+import { API_ENDPOINTS } from "@/services/apiEndpoints";
+import type {
+  User,
+  Role,
+  Permission,
+  CreateUserDto,
+  UpdateUserDto,
+  PaginatedResponse,
+} from "../types";
+import type { ObjectServiceResponse } from "@/shared/types/common-types";
 
 export const usuariosService = {
   // User Management
-  getAll: async (page?: number, pageSize?: number): Promise<PaginatedResponse<User>> => {
+  getAll: async (
+    page?: number,
+    pageSize?: number,
+  ): Promise<PaginatedResponse<User>> => {
     const { data } = await apiClient.get(API_ENDPOINTS.USUARIOS.LIST, {
       params: { page, pageSize },
     });
@@ -17,12 +28,18 @@ export const usuariosService = {
   },
 
   create: async (usuario: CreateUserDto): Promise<User> => {
-    const { data } = await apiClient.post(API_ENDPOINTS.USUARIOS.CREATE, usuario);
+    const { data } = await apiClient.post(
+      API_ENDPOINTS.USUARIOS.CREATE,
+      usuario,
+    );
     return data;
   },
 
   update: async (id: string, usuario: UpdateUserDto): Promise<User> => {
-    const { data } = await apiClient.put(API_ENDPOINTS.USUARIOS.UPDATE(id), usuario);
+    const { data } = await apiClient.put(
+      API_ENDPOINTS.USUARIOS.UPDATE(id),
+      usuario,
+    );
     return data;
   },
 
@@ -35,8 +52,13 @@ export const usuariosService = {
     return response.data || response;
   },
 
-  updateRol: async (dni: number, rol: 'usuario' | 'admin' | 'super-admin'): Promise<User> => {
-    const { data: response } = await apiClient.patch(`/usuario/addRol/${dni}`, { rol });
+  updateRol: async (
+    dni: number,
+    rol: "usuario" | "admin" | "super-admin",
+  ): Promise<User> => {
+    const { data: response } = await apiClient.patch(`/usuario/addRol/${dni}`, {
+      rol,
+    });
     return response.data || response;
   },
 
@@ -44,11 +66,11 @@ export const usuariosService = {
     // Ensure dni is a number
     const dniNumber = Number(dni);
     if (isNaN(dniNumber)) {
-      throw new Error('DNI must be a valid number');
+      throw new Error("DNI must be a valid number");
     }
-    const { data: response } = await apiClient.put('/usuario', { 
-      dni: dniNumber, 
-      isActive 
+    const { data: response } = await apiClient.put("/usuario", {
+      dni: dniNumber,
+      isActive,
     });
     return response.data || response;
   },
@@ -62,9 +84,14 @@ export const usuariosService = {
     await apiClient.post(`/usuarios/${id}/reset-password`, { newPassword });
   },
 
+  logoutUser: async (email: string): Promise<ObjectServiceResponse<{ revoked: boolean }>> => {
+    const { data } = await apiClient.post("/usuario/logout", { email });
+    return data;
+  },
+
   // Role Management
   getAllRoles: async (): Promise<Role[]> => {
-    const { data } = await apiClient.get('/roles');
+    const { data } = await apiClient.get("/roles");
     return data;
   },
 
@@ -73,8 +100,8 @@ export const usuariosService = {
     return data;
   },
 
-  createRole: async (role: Omit<Role, 'id'>): Promise<Role> => {
-    const { data } = await apiClient.post('/roles', role);
+  createRole: async (role: Omit<Role, "id">): Promise<Role> => {
+    const { data } = await apiClient.post("/roles", role);
     return data;
   },
 
@@ -89,7 +116,7 @@ export const usuariosService = {
 
   // Permission Management
   getAllPermissions: async (): Promise<Permission[]> => {
-    const { data } = await apiClient.get('/permisos');
+    const { data } = await apiClient.get("/permisos");
     return data;
   },
 
