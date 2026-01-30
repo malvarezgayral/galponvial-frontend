@@ -6,6 +6,7 @@ import { ArticuloCard } from "./ArticuloCard";
 import { EditArticuloModal } from "./EditArticuloModal";
 import type { Articulo } from "../types";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
+import { ROUTES } from "@/app/routes";
 
 const PAGE_SIZE = 6;
 
@@ -108,8 +109,10 @@ export const VisualizarAlmacen: React.FC = () => {
   };
 
   const handleViewDetails = (articulo: Articulo) => {
-    navigate(`/almacen/${articulo.cod}`); 
-  };
+    navigate(ROUTES.articuloDetalles(articulo.cod), { 
+    state: { articulo } 
+  });
+};
 
   if (error && articulos.length === 0) {
     return (

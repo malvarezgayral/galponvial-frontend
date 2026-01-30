@@ -2,6 +2,8 @@
  * Almacén (Warehouse) Types
  */
 
+import type { MovimientoTipo } from "./enums";
+
 export interface Articulo {
   cod: number;
   cod_proveedor: string;
@@ -71,4 +73,13 @@ export interface Grupo {
   nombre: string;
   descripcion: string;
   sector: Sector;
+}
+
+export interface Movimiento {
+  tipoMovimiento: MovimientoTipo;
+  fecha: string | Date; // El DTO dice Date, pero a veces llega como string del JSON
+  codArticulo: number;
+  dniUsuario: number;
+  motivo: string;
+  detalle: string;
 }
