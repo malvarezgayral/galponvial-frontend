@@ -41,7 +41,7 @@ getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
         
         fecha: m.fecha || m.createdAt || m.created_at || new Date().toISOString(),
         
-        dniUsuario: m.usuario?.dni || m.usuario?.usuario || m.dni_usuario || 'Sistema',
+        dniUsuario: m.dniUsuario || 'Sistema',
         
         motivo: m.motivo || '-',
         detalle: m.detalle || '-'
