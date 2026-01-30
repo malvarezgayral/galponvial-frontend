@@ -77,9 +77,9 @@ export interface Grupo {
 
 export interface Movimiento {
   tipoMovimiento: MovimientoTipo;
-  fecha: string | Date; // El DTO dice Date, pero a veces llega como string del JSON
+  fecha: string | Date; 
   codArticulo: number;
-  dniUsuario: number;
+  dniUsuario: string | number; 
   motivo: string;
   detalle: string;
 }

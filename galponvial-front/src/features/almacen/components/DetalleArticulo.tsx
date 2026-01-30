@@ -6,19 +6,14 @@ import { almacenService } from '../services/almacenService';
 export const DetalleArticulo: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { id } = useParams<{ id: string }>(); // Leemos el ID de la URL
-
-  // Estado inicial: intentamos leer del state, sino undefined
+  const { id } = useParams<{ id: string }>(); 
   const [articulo, setArticulo] = useState<Articulo | undefined>(location.state?.articulo);
   const [movimientos, setMovimientos] = useState<Movimiento[]>([]);
-  
-  // Estados de carga separados para mejor UX
-  const [loadingArticulo, setLoadingArticulo] = useState(!articulo); // Si ya tenemos articulo, no cargamos
+  const [loadingArticulo, setLoadingArticulo] = useState(!articulo); 
   const [loadingMovimientos, setLoadingMovimientos] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Si no hay ID en la URL, algo anda mal, volvemos
     if (!id) {
       navigate('/almacen');
       return;
@@ -28,7 +23,6 @@ export const DetalleArticulo: React.FC = () => {
       try {
         const articuloId = Number(id);
 
-        // 1. Cargar Articulo (si no lo tenemos ya)
         if (!articulo) {
           setLoadingArticulo(true);
           try {
@@ -37,20 +31,18 @@ export const DetalleArticulo: React.FC = () => {
           } catch (err) {
             console.error("Error cargando artículo:", err);
             setError("No se pudo cargar la información del artículo.");
-            return; // Si falla el artículo principal, detenemos
+            return;
           } finally {
             setLoadingArticulo(false);
           }
         }
 
-        // 2. Cargar Movimientos (siempre)
         setLoadingMovimientos(true);
         try {
           const movData = await almacenService.getMovimientos(articuloId);
           setMovimientos(movData);
         } catch (err) {
           console.error("Error cargando movimientos:", err);
-          // No bloqueamos la vista si fallan solo los movimientos
         } finally {
           setLoadingMovimientos(false);
         }
@@ -62,9 +54,8 @@ export const DetalleArticulo: React.FC = () => {
     };
 
     fetchDatos();
-  }, [id, navigate, articulo]); // Dependencias seguras
+  }, [id, navigate, articulo]); 
 
-  // Renderizado de Error
   if (error) {
     return (
         <div className="p-8 text-center">
@@ -76,7 +67,6 @@ export const DetalleArticulo: React.FC = () => {
     );
   }
 
-  // Renderizado de Carga Inicial (solo si no tenemos ni el artículo básico)
   if (loadingArticulo && !articulo) {
     return (
         <div className="flex justify-center items-center h-64">

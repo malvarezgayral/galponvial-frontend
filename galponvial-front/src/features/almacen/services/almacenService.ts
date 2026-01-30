@@ -22,18 +22,31 @@ export const almacenService = {
   /**
    * Fetch a single articulo by ID
    */
-  getArticuloById: async (id: number): Promise<Articulo> => {
-    // Usamos la constante DETAIL: /almacen/3
+ getArticuloById: async (id: number): Promise<Articulo> => {
     const { data } = await apiClient.get(API_ENDPOINTS.ALMACEN.DETAIL(id));
-    return data; 
+    return data.data; 
   },
   
-  // 2. Obtener movimientos
-  getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
-    // Usamos la constante MOVIMIENTOS: /almacen/movimientos/3
-    const { data } = await apiClient.get<Movimiento[]>(API_ENDPOINTS.ALMACEN.MOVIMIENTOS(idArticulo));
-    return data;
-  },
+ // src/services/almacenService.ts
+
+getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
+    // 1. Hacemos la petición
+    const { data } = await apiClient.get(API_ENDPOINTS.ALMACEN.MOVIMIENTOS(idArticulo));
+    
+    const rawMovimientos = Array.isArray(data) ? data : (data.data || []);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return rawMovimientos.map((m: any) => ({
+        tipoMovimiento: m.tipo_movimiento || m.tipoMovimiento || 'Desconocido',
+        
+        fecha: m.fecha || m.createdAt || m.created_at || new Date().toISOString(),
+        
+        dniUsuario: m.usuario?.dni || m.usuario?.usuario || m.dni_usuario || 'Sistema',
+        
+        motivo: m.motivo || '-',
+        detalle: m.detalle || '-'
+    }));
+},
   /**
    * Create a new articulo
    */

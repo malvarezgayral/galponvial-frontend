@@ -14,7 +14,7 @@ export const API_ENDPOINTS = {
   },
   ALMACEN: {
     LIST: '/almacen',
-    DETAIL: (id: number) => `/almacen/${id}`,
+    DETAIL: (id: number) => `/almacen/articulos/${id}`,
     CREATE: '/almacen',
     UPDATE: (id: string) => `/almacen/${id}`,
     DELETE: (id: number | string) => `/almacen/articulos/${id}`,
