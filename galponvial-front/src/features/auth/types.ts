@@ -4,6 +4,7 @@ export interface JwtLoginResponse {
   rol: string;
   accessToken: string;
   refreshToken: string;
+  permisos?: string[];
 }
 
 export interface ObjectServiceResponse<T> {

@@ -36,6 +36,7 @@ export const useLogin = (): UseLoginReturn => {
       // Store tokens and user data
       const userData: JwtLoginResponse = response.data;
       localStorage.setItem('accessToken', userData.accessToken);
+      localStorage.setItem('refreshToken', userData.refreshToken);
       localStorage.setItem('user', JSON.stringify(userData));
       setUser({ email: userData.email, rol: userData.rol, dni: userData.dni });
 

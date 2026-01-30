@@ -23,6 +23,7 @@ export interface CreateArticuloPayload {
   img?: string;
   unidad_tipo: 'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg';
   stock?: number;
+  grupo_id: number;
 }
 
 export interface ArticuloResponse {
@@ -56,4 +57,18 @@ export interface UnidadTipoOption {
   value: 'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg';
   label: string;
   requiresStock: boolean; // Si true, el campo stock es obligatorio
+}
+
+export interface Sector {
+  id: number;
+  nro_sector: number;
+  tipo: string;
+  descripcion: string;
+}
+
+export interface Grupo {
+  id: number;
+  nombre: string;
+  descripcion: string;
+  sector: Sector;
 }

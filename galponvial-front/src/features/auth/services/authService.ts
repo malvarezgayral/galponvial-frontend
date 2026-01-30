@@ -27,8 +27,31 @@ export const authService = {
    */
   logout: (): void => {
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
     localStorage.removeItem('user');
     document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+  },
+
+  /**
+   * Self logout - user logs out themselves via API
+   * @returns Promise with logout response
+   */
+  selfLogout: async (): Promise<void> => {
+    try {
+      await apiClient.post('/usuario/self-logout');
+      // Remove tokens from storage
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+    } catch (error) {
+      // Even if API call fails, clear local tokens for security
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
+      document.cookie = 'refreshToken=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+      throw error;
+    }
   },
 
   /**
@@ -39,9 +62,19 @@ export const authService = {
   },
 
   /**
-   * Check if user is authenticated
+   * Refresh access token using refresh token
+   * @returns Promise with new access token and user data
    */
-  isAuthenticated: (): boolean => {
-    return !!localStorage.getItem('accessToken');
+  refreshToken: async (): Promise<ObjectServiceResponse<JwtLoginResponse>> => {
+    const refreshToken = localStorage.getItem('refreshToken');
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
+    }
+
+    const { data } = await apiClient.post<ObjectServiceResponse<JwtLoginResponse>>(
+      '/usuario/refresh',
+      { refreshToken }
+    );
+    return data;
   },
 };

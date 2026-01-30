@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/Button';
 import { almacenService } from '../services/almacenService';
-import type { UnidadTipoOption } from '../types';
+import type { UnidadTipoOption, Grupo } from '../types';
 
 interface CreateArticuloFormProps {
   onSuccess?: () => void;
@@ -19,12 +19,36 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
   const [unidadTipo, setUnidadTipo] = useState<'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg'>('pieza');
   const [stock, setStock] = useState<string>('');
   const [img, setImg] = useState('');
+  const [grupoId, setGrupoId] = useState<number | ''>('');
 
   // UI state
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+  // Grupos state
+  const [grupos, setGrupos] = useState<Grupo[]>([]);
+  const [gruposLoading, setGruposLoading] = useState(true);
+  const [gruposError, setGruposError] = useState<string | null>(null);
+
+  // Fetch grupos on component mount
+  useEffect(() => {
+    const fetchGrupos = async () => {
+      try {
+        const data = await almacenService.getGrupos();
+        setGrupos(data);
+        setGruposError(null);
+      } catch (err) {
+        const errorMessage = err instanceof Error ? err.message : 'Error al cargar grupos';
+        setGruposError(errorMessage);
+      } finally {
+        setGruposLoading(false);
+      }
+    };
+
+    fetchGrupos();
+  }, []);
 
   // Unidad tipo options with stock requirement info
   const unidadTipoOptions: UnidadTipoOption[] = [
@@ -48,6 +72,7 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
     setUnidadTipo('pieza');
     setStock('');
     setImg('');
+    setGrupoId('');
     setError(null);
     setSuccess(false);
     setShowClearConfirm(false);
@@ -64,6 +89,11 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
       return;
     }
 
+    if (!grupoId) {
+      setError('Debe seleccionar un grupo');
+      return;
+    }
+
     if (requiresStock && (!stock.trim() || parseInt(stock, 10) <= 0)) {
       setError('El stock es obligatorio y debe ser mayor a 0 para este tipo de unidad');
       return;
@@ -77,6 +107,7 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
         modelo: modelo.trim(),
         descripcion: descripcion.trim(),
         unidad_tipo: unidadTipo,
+        grupo_id: grupoId as number,
         ...(img.trim() && { img: img.trim() }),
         ...(requiresStock && { stock: parseInt(stock, 10) }),
       };
@@ -93,6 +124,7 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
         setUnidadTipo('pieza');
         setStock('');
         setImg('');
+        setGrupoId('');
         setSuccess(false);
         onSuccess?.();
       }, 1500);
@@ -194,6 +226,35 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Grupo */}
+        <div>
+          <label htmlFor="grupo" className="block text-sm font-medium text-gray-700 mb-2">
+            Grupo *
+          </label>
+          {gruposError && (
+            <div className="text-red-600 text-sm mb-2">{gruposError}</div>
+          )}
+          <select
+            id="grupo"
+            value={grupoId}
+            onChange={(e) => setGrupoId(e.target.value ? parseInt(e.target.value, 10) : '')}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={loading || gruposLoading}
+          >
+            <option value="">
+              {gruposLoading ? 'Cargando grupos...' : 'Seleccionar grupo'}
+            </option>
+            {grupos.map((grupo) => (
+              <option key={grupo.id} value={grupo.id}>
+                {grupo.nombre} ({grupo.sector.tipo})
+              </option>
+            ))}
+          </select>
+          {gruposLoading && (
+            <p className="text-xs text-gray-500 mt-1">Cargando grupos disponibles...</p>
+          )}
         </div>
       </div>
 
