@@ -112,10 +112,11 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
       ...(img.trim() && { img: img.trim() }),
     };
 
-    console.log('ID enviado:', articulo.id_articulo);
+    console.log('ID enviado:', articulo.cod);
     console.log('COD enviado:', articulo.cod_proveedor);
+    console.log('ID ENVIADO:', articulo.cod, typeof articulo.cod)
 
-      await updateArticulo(Number(articulo.id_articulo), payload);
+      await updateArticulo(Number(articulo.cod), payload);
       setSuccess(true);
 
       // Close modal after 1.5 seconds on success

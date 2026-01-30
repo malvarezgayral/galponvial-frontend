@@ -3,7 +3,7 @@
  */
 
 export interface Articulo {
-  id_articulo: number;
+  cod: number;
   cod_proveedor: string;
   nombre: string;
   modelo: string;

@@ -24,7 +24,7 @@ export const useAlmacenStore = create<AlmacenState>((set, get) => ({
       const updated = await almacenService.updateArticulo(id, payload);
       const state = get();
       const updatedArticulos = state.articulos.map((a) =>
-        a.id_articulo === id ? { ...a, ...updated } : a
+        a.cod === id ? { ...a, ...updated } : a
       );
       set({ articulos: updatedArticulos });
     } catch (err) {
@@ -41,7 +41,7 @@ export const useAlmacenStore = create<AlmacenState>((set, get) => ({
       set({ loading: true, error: null });
       await almacenService.deleteArticulo(id);
       const state = get();
-      const filteredArticulos = state.articulos.filter((a) => a.id_articulo !== id);
+      const filteredArticulos = state.articulos.filter((a) => a.cod !== id);
       set({ articulos: filteredArticulos });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al eliminar artículo';
