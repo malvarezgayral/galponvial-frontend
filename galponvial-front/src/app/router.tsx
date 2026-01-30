@@ -5,11 +5,11 @@ import { MainLayout } from "./layouts/MainLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import AlmacenPage from "../features/almacen/pages/AlmacenPage";
+import ArticuloDetallesPage from "../features/almacen/pages/ArticuloDetallesPage";
 import VehiculosPage from "../features/vehiculos/pages/VehiculosPage";
 import VehiculoDetallesPage from "../features/vehiculos/pages/VehiculoDetallesPage";
 import UsuariosPage from "../features/usuarios/pages/UsuariosPage";
 import LoginPage from "../features/auth/pages/LoginPage";
-import { DetalleArticulo } from "@/features/almacen/components/DetalleArticulo";
 
 // Placeholder pages for routes without implementation yet
 const HomePage = () => <h1 className="text-3xl font-bold">Inicio</h1>;
@@ -52,7 +52,7 @@ export const router = createBrowserRouter([
         path: "/almacen/:id",
         element: (
           <ProtectedRoute>
-            <DetalleArticulo />
+            <ArticuloDetallesPage />
           </ProtectedRoute>
         ),
       },
