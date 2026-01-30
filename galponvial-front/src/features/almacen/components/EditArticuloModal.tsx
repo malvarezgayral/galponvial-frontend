@@ -107,6 +107,7 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
       descripcion: descripcion.trim(),
 
       unidad_medida_id: mapUnidadTipoToUnidadMedidaId(unidadTipo),
+      unidad_tipo: unidadTipo,
 
       ...(requiresStock && { stock: parseInt(stock, 10) }),
       ...(img.trim() && { img: img.trim() }),
@@ -115,6 +116,8 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
     console.log('ID enviado:', articulo.cod);
     console.log('COD enviado:', articulo.cod_proveedor);
     console.log('ID ENVIADO:', articulo.cod, typeof articulo.cod)
+    console.log('Unidad de medida (Estado actual):', unidadTipo); 
+    console.log('ID de Unidad enviado:', mapUnidadTipoToUnidadMedidaId(unidadTipo));
 
       await updateArticulo(Number(articulo.cod), payload);
       setSuccess(true);
