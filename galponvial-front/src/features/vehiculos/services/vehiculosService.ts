@@ -34,13 +34,12 @@ export const vehiculosService = {
         label: status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' '),
         value: status,
       })),
-      // Keep sectoresPertenencia as mock data since it's not in the API response
-      sectoresPertenencia: [
-        { id: 1, label: 'Sector Centro', value: 1 },
-        { id: 2, label: 'Sector Puerto', value: 2 },
-        { id: 3, label: 'Sector Rural', value: 3 },
-        { id: 4, label: 'Sector Costa', value: 4 },
-      ],
+      // Map sectoresPertenencia from Sector enum
+      sectoresPertenencia: enums.Sector.map((sector, index) => ({
+        id: index + 1,
+        label: sector,
+        value: index + 1,
+      })),
     };
   },
   /**

@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./routes";
 import { MainLayout } from "./layouts/MainLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import AlmacenPage from "../features/almacen/pages/AlmacenPage";
 import ArticuloDetallesPage from "../features/almacen/pages/ArticuloDetallesPage";
 import VehiculosPage from "../features/vehiculos/pages/VehiculosPage";
@@ -38,7 +39,14 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      { path: ROUTES.almacen, element: <AlmacenPage /> },
+      {
+        path: ROUTES.almacen,
+        element: (
+          <ProtectedRoute>
+            <AlmacenPage />
+          </ProtectedRoute>
+        ),
+      },
       {
         path: "/almacen/:id",
         element: (
@@ -47,7 +55,14 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      { path: ROUTES.usuarios, element: <UsuariosPage /> },
+      {
+        path: ROUTES.usuarios,
+        element: (
+          <AdminProtectedRoute>
+            <UsuariosPage />
+          </AdminProtectedRoute>
+        ),
+      },
       { path: ROUTES.auditoria, element: <AuditoriaPage /> },
     ],
   },
