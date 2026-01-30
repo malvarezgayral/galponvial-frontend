@@ -19,8 +19,15 @@ export interface AuthResponse {
 export const authService = {
   login: async (credentials: LoginCredentials): Promise<AuthResponse> => {
     const { data } = await apiClient.post(API_ENDPOINTS.AUTH.LOGIN, credentials);
+    
+    // CORRECCIÓN AQUÍ: Usar 'accessToken' en lugar de 'token'
     if (data.token) {
-      localStorage.setItem('token', data.token);
+      localStorage.setItem('accessToken', data.token); 
+      
+      // Opcional: Si el backend devuelve user info, es útil guardarla también
+      if (data.user) {
+         localStorage.setItem('user', JSON.stringify(data.user));
+      }
     }
     return data;
   },
@@ -29,23 +36,29 @@ export const authService = {
     try {
       await apiClient.post(API_ENDPOINTS.AUTH.LOGOUT);
     } finally {
-      localStorage.removeItem('token');
+      // CORRECCIÓN AQUÍ: Remover las claves correctas
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      localStorage.removeItem('user');
     }
   },
 
   refreshToken: async (): Promise<AuthResponse> => {
     const { data } = await apiClient.post(API_ENDPOINTS.AUTH.REFRESH);
     if (data.token) {
-      localStorage.setItem('token', data.token);
+      // CORRECCIÓN AQUÍ
+      localStorage.setItem('accessToken', data.token);
     }
     return data;
   },
 
   isAuthenticated: (): boolean => {
-    return !!localStorage.getItem('token');
+    // CORRECCIÓN AQUÍ
+    return !!localStorage.getItem('accessToken');
   },
 
   getToken: (): string | null => {
-    return localStorage.getItem('token');
+    // CORRECCIÓN AQUÍ
+    return localStorage.getItem('accessToken');
   },
 };
