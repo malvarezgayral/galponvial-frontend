@@ -26,11 +26,8 @@ export const almacenService = {
     const { data } = await apiClient.get(API_ENDPOINTS.ALMACEN.DETAIL(id));
     return data.data; 
   },
-  
- // src/services/almacenService.ts
 
 getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
-    // 1. Hacemos la petición
     const { data } = await apiClient.get(API_ENDPOINTS.ALMACEN.MOVIMIENTOS(idArticulo));
     
     const rawMovimientos = Array.isArray(data) ? data : (data.data || []);

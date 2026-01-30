@@ -133,7 +133,7 @@ const ArticuloDetallesPage: React.FC = () => {
                     </div>
                     
                      <div className="mb-8">
-                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-100 w-fit min-w-[200px]">
+                    <div className="bg-blue-50 rounded-lg p-4 border border-blue-100 w-fit min-w-50">
                         <h3 className="text-blue-800 text-sm font-semibold mb-1">Stock Actual</h3>
                         <div className="flex items-baseline gap-2">
                             <span className="text-4xl font-bold text-blue-900">{articulo.stock}</span>
