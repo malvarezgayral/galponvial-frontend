@@ -146,6 +146,7 @@ export interface VehiculosEnums {
   TipoIncidente: string[];
   StatusIncidente: string[];
   TipoServicio: string[];
+  Sector: string[];
 }
 
 export interface EnumsApiResponse {

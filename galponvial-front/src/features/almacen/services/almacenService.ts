@@ -1,7 +1,8 @@
 import { apiClient } from '@/services/api';
-import type { CreateArticuloPayload, ArticuloResponse, ArticulosListResponse } from '../types';
+import type { CreateArticuloPayload, ArticuloResponse, ArticulosListResponse, Grupo } from '../types';
 
 const BASE_URL = '/almacen/articulos';
+const GRUPOS_URL = '/almacen/grupos';
 
 /**
  * Almacén Service - API integration for warehouse management
@@ -49,5 +50,13 @@ export const almacenService = {
    */
   deleteArticulo: async (id: number): Promise<void> => {
     await apiClient.delete(`${BASE_URL}/${id}`);
+  },
+
+  /**
+   * Fetch all grupos (groups)
+   */
+  getGrupos: async (): Promise<Grupo[]> => {
+    const { data } = await apiClient.get(GRUPOS_URL);
+    return data.data || data;
   },
 };

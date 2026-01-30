@@ -40,7 +40,13 @@ apiClient.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as any;
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Only attempt refresh for 401 errors and non-login/refresh endpoints
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry &&
+      originalRequest.url !== '/usuario/login' &&
+      originalRequest.url !== '/usuario/refresh'
+    ) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
           failedQueue.push({ resolve, reject });
@@ -53,19 +59,43 @@ apiClient.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Try to refresh the token
-        // This endpoint should use the refresh token from cookies
-        const response = await axios.post(`${API_BASE_URL}/usuario/refresh`, {}, { withCredentials: true });
+        // Try to refresh the token with refresh token from localStorage
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!refreshToken) {
+          throw new Error('No refresh token available');
+        }
 
-        if (response.data.success && response.data.data.accessToken) {
-          localStorage.setItem('accessToken', response.data.data.accessToken);
-          apiClient.defaults.headers.common.Authorization = `Bearer ${response.data.data.accessToken}`;
+        const response = await axios.post(
+          `${API_BASE_URL}/usuario/refresh`,
+          { refreshToken },
+          { withCredentials: true }
+        );
+
+        if (response.status === 201 && response.data.success && response.data.data.accessToken) {
+          const newTokenData = response.data.data;
+          
+          // Update access token
+          localStorage.setItem('accessToken', newTokenData.accessToken);
+          
+          // Update user data with new rol and permisos if provided
+          if (newTokenData.rol) {
+            const userData = JSON.parse(localStorage.getItem('user') || '{}');
+            userData.rol = newTokenData.rol;
+            if (newTokenData.permisos) {
+              userData.permisos = newTokenData.permisos;
+            }
+            localStorage.setItem('user', JSON.stringify(userData));
+          }
+          
+          apiClient.defaults.headers.common.Authorization = `Bearer ${newTokenData.accessToken}`;
           processQueue(null);
           return apiClient(originalRequest);
         }
       } catch (refreshError) {
+        // Refresh token expired or invalid
         processQueue(refreshError as AxiosError);
         localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
         localStorage.removeItem('user');
         window.location.href = '/login';
         return Promise.reject(refreshError);
@@ -75,8 +105,9 @@ apiClient.interceptors.response.use(
     }
 
     if (error.response?.status === 401) {
-      // Token expired and refresh failed
+      // Token expired and refresh failed, or couldn't attempt refresh
       localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
       window.location.href = '/login';
     }

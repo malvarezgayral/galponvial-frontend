@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import AdminDashboard from '../components/AdminDashboard';
-import RolesManagement from '../components/RolesManagement';
-import PermissionsManagement from '../components/PermissionsManagement';
+import React, { useState } from "react";
+import AdminDashboard from "../components/AdminDashboard";
+//import RolesManagement from "../components/RolesManagement";
+//import PermissionsManagement from "../components/PermissionsManagement";
 
-type TabType = 'usuarios' | 'roles' | 'permisos';
+type TabType = "usuarios" | "roles" | "permisos";
 
 const UsuariosPage: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('usuarios');
+  const [activeTab, setActiveTab] = useState<TabType>("usuarios");
 
   const tabs: { id: TabType; label: string; icon: string }[] = [
-    { id: 'usuarios', label: 'Usuarios', icon: '👥' },
-    { id: 'roles', label: 'Roles', icon: '🎭' },
-    { id: 'permisos', label: 'Permisos', icon: '🔐' },
+    { id: "usuarios", label: "Usuarios", icon: "👥" },
+    //{ id: "roles", label: "Roles", icon: "🎭" },
+    //{ id: "permisos", label: "Permisos", icon: "🔐" },
   ];
 
   return (
@@ -35,8 +35,8 @@ const UsuariosPage: React.FC = () => {
               onClick={() => setActiveTab(tab.id)}
               className={`px-6 py-3 font-semibold text-lg transition-all duration-300 border-b-4 ${
                 activeTab === tab.id
-                  ? 'border-[var(--color-navbar-nav)] text-[var(--color-navbar-nav)]'
-                  : 'border-transparent text-gray-600 hover:text-gray-900'
+                  ? "border-[var(--color-navbar-nav)] text-[var(--color-navbar-nav)]"
+                  : "border-transparent text-gray-600 hover:text-gray-900"
               }`}
             >
               {tab.icon} {tab.label}
@@ -46,9 +46,9 @@ const UsuariosPage: React.FC = () => {
 
         {/* Tab Content */}
         <div className="transition-all duration-300">
-          {activeTab === 'usuarios' && <AdminDashboard />}
-          {activeTab === 'roles' && <RolesManagement />}
-          {activeTab === 'permisos' && <PermissionsManagement />}
+          {activeTab === "usuarios" && <AdminDashboard />}
+          {/*{activeTab === 'roles' && <RolesManagement />}
+          {activeTab === 'permisos' && <PermissionsManagement />}*/}
         </div>
       </div>
     </div>
