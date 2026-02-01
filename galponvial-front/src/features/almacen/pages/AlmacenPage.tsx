@@ -1,14 +1,15 @@
-import { useState } from 'react';
-import { CreateArticuloForm } from '../components/CreateArticuloForm';
-import { VisualizarAlmacen } from '../components/VisualizarAlmacen';
+import { useState } from "react";
+import { CreateArticuloForm } from "../components/CreateArticuloForm";
+import { VisualizarAlmacen } from "../components/VisualizarAlmacen";
+import { CreateGrupoArticuloForm } from "../components/CreateGrupoArticuloForm";
 
-type AlmacenView = 'administrar' | 'visualizar';
+type AlmacenView = "administrar" | "visualizar";
 
 /**
  * Almacén Page - Main warehouse management page
  */
 export default function AlmacenPage() {
-  const [currentView, setCurrentView] = useState<AlmacenView>('administrar');
+  const [currentView, setCurrentView] = useState<AlmacenView>("administrar");
   const [refetchTrigger, setRefetchTrigger] = useState(0);
 
   const handleArticuloCreated = () => {
@@ -25,21 +26,21 @@ export default function AlmacenPage() {
         {/* Toggle Buttons */}
         <div className="flex gap-2 bg-gray-100 rounded-lg p-1 w-fit">
           <button
-            onClick={() => setCurrentView('administrar')}
+            onClick={() => setCurrentView("administrar")}
             className={`px-6 py-2 rounded-md font-medium transition-colors ${
-              currentView === 'administrar'
-                ? 'bg-blue-600 text-white shadow'
-                : 'text-gray-700 hover:bg-gray-200'
+              currentView === "administrar"
+                ? "bg-blue-600 text-white shadow"
+                : "text-gray-700 hover:bg-gray-200"
             }`}
           >
             Administrar Almacén
           </button>
           <button
-            onClick={() => setCurrentView('visualizar')}
+            onClick={() => setCurrentView("visualizar")}
             className={`px-6 py-2 rounded-md font-medium transition-colors ${
-              currentView === 'visualizar'
-                ? 'bg-blue-600 text-white shadow'
-                : 'text-gray-700 hover:bg-gray-200'
+              currentView === "visualizar"
+                ? "bg-blue-600 text-white shadow"
+                : "text-gray-700 hover:bg-gray-200"
             }`}
           >
             Visualizar Almacén
@@ -49,8 +50,16 @@ export default function AlmacenPage() {
 
       {/* Content */}
       <div className="space-y-6">
-        {currentView === 'administrar' && <CreateArticuloForm onSuccess={handleArticuloCreated} />}
-        {currentView === 'visualizar' && <VisualizarAlmacen key={refetchTrigger} />}
+        {currentView === "administrar" && (
+          <div className="space-y-8">
+            <CreateArticuloForm onSuccess={handleArticuloCreated} />
+            <CreateGrupoArticuloForm />
+          </div>
+        )}
+
+        {currentView === "visualizar" && (
+          <VisualizarAlmacen key={refetchTrigger} />
+        )}
       </div>
     </div>
   );

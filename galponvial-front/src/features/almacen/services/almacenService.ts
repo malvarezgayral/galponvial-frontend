@@ -87,4 +87,13 @@ getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
     return data;
 },
 
+createGrupoArticulo(payload: {
+  nombre: string;
+  descripcion: string;
+  sector_id: number;
+}) {
+  return apiClient.post('/almacen/grupos', payload);
+}
+
+
 };
