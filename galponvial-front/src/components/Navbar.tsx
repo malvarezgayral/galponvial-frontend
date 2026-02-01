@@ -17,7 +17,7 @@ const Navbar = () => {
   const navLinks: NavItem[] = [
     { name: "Almacén", href: ROUTES.almacen },
     { name: "Vehículos", href: ROUTES.vehiculos },
-    { name: "Servicios", href: "#" },
+    { name: "Servicios", href: ROUTES.servicios },
     { name: "Proveedores", href: "#" },
     { name: "Usuarios", href: ROUTES.usuarios },
   ];
@@ -54,15 +54,9 @@ const Navbar = () => {
               key={link.name}
               className="h-full text-center flex items-center justify-center"
             >
-              {link.href !== "#" ? (
-                <Link to={link.href} className="navbar-link">
-                  {link.name}
-                </Link>
-              ) : (
-                <a href={link.href} className="navbar-link">
-                  {link.name}
-                </a>
-              )}
+              <Link to={link.href} className="navbar-link">
+                {link.name}
+              </Link>
             </li>
           ))}
           {/* Logout Button */}

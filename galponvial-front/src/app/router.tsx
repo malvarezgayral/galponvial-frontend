@@ -8,6 +8,10 @@ import AlmacenPage from "../features/almacen/pages/AlmacenPage";
 import ArticuloDetallesPage from "../features/almacen/pages/ArticuloDetallesPage";
 import VehiculosPage from "../features/vehiculos/pages/VehiculosPage";
 import VehiculoDetallesPage from "../features/vehiculos/pages/VehiculoDetallesPage";
+import ServiciosPage from "../features/servicios/pages/ServiciosPage";
+import CombustiblePage from "../features/servicios/pages/CombustiblePage";
+import IncidentePage from "../features/servicios/pages/IncidentePage";
+import RecordatorioPage from "../features/servicios/pages/RecordatorioPage";
 import UsuariosPage from "../features/usuarios/pages/UsuariosPage";
 import LoginPage from "../features/auth/pages/LoginPage";
 
@@ -53,6 +57,38 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <ArticuloDetallesPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTES.servicios,
+        element: (
+          <ProtectedRoute>
+            <ServiciosPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/servicios/combustible",
+        element: (
+          <ProtectedRoute>
+            <CombustiblePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/servicios/incidente",
+        element: (
+          <ProtectedRoute>
+            <IncidentePage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/servicios/recordatorio",
+        element: (
+          <ProtectedRoute>
+            <RecordatorioPage />
           </ProtectedRoute>
         ),
       },
