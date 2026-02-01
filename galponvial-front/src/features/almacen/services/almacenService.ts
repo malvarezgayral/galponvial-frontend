@@ -77,4 +77,14 @@ getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
     const { data } = await apiClient.get(GRUPOS_URL);
     return data.data || data;
   },
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  createMovimiento: async (payload: any) => {
+    const { data } = await apiClient.post(
+      API_ENDPOINTS.ALMACEN.CREATE_MOVIMIENTO,
+      payload
+    );
+    return data;
+},
+
 };

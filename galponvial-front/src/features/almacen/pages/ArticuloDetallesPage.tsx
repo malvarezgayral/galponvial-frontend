@@ -4,6 +4,7 @@ import { almacenService } from '../services/almacenService';
 import { Button } from '@/shared/ui/Button'; 
 import { Badge } from '@/shared/ui/Badge'; 
 import type { Articulo, Movimiento } from '../types';
+import CreateMovimientoModal from '../components/CreateMovimientoModal';
 
 const ArticuloDetallesPage: React.FC = () => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const ArticuloDetallesPage: React.FC = () => {
 
   const [movimientos, setMovimientos] = useState<Movimiento[]>([]);
   const [movimientosLoading, setMovimientosLoading] = useState(false);
+  const [openMovimientoModal, setOpenMovimientoModal] = useState(false);
+
   
   const refetchAllData = useCallback(async () => {
     if (!id) return;
@@ -158,6 +161,13 @@ const ArticuloDetallesPage: React.FC = () => {
 
       <div className="bg-white rounded-lg shadow p-6 mt-8">
         <div className="flex justify-between items-center mb-6">
+            <Button
+            variant="primary"
+            onClick={() => setOpenMovimientoModal(true)}
+            >
+            Registrar movimiento
+            </Button>
+
             <h2 className="text-lg font-semibold text-gray-900">Historial de Movimientos</h2>
             <div className="text-sm text-gray-500">
                 {movimientos.length} registros
@@ -214,6 +224,14 @@ const ArticuloDetallesPage: React.FC = () => {
                 </table>
             </div>
         )}
+        {openMovimientoModal && articulo && (
+            <CreateMovimientoModal
+                codArticulo={articulo.cod}
+                onClose={() => setOpenMovimientoModal(false)}
+                onSuccess={refetchAllData}
+            />
+            )}
+
       </div>
 
     </div>
