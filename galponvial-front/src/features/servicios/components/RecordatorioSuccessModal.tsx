@@ -66,23 +66,25 @@ export const RecordatorioSuccessModal: React.FC<RecordatorioSuccessModalProps> =
 
         {/* Contenido */}
         <div className="px-6 py-6 space-y-6">
-          {/* Información del vehículo */}
-          <div className="border-l-4 border-[#378AFE] pl-4">
-            <h4 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-2 uppercase">
-              Vehículo
-            </h4>
-            <div className="space-y-1">
-              <p className="text-lg font-bold text-[var(--color-text-primary)]">
-                {data.vehiculo.nombre}
-              </p>
-              <p className="text-sm text-[var(--color-text-secondary)]">
-                Código: <span className="font-medium">{data.vehiculo.codigo}</span>
-              </p>
-              <p className="text-sm text-[var(--color-text-secondary)]">
-                {data.vehiculo.marca} {data.vehiculo.modelo} ({data.vehiculo.anio})
-              </p>
+          {/* Información del usuario */}
+          {data.usuario && (
+            <div className="border-l-4 border-[#378AFE] pl-4">
+              <h4 className="text-sm font-semibold text-[var(--color-text-secondary)] mb-2 uppercase">
+                Usuario
+              </h4>
+              <div className="space-y-1">
+                <p className="text-lg font-bold text-[var(--color-text-primary)]">
+                  {data.usuario.nombre} {data.usuario.apellido}
+                </p>
+                <p className="text-sm text-[var(--color-text-secondary)]">
+                  DNI: <span className="font-medium">{data.usuario.dni}</span>
+                </p>
+                <p className="text-sm text-[var(--color-text-secondary)]">
+                  {data.usuario.email}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Información del recordatorio */}
           <div className="border-l-4 border-[#80DD4B] pl-4">

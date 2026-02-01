@@ -7,6 +7,7 @@ import type {
   CreateUserDto,
   UpdateUserDto,
   PaginatedResponse,
+  RolePermissionStructure,
 } from "../types";
 import type { ObjectServiceResponse } from "@/shared/types/common-types";
 
@@ -123,5 +124,16 @@ export const usuariosService = {
   getPermissionsByModule: async (modulo: string): Promise<Permission[]> => {
     const { data } = await apiClient.get(`/permisos?modulo=${modulo}`);
     return data;
+  },
+
+  /**
+   * Get the structure of roles and their associated permissions
+   * Returns a mapping of roles to their permissions
+   */
+  getRolePermissionStructure: async (): Promise<RolePermissionStructure> => {
+    const { data } = await apiClient.get<ObjectServiceResponse<RolePermissionStructure>>(
+      "/usuario/roles/estructura"
+    );
+    return data.data;
   },
 };

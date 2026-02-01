@@ -101,6 +101,11 @@ export interface RecordatorioRequest {
 export interface RecordatorioResponse {
   fecha: string;
   descripcion: string;
-  vehiculo: VehiculoInfo;
   id: number;
+  usuario?: {
+    dni: number;
+    nombre: string;
+    apellido: string;
+    email: string;
+  };
 }

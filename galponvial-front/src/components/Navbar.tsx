@@ -37,14 +37,25 @@ const Navbar = () => {
     }
   };
 
+  const handleLogoClick = () => {
+    navigate(ROUTES.home);
+  };
+
   return (
     <header className="navbar-header">
       <div className="w-full flex justify-center">
-        <img
-          src={logoMunicipio}
-          alt="Lobería Gobierno Local"
-          className="h-20 object-contain"
-        />
+        <button
+          onClick={handleLogoClick}
+          className="bg-transparent border-none cursor-pointer hover:opacity-80 transition-opacity"
+          title="Ir al inicio"
+          aria-label="Ir al inicio"
+        >
+          <img
+            src={logoMunicipio}
+            alt="Lobería Gobierno Local"
+            className="h-20 object-contain"
+          />
+        </button>
       </div>
 
       <nav className="navbar-nav">
