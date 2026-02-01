@@ -1,17 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/Button';
 import { almacenService } from '../services/almacenService';
+import type { SectorDto } from '../types';
 
 interface CreateGrupoArticuloFormProps {
   onSuccess?: () => void;
 }
-
-// 🔧 Hardcodeo temporal de sectores
-const SECTORES = [
-  { id: 1, nombre: 'Taller' },
-  { id: 2, nombre: 'Depósito' },
-  { id: 3, nombre: 'Mostrador' },
-];
 
 export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = ({
   onSuccess,
@@ -20,9 +14,28 @@ export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = (
   const [descripcion, setDescripcion] = useState('');
   const [sectorId, setSectorId] = useState<number | ''>('');
 
+  const [sectores, setSectores] = useState<SectorDto[]>([]);
+  const [loadingSectores, setLoadingSectores] = useState(true);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
+  // 🔁 Cargar sectores
+  useEffect(() => {
+    const fetchSectores = async () => {
+      try {
+        const data = await almacenService.getSectores();
+        setSectores(data);
+      } catch {
+        setError('Error al cargar los sectores');
+      } finally {
+        setLoadingSectores(false);
+      }
+    };
+
+    fetchSectores();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,13 +54,11 @@ export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = (
 
     setLoading(true);
     try {
-      const payload = {
+      await almacenService.createGrupoArticulo({
         nombre: nombre.trim(),
         descripcion: descripcion.trim(),
         sector_id: sectorId,
-      };
-
-      await almacenService.createGrupoArticulo(payload);
+      });
 
       setSuccess(true);
 
@@ -99,7 +110,6 @@ export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = (
             type="text"
             value={nombre}
             onChange={(e) => setNombre(e.target.value)}
-            placeholder="Ej: Lubricantes"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
             disabled={loading}
           />
@@ -116,12 +126,14 @@ export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = (
               setSectorId(e.target.value ? Number(e.target.value) : '')
             }
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-            disabled={loading}
+            disabled={loading || loadingSectores}
           >
-            <option value="">Seleccionar sector</option>
-            {SECTORES.map((sector) => (
+            <option value="">
+              {loadingSectores ? 'Cargando sectores...' : 'Seleccionar sector'}
+            </option>
+            {sectores.map((sector) => (
               <option key={sector.id} value={sector.id}>
-                {sector.nombre}
+                Sector {sector.nro_sector} - {sector.descripcion}
               </option>
             ))}
           </select>
@@ -136,7 +148,6 @@ export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = (
         <textarea
           value={descripcion}
           onChange={(e) => setDescripcion(e.target.value)}
-          placeholder="Grupo de aceites y lubricantes"
           rows={4}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 resize-none"
           disabled={loading}

@@ -20,6 +20,9 @@ export const API_ENDPOINTS = {
     DELETE: (id: number | string) => `/almacen/articulos/${id}`,
     CREATE_MOVIMIENTO: '/almacen/movimientos',
     MOVIMIENTOS: (id: string | number) => `/almacen/movimientos/${id}`,
+    GRUPOS: '/almacen/grupos',
+    GRUPO_DETAIL: (id: number) => `/almacen/grupos/${id}`,
+    SECTORES: '/almacen/sectores',
   },
   USUARIOS: {
     LIST: '/usuario',
