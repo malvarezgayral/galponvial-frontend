@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Button } from '@/shared/ui/Button';
-import { almacenService } from '../services/almacenService';
+import React, { useState } from "react";
+import { Button } from "@/shared/ui/Button";
+import { almacenService } from "../services/almacenService";
 
-type MovimientoTipo = 'entrada' | 'salida';
+type MovimientoTipo = "entrada" | "salida";
 
 interface CreateMovimientoModalProps {
   codArticulo: number;
@@ -15,7 +15,7 @@ const CreateMovimientoModal: React.FC<CreateMovimientoModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [tipoMovimiento, setTipoMovimiento] = useState<MovimientoTipo | ''>('');
+  const [tipoMovimiento, setTipoMovimiento] = useState<MovimientoTipo | "">("");
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [form, setForm] = useState<Record<string, any>>({});
   const [loading, setLoading] = useState(false);
@@ -23,7 +23,7 @@ const CreateMovimientoModal: React.FC<CreateMovimientoModalProps> = ({
   const handleChange = (
     e: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    >,
   ) => {
     const { name, value } = e.target;
     setForm((prev) => ({
@@ -45,8 +45,15 @@ const CreateMovimientoModal: React.FC<CreateMovimientoModalProps> = ({
       await almacenService.createMovimiento(payload);
       onSuccess();
       onClose();
-    } catch (error) {
-      console.error('Error al crear movimiento:', error);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        alert(
+          "No contás con los permisos necesarios para registrar un movimiento",
+        );
+      } else {
+        alert("Error al registrar el movimiento");
+      }
     } finally {
       setLoading(false);
     }
@@ -76,7 +83,7 @@ const CreateMovimientoModal: React.FC<CreateMovimientoModalProps> = ({
           </select>
         </div>
 
-        {tipoMovimiento === 'entrada' && (
+        {tipoMovimiento === "entrada" && (
           <div className="space-y-3">
             <select
               name="tipo"
@@ -108,7 +115,7 @@ const CreateMovimientoModal: React.FC<CreateMovimientoModalProps> = ({
           </div>
         )}
 
-        {tipoMovimiento === 'salida' && (
+        {tipoMovimiento === "salida" && (
           <div className="space-y-3">
             <select
               name="tipo"
@@ -155,7 +162,7 @@ const CreateMovimientoModal: React.FC<CreateMovimientoModalProps> = ({
             disabled={loading || !tipoMovimiento}
             onClick={handleSubmit}
           >
-            {loading ? 'Guardando...' : 'Registrar'}
+            {loading ? "Guardando..." : "Registrar"}
           </Button>
         </div>
       </div>
