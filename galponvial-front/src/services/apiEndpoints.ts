@@ -14,10 +14,11 @@ export const API_ENDPOINTS = {
   },
   ALMACEN: {
     LIST: '/almacen',
-    DETAIL: (id: string) => `/almacen/${id}`,
+    DETAIL: (id: number) => `/almacen/articulos/${id}`,
     CREATE: '/almacen',
     UPDATE: (id: string) => `/almacen/${id}`,
-    DELETE: (id: string) => `/almacen/${id}`,
+    DELETE: (id: number | string) => `/almacen/articulos/${id}`,
+    MOVIMIENTOS: (id: string | number) => `/almacen/movimientos/${id}`,
   },
   USUARIOS: {
     LIST: '/usuario',

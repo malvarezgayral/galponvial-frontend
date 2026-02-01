@@ -48,7 +48,7 @@ export const ArticuloCard: React.FC<ArticuloCardProps> = ({
       </div>
 
       {/* Content */}
-      <div className="p-5 flex flex-col flex-grow">
+      <div className="p-5 flex flex-col grow">
         {/* Header info */}
         <div className="mb-3">
           <p className="text-xs font-medium text-gray-500 mb-1">Código: {articulo.cod_proveedor}</p>
@@ -57,7 +57,7 @@ export const ArticuloCard: React.FC<ArticuloCardProps> = ({
         </div>
 
         {/* Description */}
-        <p className="text-sm text-gray-700 line-clamp-2 mb-4 flex-grow">{articulo.descripcion}</p>
+        <p className="text-sm text-gray-700 line-clamp-2 mb-4 grow">{articulo.descripcion}</p>
 
         {/* View details button */}
         <Button

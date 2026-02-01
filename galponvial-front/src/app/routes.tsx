@@ -3,8 +3,9 @@ export const ROUTES = {
   vehiculos: "/vehiculos",
   vehiculoDetalles: (id: number) => `/vehiculos/${id}`,
   almacen: "/almacen",
-  articuloDetalles: (id: number) => `/almacen/${id}`,
   usuarios: "/usuarios",
   auditoria: "/auditoria",
   login: "/login",
+  articuloDetallesRoute: "/almacen/:id", 
+  articuloDetalles: (id: number) => `/almacen/${id}`,
 } as const;

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { authService } from '@/services/auth';
+import { authService } from '@/features/auth/services/authService';
 import type { User, UserAuth } from '@/features/usuarios/types';
 
 interface AppState {

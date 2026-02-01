@@ -8,7 +8,7 @@ interface AlmacenState {
   error: string | null;
   setArticulos: (articulos: Articulo[]) => void;
   updateArticulo: (id: number, payload: Partial<Articulo>) => Promise<void>;
-  deleteArticulo: (id: number) => Promise<void>;
+  removeArticulo: (id: number) => Promise<void>;
 }
 
 export const useAlmacenStore = create<AlmacenState>((set, get) => ({
@@ -24,7 +24,7 @@ export const useAlmacenStore = create<AlmacenState>((set, get) => ({
       const updated = await almacenService.updateArticulo(id, payload);
       const state = get();
       const updatedArticulos = state.articulos.map((a) =>
-        a.id_articulo === id ? { ...a, ...updated } : a
+        a.cod === id ? { ...a, ...updated } : a
       );
       set({ articulos: updatedArticulos });
     } catch (err) {
@@ -36,19 +36,25 @@ export const useAlmacenStore = create<AlmacenState>((set, get) => ({
     }
   },
 
-  deleteArticulo: async (id) => {
-    try {
-      set({ loading: true, error: null });
-      await almacenService.deleteArticulo(id);
-      const state = get();
-      const filteredArticulos = state.articulos.filter((a) => a.id_articulo !== id);
-      set({ articulos: filteredArticulos });
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Error al eliminar artículo';
-      set({ error: message });
-      throw err;
-    } finally {
-      set({ loading: false });
-    }
-  },
+  removeArticulo: async (id: number) => {
+  set({ loading: true, error: null });
+  try {
+    // 1. Llamar al servicio (asegúrate de que tu servicio use la URL corregida)
+    await almacenService.deleteArticulo(id);
+
+    // 2. Actualizar el estado local quitando el artículo eliminado
+    set((state) => ({
+      articulos: state.articulos.filter((art) => Number(art.cod) !== id),
+      loading: false,
+      success: true 
+    }));
+    
+  } catch (error) {
+    set({ 
+      error: error instanceof Error ? error.message : 'Error al eliminar', 
+      loading: false 
+    });
+    throw error; // Re-lanzamos para que el componente sepa que falló
+  }
+},
 }));

@@ -1,5 +1,6 @@
 import { apiClient } from '@/services/api';
-import type { CreateArticuloPayload, ArticuloResponse, ArticulosListResponse, Grupo } from '../types';
+import type { CreateArticuloPayload, ArticuloResponse, ArticulosListResponse, Grupo, Movimiento, Articulo } from '../types';
+import { API_ENDPOINTS } from '@/services/apiEndpoints';
 
 const BASE_URL = '/almacen/articulos';
 const GRUPOS_URL = '/almacen/grupos';
@@ -21,11 +22,28 @@ export const almacenService = {
   /**
    * Fetch a single articulo by ID
    */
-  getArticuloById: async (id: number): Promise<ArticuloResponse> => {
-    const { data } = await apiClient.get(`${BASE_URL}/${id}`);
-    return data.data || data;
+ getArticuloById: async (id: number): Promise<Articulo> => {
+    const { data } = await apiClient.get(API_ENDPOINTS.ALMACEN.DETAIL(id));
+    return data.data; 
   },
 
+getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
+    const { data } = await apiClient.get(API_ENDPOINTS.ALMACEN.MOVIMIENTOS(idArticulo));
+    
+    const rawMovimientos = Array.isArray(data) ? data : (data.data || []);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    return rawMovimientos.map((m: any) => ({
+        tipoMovimiento: m.tipo_movimiento || m.tipoMovimiento || 'Desconocido',
+        
+        fecha: m.fecha || m.createdAt || m.created_at || new Date().toISOString(),
+        
+        dniUsuario: m.dniUsuario || 'Sistema',
+        
+        motivo: m.motivo || '-',
+        detalle: m.detalle || '-'
+    }));
+},
   /**
    * Create a new articulo
    */

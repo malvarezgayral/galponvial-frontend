@@ -85,17 +85,41 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
 
     setLoading(true);
     try {
-      const payload: Partial<Articulo> = {
-        cod_proveedor: codProveedor.trim(),
-        nombre: nombre.trim(),
-        modelo: modelo.trim(),
-        descripcion: descripcion.trim(),
-        unidad_tipo: unidadTipo,
-        ...(img.trim() && { img: img.trim() }),
-        ...(requiresStock && { stock: parseInt(stock, 10) }),
-      };
+      const mapUnidadTipoToUnidadMedidaId = (
+      tipo: Articulo['unidad_tipo']
+    ): number => {
+      switch (tipo) {
+        case 'pieza': return 1;
+        case 'caja': return 2;
+        case 'bulto': return 3;
+        case 'metro': return 4;
+        case 'litro': return 5;
+        case 'kg': return 6;
+        default: throw new Error('Unidad no válida');
+      }
+    };
 
-      await updateArticulo(articulo.id_articulo, payload);
+
+      const payload = {
+      cod_proveedor: codProveedor.trim(),
+      nombre: nombre.trim(),
+      modelo: modelo.trim(),
+      descripcion: descripcion.trim(),
+
+      unidad_medida_id: mapUnidadTipoToUnidadMedidaId(unidadTipo),
+      unidad_tipo: unidadTipo,
+
+      ...(requiresStock && { stock: parseInt(stock, 10) }),
+      ...(img.trim() && { img: img.trim() }),
+    };
+
+    console.log('ID enviado:', articulo.cod);
+    console.log('COD enviado:', articulo.cod_proveedor);
+    console.log('ID ENVIADO:', articulo.cod, typeof articulo.cod)
+    console.log('Unidad de medida (Estado actual):', unidadTipo); 
+    console.log('ID de Unidad enviado:', mapUnidadTipoToUnidadMedidaId(unidadTipo));
+
+      await updateArticulo(Number(articulo.cod), payload);
       setSuccess(true);
 
       // Close modal after 1.5 seconds on success

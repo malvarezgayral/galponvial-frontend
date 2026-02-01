@@ -2,8 +2,10 @@
  * Almacén (Warehouse) Types
  */
 
+import type { MovimientoTipo } from "./enums";
+
 export interface Articulo {
-  id_articulo: number;
+  cod: number;
   cod_proveedor: string;
   nombre: string;
   modelo: string;
@@ -71,4 +73,13 @@ export interface Grupo {
   nombre: string;
   descripcion: string;
   sector: Sector;
+}
+
+export interface Movimiento {
+  tipoMovimiento: MovimientoTipo;
+  fecha: string | Date; 
+  codArticulo: number;
+  dniUsuario: string | number; 
+  motivo: string;
+  detalle: string;
 }

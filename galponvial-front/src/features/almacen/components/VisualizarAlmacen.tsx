@@ -5,6 +5,8 @@ import { useAlmacenStore } from "../store";
 import { ArticuloCard } from "./ArticuloCard";
 import { EditArticuloModal } from "./EditArticuloModal";
 import type { Articulo } from "../types";
+import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
+import { ROUTES } from "@/app/routes";
 
 const PAGE_SIZE = 6;
 
@@ -13,41 +15,54 @@ const PAGE_SIZE = 6;
  */
 export const VisualizarAlmacen: React.FC = () => {
   const navigate = useNavigate();
-  const { setArticulos } = useAlmacenStore();
+  // Traemos removeArticulo del store
+  const { setArticulos, removeArticulo } = useAlmacenStore(); 
+  
   const [articulos, setLocalArticulos] = useState<Articulo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  
+  // Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
+  
+  // Estado para Edición
   const [editingArticulo, setEditingArticulo] = useState<Articulo | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
 
+  // Estado para Eliminación (NUEVO)
+  const [deletingArticulo, setDeletingArticulo] = useState<Articulo | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
-  useEffect(() => {
-    const fetchArticulos = async () => {
-      try {
-        setLoading(true);
-        const response = await almacenService.getArticulos(
-          currentPage,
-          PAGE_SIZE,
-        );
-        setLocalArticulos(response.data);
-        setArticulos(response.data);
-        setTotalItems(response.total);
-      } catch (err) {
-        const errorMsg =
-          err instanceof Error ? err : new Error("Error al cargar artículos");
-        setError(errorMsg);
-        console.error("Error fetching articulos:", errorMsg);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Cargar artículos
+  const fetchArticulos = async () => {
+    try {
+      setLoading(true);
+      const response = await almacenService.getArticulos(
+        currentPage,
+        PAGE_SIZE,
+      );
+      setLocalArticulos(response.data);
+      setArticulos(response.data);
+      setTotalItems(response.total);
+    } catch (err) {
+      const errorMsg =
+        err instanceof Error ? err : new Error("Error al cargar artículos");
+      setError(errorMsg);
+      console.error("Error fetching articulos:", errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchArticulos();
   }, [currentPage, setArticulos]);
 
+  // --- Lógica de Edición ---
   const handleEdit = (articulo: Articulo) => {
     setEditingArticulo(articulo);
     setShowEditModal(true);
@@ -59,30 +74,45 @@ export const VisualizarAlmacen: React.FC = () => {
   };
 
   const handleEditSuccess = () => {
-    // Refetch articulos after successful edit
-    const fetchArticulos = async () => {
-      try {
-        const response = await almacenService.getArticulos(
-          currentPage,
-          PAGE_SIZE,
-        );
-        setLocalArticulos(response.data);
-        setArticulos(response.data);
-      } catch (err) {
-        console.error("Error refetching articulos:", err);
-      }
-    };
-    void fetchArticulos();
+    void fetchArticulos(); // Recargar datos tras editar
   };
 
-  const handleDelete = (articulo: Articulo) => {
-    // TODO: Implement delete confirmation modal
-    console.log("Delete:", articulo);
+  // --- Lógica de Eliminación (NUEVO) ---
+  const handleDeleteClick = (articulo: Articulo) => {
+    setDeletingArticulo(articulo);
+    setShowDeleteModal(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!deletingArticulo) return;
+
+    setDeleteLoading(true);
+    try {
+      await removeArticulo(Number(deletingArticulo.cod));
+
+      setLocalArticulos((prev) => prev.filter(a => a.cod !== deletingArticulo.cod));
+      setTotalItems((prev) => prev - 1);
+      
+      setShowDeleteModal(false);
+      setDeletingArticulo(null);
+      
+      if (articulos.length === 1 && currentPage > 1) {
+          setCurrentPage(currentPage - 1);
+      }
+      
+    } catch (err) {
+      console.error("Error eliminando:", err);
+      alert("Hubo un error al eliminar el artículo");
+    } finally {
+      setDeleteLoading(false);
+    }
   };
 
   const handleViewDetails = (articulo: Articulo) => {
-    navigate(`/almacen/${articulo.id_articulo}`);
-  };
+    navigate(ROUTES.articuloDetalles(articulo.cod), { 
+    state: { articulo } 
+  });
+};
 
   if (error && articulos.length === 0) {
     return (
@@ -122,10 +152,10 @@ export const VisualizarAlmacen: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {articulos.map((articulo) => (
             <ArticuloCard
-              key={articulo.id_articulo}
+              key={articulo.cod || articulo.cod} // Usar ID único
               articulo={articulo}
               onEdit={handleEdit}
-              onDelete={handleDelete}
+              onDelete={handleDeleteClick} // Conectado al click handler
               onViewDetails={handleViewDetails}
             />
           ))}
@@ -185,6 +215,16 @@ export const VisualizarAlmacen: React.FC = () => {
         articulo={editingArticulo}
         onClose={handleCloseEditModal}
         onSuccess={handleEditSuccess}
+      />
+
+      {/* Delete Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleConfirmDelete}
+        loading={deleteLoading}
+        title="Eliminar Artículo"
+        message={`¿Estás seguro de que deseas eliminar el artículo "${deletingArticulo?.nombre}"? Esta acción no se puede deshacer.`}
       />
     </div>
   );
