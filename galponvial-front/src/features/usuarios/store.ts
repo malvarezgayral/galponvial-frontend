@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { usuariosService } from '@/features/usuarios/services/usuariosService';
 import { handleApiError } from '@/services/errorHandler';
-import type { User, Role, Permission } from '@/features/usuarios/types';
+import type { User, Role, Permission, RolePermissionStructure } from '@/features/usuarios/types';
 import type { CreateUserDto, UpdateUserDto } from '@/features/usuarios/types';
 
 interface UsuariosState {
@@ -19,6 +19,10 @@ interface UsuariosState {
   // Permissions
   permisos: Permission[];
 
+  // Role-Permission Structure
+  rolePermissionStructure: RolePermissionStructure;
+  loadingStructure: boolean;
+
   // UI State
   isLoading: boolean;
   error: string | null;
@@ -31,7 +35,7 @@ interface UsuariosState {
   crearUsuario: (data: CreateUserDto) => Promise<User | null>;
   actualizarUsuario: (id: string, data: UpdateUserDto) => Promise<User | null>;
   actualizarPorDni: (dni: number, data: UpdateUserDto) => Promise<User | null>;
-  actualizarRol: (dni: number, rol: 'usuario' | 'admin' | 'super-admin') => Promise<User | null>;
+  actualizarRol: (dni: number, rol: 'user' | 'admin' | 'superuser') => Promise<User | null>;
   eliminarUsuario: (id: string) => Promise<boolean>;
   toggleUsuarioActivo: (id: string) => Promise<void>;
   resetearPassword: (id: string, newPassword: string) => Promise<void>;
@@ -49,6 +53,9 @@ interface UsuariosState {
   // Permissions Actions
   fetchPermisos: () => Promise<void>;
   getPermisosPorModulo: (modulo: string) => Promise<Permission[]>;
+
+  // Role-Permission Structure Actions
+  fetchRolePermissionStructure: () => Promise<void>;
 }
 
 export const useUsuariosStore = create<UsuariosState>((set) => ({
@@ -61,6 +68,8 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
   roles: [],
   rolesSeleccionados: [],
   permisos: [],
+  rolePermissionStructure: [],
+  loadingStructure: false,
   isLoading: false,
   error: null,
   modalAbierto: false,
@@ -123,7 +132,7 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
       set({ isLoading: true, error: null });
       const usuario = await usuariosService.update(id, data);
       set((state: UsuariosState) => ({
-        usuarios: state.usuarios.map((u: User) => (u.id === id ? usuario : u)),
+        usuarios: state.usuarios.map((u: User) => (u.dni === usuario.dni ? usuario : u)),
         usuarioSeleccionado: usuario,
       }));
       return usuario;
@@ -154,7 +163,7 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
     }
   },
 
-  actualizarRol: async (dni: number, rol: 'usuario' | 'admin' | 'super-admin') => {
+  actualizarRol: async (dni: number, rol: 'user' | 'admin' | 'superuser') => {
     try {
       set({ isLoading: true, error: null });
       const usuario = await usuariosService.updateRol(dni, rol);
@@ -177,7 +186,7 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
       set({ isLoading: true, error: null });
       await usuariosService.delete(id);
       set((state: UsuariosState) => ({
-        usuarios: state.usuarios.filter((u: User) => u.id !== id),
+        usuarios: state.usuarios.filter((u: User) => u.dni !== parseInt(id, 10)),
         usuariosTotal: state.usuariosTotal - 1,
       }));
       return true;
@@ -195,7 +204,7 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
       set({ isLoading: true, error: null });
       const usuario = await usuariosService.toggleActive(id);
       set((state: UsuariosState) => ({
-        usuarios: state.usuarios.map((u: User) => (u.id === id ? usuario : u)),
+        usuarios: state.usuarios.map((u: User) => (u.dni === usuario.dni ? usuario : u)),
       }));
     } catch (error) {
       const apiError = handleApiError(error);
@@ -309,6 +318,20 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
       const apiError = handleApiError(error);
       set({ error: apiError.message });
       return [];
+    }
+  },
+
+  // Role-Permission Structure Actions
+  fetchRolePermissionStructure: async () => {
+    try {
+      set({ loadingStructure: true, error: null });
+      const structure = await usuariosService.getRolePermissionStructure();
+      set({ rolePermissionStructure: structure });
+    } catch (error) {
+      const apiError = handleApiError(error);
+      set({ error: apiError.message });
+    } finally {
+      set({ loadingStructure: false });
     }
   },
 }));

@@ -38,7 +38,21 @@ export const useLogin = (): UseLoginReturn => {
       localStorage.setItem('accessToken', userData.accessToken);
       localStorage.setItem('refreshToken', userData.refreshToken);
       localStorage.setItem('user', JSON.stringify(userData));
-      setUser({ email: userData.email, rol: userData.rol, dni: userData.dni });
+      
+      // Convert permisos from strings to Permission objects if they exist
+      const userWithPermisos = {
+        email: userData.email,
+        rol: userData.rol,
+        dni: userData.dni,
+        permisos: (userData.permisos || []).map((nombre) => ({
+          id: '',
+          nombre,
+          descripcion: '',
+          modulo: 'almacen' as const,
+          accion: 'crear' as const,
+        })),
+      };
+      setUser(userWithPermisos);
 
       // Store refresh token in HttpOnly cookie (sent by backend via Set-Cookie header)
       // This is handled automatically by axios
