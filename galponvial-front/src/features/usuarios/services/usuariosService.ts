@@ -55,7 +55,7 @@ export const usuariosService = {
 
   updateRol: async (
     dni: number,
-    rol: "usuario" | "admin" | "super-admin",
+    rol: "user" | "admin" | "superuser",
   ): Promise<User> => {
     const { data: response } = await apiClient.patch(`/usuario/addRol/${dni}`, {
       rol,
@@ -128,12 +128,12 @@ export const usuariosService = {
 
   /**
    * Get the structure of roles and their associated permissions
-   * Returns a mapping of roles to their permissions
+   * Returns an array of role-permission combinations
    */
   getRolePermissionStructure: async (): Promise<RolePermissionStructure> => {
     const { data } = await apiClient.get<ObjectServiceResponse<RolePermissionStructure>>(
       "/usuario/roles/estructura"
     );
-    return data.data;
+    return Array.isArray(data.data) ? data.data : [];
   },
 };

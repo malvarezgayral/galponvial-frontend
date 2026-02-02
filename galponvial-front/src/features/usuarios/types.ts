@@ -15,9 +15,9 @@ export enum ValidPermissions {
 }
 
 /**
- * Valid role names
+ * Valid role names - Must match backend values
  */
-export type UserRole = 'usuario' | 'admin' | 'super-admin';
+export type UserRole = 'user' | 'admin' | 'superuser';
 
 export interface User {
   dni: number;
@@ -65,19 +65,23 @@ export interface UpdateUserDto {
   apellido?: string;
   email?: string;
   password?: string;
-  rol?: UserRole;
-  permisos?: ValidPermissions[];
+  rol_ids?: number[];
   activo?: boolean;
+}
+
+/**
+ * Single role-permission combination from the backend
+ */
+export interface RolePermissionItem {
+  id: number;
+  permisos: ValidPermissions[];
+  rol: UserRole;
 }
 
 /**
  * Structure of roles and their associated permissions from the backend
  */
-export interface RolePermissionStructure {
-  [key: string]: {
-    permisos: ValidPermissions[];
-  };
-}
+export type RolePermissionStructure = RolePermissionItem[];
 
 export interface PaginatedResponse<T> {
   data: T[];
