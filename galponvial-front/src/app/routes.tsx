@@ -3,6 +3,7 @@ export const ROUTES = {
   vehiculos: "/vehiculos",
   vehiculoDetalles: (id: number) => `/vehiculos/${id}`,
   almacen: "/almacen",
+  servicios: "/servicios",
   usuarios: "/usuarios",
   auditoria: "/auditoria",
   login: "/login",

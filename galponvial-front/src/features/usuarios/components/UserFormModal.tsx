@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useUsuariosStore } from '../store';
 import { Button } from '@/shared/ui/Button';
-import type { CreateUserDto, UpdateUserDto } from '../types';
+import type { CreateUserDto, UpdateUserDto, ValidPermissions, RolePermissionItem } from '../types';
+import type { UserRole } from '../types';
 
 const UserFormModal: React.FC = () => {
   const {
     usuarioSeleccionado,
     modoEdicion,
     isLoading,
+    rolePermissionStructure,
+    loadingStructure,
     setModalAbierto,
     setUsuarioSeleccionado,
     crearUsuario,
     actualizarPorDni,
-    actualizarRol,
-    fetchRoles,
+    fetchRolePermissionStructure,
   } = useUsuariosStore();
 
   const [formData, setFormData] = useState<{
@@ -22,22 +24,36 @@ const UserFormModal: React.FC = () => {
     apellido: string;
     email: string;
     password: string;
-    rol: 'usuario' | 'admin' | 'super-admin';
+    rol: UserRole;
+    permisos: number[];
   }>({
     dni: '',
     nombre: '',
     apellido: '',
     email: '',
     password: '',
-    rol: 'usuario',
+    rol: 'user',
+    permisos: [],
   });
 
   const [passwordInputType, setPasswordInputType] = useState<'password' | 'text'>('password');
+  const [feedbackMessage, setFeedbackMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  // Load role/permission structure on mount
   useEffect(() => {
-    fetchRoles();
-  }, [fetchRoles]);
+    fetchRolePermissionStructure();
+  }, [fetchRolePermissionStructure]);
 
+  // Get available permissions for the selected role
+  const getAvailablePermissionsForRole = (): RolePermissionItem[] => {
+    return Array.isArray(rolePermissionStructure)
+      ? rolePermissionStructure.filter((item) => item.rol === formData.rol)
+      : [];
+  };
+
+  // Initialize form when editing a user
+  // This effect initializes the form with user data when entering edit mode
+  // The setState call is safe here as it's synchronizing with external state (usuarioSeleccionado)
   useEffect(() => {
     if (modoEdicion && usuarioSeleccionado) {
       setFormData({
@@ -47,6 +63,7 @@ const UserFormModal: React.FC = () => {
         email: usuarioSeleccionado.email,
         password: '',
         rol: usuarioSeleccionado.rol,
+        permisos: [],
       });
     } else {
       setFormData({
@@ -55,84 +72,119 @@ const UserFormModal: React.FC = () => {
         apellido: '',
         email: '',
         password: '',
-        rol: 'usuario',
+        rol: 'user',
+        permisos: [],
       });
     }
   }, [modoEdicion, usuarioSeleccionado]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === 'rol') {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value as UserRole,
+        permisos: [], // Clear selected permissions when role changes
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
+  };
+
+  const handlePermissionToggle = (permissionId: number) => {
+    setFormData((prev) => {
+      const isSelected = prev.permisos.includes(permissionId);
+      return {
+        ...prev,
+        permisos: isSelected
+          ? prev.permisos.filter((id) => id !== permissionId)
+          : [...prev.permisos, permissionId],
+      };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFeedbackMessage(null);
 
     // Validate DNI
     const dniNum = parseInt(formData.dni, 10);
     if (!formData.dni || dniNum < 1000000 || dniNum > 99999999) {
-      alert('DNI debe ser un número entre 1000000 y 99999999');
+      setFeedbackMessage({
+        type: 'error',
+        text: 'DNI debe ser un número entre 1000000 y 99999999',
+      });
       return;
     }
 
     if (modoEdicion && usuarioSeleccionado) {
-      // Edit mode with dual-endpoint logic
-      const nombreChanged = usuarioSeleccionado.nombre !== formData.nombre;
-      const apellidoChanged = usuarioSeleccionado.apellido !== formData.apellido;
-      const emailChanged = usuarioSeleccionado.email !== formData.email;
-      const passwordChanged = formData.password.length > 0;
-      const rolChanged = usuarioSeleccionado.rol !== formData.rol;
-
-      // Check if non-rol fields changed
-      const otherFieldsChanged = nombreChanged || apellidoChanged || emailChanged || passwordChanged;
-
-      let updateSuccess = true;
-      let roleUpdateSuccess = true;
-
+      // Edit mode - Single request with rol_ids
       try {
-        // Call updateByDni if other fields changed
-        if (otherFieldsChanged) {
-          const updateData: UpdateUserDto = {};
+        const updateData: UpdateUserDto = {};
+        let hasChanges = false;
 
-          if (nombreChanged) updateData.nombre = formData.nombre;
-          if (apellidoChanged) updateData.apellido = formData.apellido;
-          if (emailChanged) updateData.email = formData.email;
-          if (passwordChanged) updateData.password = formData.password;
-
-          const result = await actualizarPorDni(dniNum, updateData);
-          updateSuccess = result !== null;
-
-          if (!updateSuccess) {
-            alert('Error al actualizar los datos del usuario');
-          }
+        if (usuarioSeleccionado.nombre !== formData.nombre) {
+          updateData.nombre = formData.nombre;
+          hasChanges = true;
+        }
+        if (usuarioSeleccionado.apellido !== formData.apellido) {
+          updateData.apellido = formData.apellido;
+          hasChanges = true;
+        }
+        if (usuarioSeleccionado.email !== formData.email) {
+          updateData.email = formData.email;
+          hasChanges = true;
+        }
+        if (formData.password.length > 0) {
+          updateData.password = formData.password;
+          hasChanges = true;
+        }
+        if (formData.permisos.length > 0) {
+          updateData.rol_ids = formData.permisos;
+          hasChanges = true;
         }
 
-        // Call updateRol if rol changed
-        if (rolChanged) {
-          const result = await actualizarRol(dniNum, formData.rol);
-          roleUpdateSuccess = result !== null;
-
-          if (!roleUpdateSuccess) {
-            alert('Error al actualizar el rol del usuario');
-          }
+        if (!hasChanges) {
+          setFeedbackMessage({
+            type: 'error',
+            text: 'No hay cambios para guardar',
+          });
+          return;
         }
 
-        // Close modal only if at least one update was successful
-        if (updateSuccess || roleUpdateSuccess) {
-          setModalAbierto(false);
-          setUsuarioSeleccionado(null);
+        const result = await actualizarPorDni(dniNum, updateData);
+        if (result) {
+          setFeedbackMessage({
+            type: 'success',
+            text: 'Usuario actualizado correctamente',
+          });
+          setTimeout(() => {
+            setModalAbierto(false);
+            setUsuarioSeleccionado(null);
+          }, 1500);
+        } else {
+          setFeedbackMessage({
+            type: 'error',
+            text: 'Error al actualizar el usuario',
+          });
         }
       } catch (error) {
         console.error('Error updating user:', error);
-        alert('Error al actualizar el usuario');
+        setFeedbackMessage({
+          type: 'error',
+          text: `Error al actualizar el usuario: ${error instanceof Error ? error.message : 'Error desconocido'}`,
+        });
       }
     } else {
       // Create mode
       if (!formData.password) {
-        alert('La contraseña es requerida para crear un nuevo usuario');
+        setFeedbackMessage({
+          type: 'error',
+          text: 'La contraseña es requerida para crear un nuevo usuario',
+        });
         return;
       }
 
@@ -146,18 +198,68 @@ const UserFormModal: React.FC = () => {
 
       const result = await crearUsuario(createData);
       if (result) {
-        setModalAbierto(false);
-        setUsuarioSeleccionado(null);
+        setFeedbackMessage({
+          type: 'success',
+          text: 'Usuario creado correctamente',
+        });
+        setTimeout(() => {
+          setModalAbierto(false);
+          setUsuarioSeleccionado(null);
+        }, 1500);
+      } else {
+        setFeedbackMessage({
+          type: 'error',
+          text: 'Error al crear el usuario',
+        });
       }
     }
   };
 
+  const getPermissionLabel = (permission: ValidPermissions): string => {
+    const labels: Record<ValidPermissions, string> = {
+      'almacen-taller:read': 'Almacén Taller - Lectura',
+      'almacen-taller:write': 'Almacén Taller - Escritura',
+      'almacen-comun:read': 'Almacén Común - Lectura',
+      'almacen-comun:write': 'Almacén Común - Escritura',
+      'all:read': 'Todos - Lectura',
+      'all:write': 'Todos - Escritura',
+    };
+    return labels[permission] || permission;
+  };
+
+  const getRoleLabel = (rol: UserRole): string => {
+    const labels: Record<UserRole, string> = {
+      'user': 'Usuario',
+      'admin': 'Admin',
+      'superuser': 'Super usuario',
+    };
+    return labels[rol] || rol;
+  };
+
+  const availablePermissions = getAvailablePermissionsForRole();
+  const selectedPermissionsDetails = rolePermissionStructure.filter((item) =>
+    formData.permisos.includes(item.id)
+  );
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 overflow-y-auto">
+      <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full my-8">
         <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">
           {modoEdicion ? 'Editar Usuario' : 'Crear Nuevo Usuario'}
         </h2>
+
+        {/* Feedback Message */}
+        {feedbackMessage && (
+          <div
+            className={`mb-4 p-4 rounded-lg text-sm font-medium ${
+              feedbackMessage.type === 'success'
+                ? 'bg-green-100 text-green-800 border border-green-300'
+                : 'bg-red-100 text-red-800 border border-red-300'
+            }`}
+          >
+            {feedbackMessage.text}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           {/* DNI */}
@@ -255,26 +357,82 @@ const UserFormModal: React.FC = () => {
             </div>
           </div>
 
-          {/* Rol - Only show in edit mode */}
-          {modoEdicion && (
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Rol
-              </label>
-              <select
-                name="rol"
-                value={formData.rol}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-navbar-nav)] focus:border-transparent"
-              >
-                <option value="usuario">Usuario</option>
-                <option value="admin">Admin</option>
-                <option value="super-admin">Super Admin</option>
-              </select>
+          {/* Rol */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Rol
+            </label>
+            <select
+              name="rol"
+              value={formData.rol}
+              onChange={handleChange}
+              disabled={!modoEdicion}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-navbar-nav)] focus:border-transparent disabled:bg-gray-100"
+            >
+              <option value="user">Usuario</option>
+              <option value="admin">Admin</option>
+              <option value="superuser">Super usuario</option>
+            </select>
+            {modoEdicion && (
               <p className="text-xs text-gray-500 mt-1">
                 * Solo super-admins pueden crear otros admins
               </p>
-            </div>
+            )}
+          </div>
+
+          {/* Permisos - Multi-select (Only in edit mode) */}
+          {modoEdicion && (
+            <>
+              {!loadingStructure && (
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Permisos para {getRoleLabel(formData.rol)}
+                  </label>
+                  <div className="border border-gray-300 rounded-lg p-3 bg-gray-50 max-h-48 overflow-y-auto">
+                    {availablePermissions.length > 0 ? (
+                      <div className="space-y-2">
+                        {availablePermissions.map((permission) => (
+                          <label key={permission.id} className="flex items-center cursor-pointer">
+                            <input
+                              type="checkbox"
+                              checked={formData.permisos.includes(permission.id)}
+                              onChange={() => handlePermissionToggle(permission.id)}
+                              className="w-4 h-4 text-[#378AFE] rounded border-gray-300"
+                            />
+                            <span className="ml-2 text-sm text-gray-700">
+                              {permission.permisos.map((p) => getPermissionLabel(p)).join(', ')}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500">No hay permisos disponibles para este rol</p>
+                    )}
+                  </div>
+
+                  {/* Selected Permissions Badges */}
+                  {selectedPermissionsDetails.length > 0 && (
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {selectedPermissionsDetails.map((permission) => (
+                        <div
+                          key={permission.id}
+                          className="inline-flex items-center gap-2 px-3 py-1 bg-[#E3F2FD] text-[#0962DE] text-xs rounded-full border border-[#88BAFF]"
+                        >
+                          <span>{permission.permisos.map((p) => getPermissionLabel(p)).join(', ')}</span>
+                          <button
+                            type="button"
+                            onClick={() => handlePermissionToggle(permission.id)}
+                            className="ml-1 hover:opacity-70"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </>
           )}
 
           {/* Buttons */}
@@ -287,7 +445,7 @@ const UserFormModal: React.FC = () => {
                 setModalAbierto(false);
                 setUsuarioSeleccionado(null);
               }}
-              disabled={isLoading}
+              disabled={isLoading || loadingStructure}
               className="flex-1"
             >
               Cancelar
@@ -296,8 +454,8 @@ const UserFormModal: React.FC = () => {
               type="submit"
               variant="primary"
               size="md"
-              isLoading={isLoading}
-              disabled={isLoading}
+              isLoading={isLoading || loadingStructure}
+              disabled={isLoading || loadingStructure}
               className="flex-1"
             >
               {modoEdicion ? 'Guardar Cambios' : 'Crear Usuario'}

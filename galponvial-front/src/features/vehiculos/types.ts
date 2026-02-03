@@ -144,6 +144,7 @@ export interface VehiculosEnums {
   VehiculoStatus: string[];
   TipoVehiculo: string[];
   TipoIncidente: string[];
+  FallaIncidente: string[];
   StatusIncidente: string[];
   TipoServicio: string[];
   Sector: string[];

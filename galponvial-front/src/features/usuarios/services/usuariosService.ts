@@ -7,6 +7,7 @@ import type {
   CreateUserDto,
   UpdateUserDto,
   PaginatedResponse,
+  RolePermissionStructure,
 } from "../types";
 import type { ObjectServiceResponse } from "@/shared/types/common-types";
 
@@ -54,7 +55,7 @@ export const usuariosService = {
 
   updateRol: async (
     dni: number,
-    rol: "usuario" | "admin" | "super-admin",
+    rol: "user" | "admin" | "superuser",
   ): Promise<User> => {
     const { data: response } = await apiClient.patch(`/usuario/addRol/${dni}`, {
       rol,
@@ -123,5 +124,16 @@ export const usuariosService = {
   getPermissionsByModule: async (modulo: string): Promise<Permission[]> => {
     const { data } = await apiClient.get(`/permisos?modulo=${modulo}`);
     return data;
+  },
+
+  /**
+   * Get the structure of roles and their associated permissions
+   * Returns an array of role-permission combinations
+   */
+  getRolePermissionStructure: async (): Promise<RolePermissionStructure> => {
+    const { data } = await apiClient.get<ObjectServiceResponse<RolePermissionStructure>>(
+      "/usuario/roles/estructura"
+    );
+    return Array.isArray(data.data) ? data.data : [];
   },
 };
