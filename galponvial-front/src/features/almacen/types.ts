@@ -83,3 +83,10 @@ export interface Movimiento {
   motivo: string;
   detalle: string;
 }
+
+export interface SectorDto {
+  id: number;
+  nro_sector: number;
+  tipo: string;
+  descripcion: string;
+}

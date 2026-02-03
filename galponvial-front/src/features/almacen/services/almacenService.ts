@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/api';
-import type { CreateArticuloPayload, ArticuloResponse, ArticulosListResponse, Grupo, Movimiento, Articulo } from '../types';
+import type { CreateArticuloPayload, ArticuloResponse, ArticulosListResponse, Grupo, Movimiento, Articulo, SectorDto } from '../types';
 import { API_ENDPOINTS } from '@/services/apiEndpoints';
 
 const BASE_URL = '/almacen/articulos';
@@ -77,4 +77,26 @@ getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
     const { data } = await apiClient.get(GRUPOS_URL);
     return data.data || data;
   },
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  createMovimiento: async (payload: any) => {
+    const { data } = await apiClient.post(
+      API_ENDPOINTS.ALMACEN.CREATE_MOVIMIENTO,
+      payload
+    );
+    return data;
+},
+
+createGrupoArticulo(payload: {
+    nombre: string;
+    descripcion: string;
+    sector_id: number;
+  }) {
+    return apiClient.post(API_ENDPOINTS.ALMACEN.GRUPOS, payload);
+  },
+  getSectores(): Promise<SectorDto[]> {
+    return apiClient.get(API_ENDPOINTS.ALMACEN.SECTORES).then((res) => res.data);
+  },
+
+
 };

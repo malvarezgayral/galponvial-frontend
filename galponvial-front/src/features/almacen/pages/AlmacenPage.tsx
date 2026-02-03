@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState } from "react";
+import { CreateGrupoArticuloForm } from "../components/CreateGrupoArticuloForm";
 import { CreateArticuloForm } from '../components/CreateArticuloForm';
 import { VisualizarAlmacen } from '../components/VisualizarAlmacen';
 import { useAlmacenPermissions } from '../hooks/useAlmacenPermissions';
 
-type AlmacenView = 'administrar' | 'visualizar';
+type AlmacenView = "administrar" | "visualizar";
 
 /**
  * Almacén Page - Main warehouse management page
@@ -44,11 +45,11 @@ export default function AlmacenPage() {
             </button>
           )}
           <button
-            onClick={() => setCurrentView('visualizar')}
+            onClick={() => setCurrentView("visualizar")}
             className={`px-6 py-2 rounded-md font-medium transition-colors ${
-              currentView === 'visualizar'
-                ? 'bg-blue-600 text-white shadow'
-                : 'text-gray-700 hover:bg-gray-200'
+              currentView === "visualizar"
+                ? "bg-blue-600 text-white shadow"
+                : "text-gray-700 hover:bg-gray-200"
             }`}
           >
             Visualizar Almacén
@@ -58,10 +59,16 @@ export default function AlmacenPage() {
 
       {/* Content */}
       <div className="space-y-6">
-        {currentView === 'administrar' && canAdminister && (
-          <CreateArticuloForm onSuccess={handleArticuloCreated} />
+        {currentView === "administrar" && (
+          <div className="space-y-8">
+            <CreateArticuloForm onSuccess={handleArticuloCreated} />
+            <CreateGrupoArticuloForm />
+          </div>
         )}
-        {currentView === 'visualizar' && <VisualizarAlmacen key={refetchTrigger} />}
+
+        {currentView === "visualizar" && (
+          <VisualizarAlmacen key={refetchTrigger} />
+        )}
       </div>
     </div>
   );
