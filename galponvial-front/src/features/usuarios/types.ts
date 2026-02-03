@@ -17,7 +17,7 @@ export enum ValidPermissions {
 /**
  * Valid role names - Must match backend values
  */
-export type UserRole = 'user' | 'admin' | 'superuser';
+export type UserRole = 'user' | 'admin' | 'superuser' | 'super-admin' | 'superadmin';
 
 export interface User {
   dni: number;

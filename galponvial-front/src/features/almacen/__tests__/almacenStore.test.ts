@@ -1,5 +1,4 @@
 import { useAlmacenStore } from '../store';
-import { almacenService } from '../services/almacenService';
 import type { Articulo } from '../types';
 
 jest.mock('../services/almacenService');
