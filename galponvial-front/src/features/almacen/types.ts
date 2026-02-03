@@ -13,7 +13,7 @@ export interface Articulo {
   img?: string;
   unidad_tipo: 'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg';
   stock?: number; // Solo aplica para ciertos tipos de unidad
-  grupo_id?: number; // ID del grupo al que pertenece el artículo
+  grupo?: Grupo; // Objeto grupo al que pertenece el artículo
   fechaCreacion?: string;
   ultimaModificacion?: string;
 }

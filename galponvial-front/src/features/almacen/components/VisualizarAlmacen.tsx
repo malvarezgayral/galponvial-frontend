@@ -151,7 +151,7 @@ export const VisualizarAlmacen: React.FC = () => {
       </div>
     );
   }
-
+  console.log('articulos: ', articulos);
   return (
     <div className="space-y-6">
       {/* Filters Section */}

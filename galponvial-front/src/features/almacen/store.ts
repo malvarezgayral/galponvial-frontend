@@ -35,8 +35,8 @@ const applyFilters = (articulos: Articulo[], filters: AlmacenFilters): Articulo[
       return false;
     }
 
-    // Filter by grupo (Note: This would require grupo_id in Articulo type)
-    if (filters.grupo && articulo.grupo_id !== Number(filters.grupo)) {
+    // Filter by grupo
+    if (filters.grupo && articulo.grupo?.id !== Number(filters.grupo)) {
       return false;
     }
 
