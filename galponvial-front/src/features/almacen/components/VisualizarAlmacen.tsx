@@ -4,7 +4,7 @@ import { almacenService } from "../services/almacenService";
 import { useAlmacenStore } from "../store";
 import { ArticuloCard } from "./ArticuloCard";
 import { EditArticuloModal } from "./EditArticuloModal";
-import type { Articulo } from "../types";
+import type { Articulo, Grupo } from "../types";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { ROUTES } from "@/app/routes";
 
@@ -16,11 +16,12 @@ const PAGE_SIZE = 6;
 export const VisualizarAlmacen: React.FC = () => {
   const navigate = useNavigate();
   // Traemos removeArticulo del store
-  const { setArticulos, removeArticulo } = useAlmacenStore(); 
+  const { setArticulos, setGrupos, removeArticulo, articulos, filteredArticulos, grupos, filters, setFilter, resetFilters } = useAlmacenStore(); 
   
-  const [articulos, setLocalArticulos] = useState<Articulo[]>([]);
+  const [localArticulos, setLocalArticulos] = useState<Articulo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+  const [gruposLoading, setGruposLoading] = useState(false);
   
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -36,6 +37,19 @@ export const VisualizarAlmacen: React.FC = () => {
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+
+  // Cargar grupos
+  const fetchGrupos = async () => {
+    try {
+      setGruposLoading(true);
+      const data = await almacenService.getGrupos();
+      setGrupos(data);
+    } catch (err) {
+      console.error("Error fetching grupos:", err);
+    } finally {
+      setGruposLoading(false);
+    }
+  };
 
   // Cargar artículos
   const fetchArticulos = async () => {
@@ -60,7 +74,8 @@ export const VisualizarAlmacen: React.FC = () => {
 
   useEffect(() => {
     fetchArticulos();
-  }, [currentPage, setArticulos]);
+    fetchGrupos();
+  }, [currentPage, setArticulos, setGrupos]);
 
   // --- Lógica de Edición ---
   const handleEdit = (articulo: Articulo) => {
@@ -136,9 +151,96 @@ export const VisualizarAlmacen: React.FC = () => {
       </div>
     );
   }
-
+  console.log('articulos: ', articulos);
   return (
     <div className="space-y-6">
+      {/* Filters Section */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <h2 className="text-lg font-bold text-gray-900 mb-4">Filtros</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {/* Search by name, modelo or codigo */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Buscar por nombre, modelo o código
+            </label>
+            <input
+              type="text"
+              placeholder="Buscar..."
+              value={filters.searchTerm}
+              onChange={(e) => setFilter("searchTerm", e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+
+          {/* Filter by unidad_tipo */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tipo de unidad
+            </label>
+            <select
+              value={filters.unidad_tipo || ""}
+              onChange={(e) => setFilter("unidad_tipo", e.target.value || null)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="">Todos los tipos</option>
+              <option value="pieza">Pieza</option>
+              <option value="caja">Caja</option>
+              <option value="bulto">Bulto</option>
+              <option value="metro">Metro</option>
+              <option value="litro">Litro</option>
+              <option value="kg">Kilogramo</option>
+            </select>
+          </div>
+
+          {/* Filter by grupo */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Grupo
+            </label>
+            <select
+              value={filters.grupo || ""}
+              onChange={(e) => setFilter("grupo", e.target.value || null)}
+              disabled={gruposLoading}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+            >
+              <option value="">Todos los grupos</option>
+              {grupos.map((grupo) => (
+                <option key={grupo.id} value={grupo.id}>
+                  {grupo.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Filter by stock range */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Stock
+            </label>
+            <input
+              type="number"
+              placeholder="Mín. stock"
+              min="0"
+              value={filters.stockRange?.min || ""}
+              onChange={(e) => {
+                const minValue = e.target.value ? Number(e.target.value) : 0;
+                const maxValue = filters.stockRange?.max || 999999;
+                setFilter("stockRange", { min: minValue, max: maxValue });
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+        </div>
+
+        {/* Reset filters button */}
+        <button
+          onClick={resetFilters}
+          className="mt-4 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+        >
+          Limpiar filtros
+        </button>
+      </div>
       {/* Loading state */}
       {loading && currentPage === 1 && (
         <div className="flex justify-center items-center py-12">
@@ -147,10 +249,19 @@ export const VisualizarAlmacen: React.FC = () => {
         </div>
       )}
 
+      {/* Empty state */}
+      {!loading && filteredArticulos.length === 0 && articulos.length > 0 && (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg">
+            No hay artículos que coincidan con los filtros
+          </p>
+        </div>
+      )}
+
       {/* Cards grid */}
-      {!loading && totalItems > 0 && (
+      {!loading && filteredArticulos.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {articulos.map((articulo) => (
+          {filteredArticulos.map((articulo) => (
             <ArticuloCard
               key={articulo.cod || articulo.cod} // Usar ID único
               articulo={articulo}
@@ -162,50 +273,10 @@ export const VisualizarAlmacen: React.FC = () => {
         </div>
       )}
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center gap-2 mt-8">
-          <button
-            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
-            disabled={currentPage === 1 || loading}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            ← Anterior
-          </button>
-
-          <div className="flex items-center gap-1">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                onClick={() => setCurrentPage(page)}
-                disabled={loading}
-                className={`w-10 h-10 rounded-lg font-medium transition-colors ${
-                  currentPage === page
-                    ? "bg-blue-600 text-white"
-                    : "border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-                }`}
-              >
-                {page}
-              </button>
-            ))}
-          </div>
-
-          <button
-            onClick={() =>
-              setCurrentPage((prev) => Math.min(totalPages, prev + 1))
-            }
-            disabled={currentPage === totalPages || loading}
-            className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Siguiente →
-          </button>
-        </div>
-      )}
-
-      {/* Page info */}
-      {totalPages > 0 && (
-        <div className="text-center text-sm text-gray-600">
-          Página {currentPage} de {totalPages} ({totalItems} artículos totales)
+      {/* Results count */}
+      {!loading && filteredArticulos.length > 0 && (
+        <div className="text-sm text-gray-600 text-center mt-6">
+          Mostrando {filteredArticulos.length} de {articulos.length} artículos
         </div>
       )}
 

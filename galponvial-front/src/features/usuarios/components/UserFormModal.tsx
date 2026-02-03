@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useUsuariosStore } from '../store';
+import { useAppStore } from '@/app/stores/appStore';
 import { Button } from '@/shared/ui/Button';
 import type { CreateUserDto, UpdateUserDto, ValidPermissions, RolePermissionItem } from '../types';
 import type { UserRole } from '../types';
 
 const UserFormModal: React.FC = () => {
+  const { user } = useAppStore();
   const {
     usuarioSeleccionado,
     modoEdicion,
@@ -17,6 +19,36 @@ const UserFormModal: React.FC = () => {
     actualizarPorDni,
     fetchRolePermissionStructure,
   } = useUsuariosStore();
+
+  /**
+   * Helper function to check if current user is super-admin
+   */
+  const isSuperAdmin = (): boolean => {
+    if (!user || !("rol" in user)) return false;
+    // Verificar ambas variaciones: "super-admin" y "superadmin"
+    return user.rol === "super-admin" || user.rol === "superadmin";
+  };
+
+  /**
+   * Get available roles for the current user to assign to others
+   * Super-admin can assign all roles
+   * Admin can only assign user and superuser roles
+   */
+  const getAvailableRoles = (): { value: UserRole; label: string }[] => {
+    if (isSuperAdmin()) {
+      return [
+        { value: 'user', label: 'Usuario' },
+        { value: 'admin', label: 'Admin' },
+        { value: 'superuser', label: 'Super usuario' },
+        { value: 'super-admin', label: 'Super Admin' },
+      ];
+    }
+    // Admin can only assign user and superuser
+    return [
+      { value: 'user', label: 'Usuario' },
+      { value: 'superuser', label: 'Super usuario' },
+    ];
+  };
 
   const [formData, setFormData] = useState<{
     dni: string;
@@ -232,6 +264,8 @@ const UserFormModal: React.FC = () => {
       'user': 'Usuario',
       'admin': 'Admin',
       'superuser': 'Super usuario',
+      'super-admin': 'Super Admin',
+      'superadmin': 'Super Admin',
     };
     return labels[rol] || rol;
   };
@@ -369,13 +403,20 @@ const UserFormModal: React.FC = () => {
               disabled={!modoEdicion}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-navbar-nav)] focus:border-transparent disabled:bg-gray-100"
             >
-              <option value="user">Usuario</option>
-              <option value="admin">Admin</option>
-              <option value="superuser">Super usuario</option>
+              {getAvailableRoles().map((role) => (
+                <option key={role.value} value={role.value}>
+                  {role.label}
+                </option>
+              ))}
             </select>
-            {modoEdicion && (
+            {modoEdicion && !isSuperAdmin() && (
               <p className="text-xs text-gray-500 mt-1">
-                * Solo super-admins pueden crear otros admins
+                * Como admin, solo puedes asignar roles de Usuario o Super usuario
+              </p>
+            )}
+            {modoEdicion && isSuperAdmin() && (
+              <p className="text-xs text-gray-500 mt-1">
+                * Como super-admin, puedes asignar cualquier rol
               </p>
             )}
           </div>

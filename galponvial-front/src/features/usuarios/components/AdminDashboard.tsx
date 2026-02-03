@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useUsuariosStore } from "../store";
+import { useAppStore } from "@/app/stores/appStore";
 import { usuariosService } from "../services/usuariosService";
 import { Button } from "@/shared/ui/Button";
 import { Table } from "@/shared/ui/Table";
@@ -9,6 +10,7 @@ import type { User } from "../types";
 import type { ObjectServiceResponse } from "@/shared/types/common-types";
 
 const AdminDashboard: React.FC = () => {
+  const { user } = useAppStore();
   const {
     usuarios,
     usuariosTotal,
@@ -22,6 +24,31 @@ const AdminDashboard: React.FC = () => {
     setUsuarioSeleccionado,
     fetchUsuarios,
   } = useUsuariosStore();
+
+  /**
+   * Helper function to check if current user is super-admin
+   */
+  const isSuperAdmin = (): boolean => {
+    if (!user || !("rol" in user)) return false;
+    // Verificar ambas variaciones: "super-admin" y "superadmin"
+    return user.rol === "super-admin" || user.rol === "superadmin";
+  };
+
+  /**
+   * Helper function to check if a user can be edited/managed by the current user
+   * Super-admin can manage everyone
+   * Admin can only manage users who are not admin or super-admin
+   */
+  const canManageUser = (targetUser: any): boolean => {
+    if (isSuperAdmin()) return true;
+    // Admin can only manage users, not other admins or super-admins
+    // Verificar ambas variaciones de super-admin
+    const usuarioRoles = targetUser.usuarioRoles;
+    const isAdminOrSuperAdmin = usuarioRoles.find(
+      (ur: any) => ur.rol.rol === "superadmin" || ur.rol.rol === "admin",
+    );
+    return !isAdminOrSuperAdmin;
+  };
 
   const [confirmModal, setConfirmModal] = useState<{
     visible: boolean;
@@ -114,10 +141,8 @@ const AdminDashboard: React.FC = () => {
 
     try {
       const response: ObjectServiceResponse<{
-        revoked: boolean
-      }> = await usuariosService.logoutUser(
-        logoutModal.usuario.email,
-      );
+        revoked: boolean;
+      }> = await usuariosService.logoutUser(logoutModal.usuario.email);
       if (response.success) {
         setLogoutModal((prev) => ({
           ...prev,
@@ -215,6 +240,11 @@ const AdminDashboard: React.FC = () => {
 
   const columns = [
     {
+      key: "dni" as const,
+      label: "DNI",
+      render: (value: number) => String(value),
+    },
+    {
       key: "nombre" as const,
       label: "Nombre",
       render: (_value: string, row: User) => `${row.nombre} ${row.apellido}`,
@@ -226,42 +256,69 @@ const AdminDashboard: React.FC = () => {
     {
       key: "isActive" as const,
       label: "Estado",
-      render: (value: boolean, row: User) => (
-        <button
-          onClick={() => handleToggleStatus(row)}
-          className="px-3 py-1 text-sm font-medium rounded-full cursor-pointer transition-all duration-200 hover:opacity-80"
-          style={{
-            backgroundColor: value ? "#dcfce7" : "#fee2e2",
-            color: value ? "#166534" : "#991b1b",
-          }}
-        >
-          {value ? "Activo" : "Inactivo"}
-        </button>
-      ),
+      render: (value: boolean, row: any) => {
+        // No mostrar estado para super-admin (siempre activo)
+        // Verificar ambas variaciones de super-admin
+        const usuarioRoles = row.usuarioRoles;
+        const superAdminFound = usuarioRoles.find(
+          (ur: any) => ur.rol.rol === "superadmin",
+        );
+
+        if (superAdminFound) {
+          return <span className="text-gray-400 text-sm"></span>;
+        }
+
+        const canToggle = canManageUser(row);
+        return (
+          <button
+            onClick={() => canToggle && handleToggleStatus(row)}
+            disabled={!canToggle}
+            className={`px-3 py-1 text-sm font-medium rounded-full cursor-pointer transition-all duration-200 ${
+              canToggle ? "hover:opacity-80" : "opacity-50 cursor-not-allowed"
+            }`}
+            style={{
+              backgroundColor: value ? "#dcfce7" : "#fee2e2",
+              color: value ? "#166534" : "#991b1b",
+            }}
+            title={
+              canToggle ? "" : "No tienes permisos para cambiar este estado"
+            }
+          >
+            {value ? "Activo" : "Inactivo"}
+          </button>
+        );
+      },
     },
     {
       key: "acciones" as const,
       label: "Acciones",
-      render: (_value: unknown, row: User) => (
-        <div className="flex gap-2">
-          <button
-            onClick={() => handleEditarUsuario(row)}
-            className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors duration-200"
-            title="Editar usuario"
-            aria-label="Editar usuario"
-          >
-            ✏️
-          </button>
-          <button
-            onClick={() => handleLogoutUser(row)}
-            className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-orange-100 hover:bg-orange-200 text-orange-600 transition-colors duration-200"
-            title="Cerrar sesión del usuario"
-            aria-label="Cerrar sesión"
-          >
-            🚪
-          </button>
-        </div>
-      ),
+      render: (_value: unknown, row: any) => {
+        const canManage = canManageUser(row);
+        return (
+          <div className="flex gap-2">
+            {canManage && (
+              <>
+                <button
+                  onClick={() => handleEditarUsuario(row)}
+                  className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-blue-100 hover:bg-blue-200 text-blue-600 transition-colors duration-200"
+                  title="Editar usuario"
+                  aria-label="Editar usuario"
+                >
+                  ✏️
+                </button>
+                <button
+                  onClick={() => handleLogoutUser(row)}
+                  className="inline-flex items-center justify-center w-9 h-9 rounded-lg bg-orange-100 hover:bg-orange-200 text-orange-600 transition-colors duration-200"
+                  title="Cerrar sesión del usuario"
+                  aria-label="Cerrar sesión"
+                >
+                  🚪
+                </button>
+              </>
+            )}
+          </div>
+        );
+      },
     },
   ];
 

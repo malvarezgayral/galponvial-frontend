@@ -20,7 +20,7 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
   }
 
   // User doesn't have admin role - redirect to home
-  if (user.rol !== 'admin' && user.rol !== 'super-admin') {
+  if (user.rol !== 'admin' && user.rol !== 'super-admin' && user.rol !== 'superadmin') {
     return <Navigate to="/" replace />;
   }
 
