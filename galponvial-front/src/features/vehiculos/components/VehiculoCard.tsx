@@ -1,6 +1,6 @@
-import type { Vehiculo } from '../types';
-import { Button } from '@/shared/ui/Button';
-import { useAppStore } from '@/app/stores/appStore';
+import type { Vehiculo } from "../types";
+import { Button } from "@/shared/ui/Button";
+import { useAppStore } from "@/app/stores/appStore";
 
 interface VehiculoCardProps {
   vehiculo: Vehiculo;
@@ -21,10 +21,16 @@ export const VehiculoCard: React.FC<VehiculoCardProps> = ({
 }) => {
   const { user } = useAppStore();
   // Check if user can edit (superuser or greater)
-  const canEdit = user && 'rol' in user && (user.rol === 'super-admin' || user.rol === 'admin');
+  const canEdit =
+    user &&
+    "rol" in user &&
+    (user.rol === "super-admin" || user.rol === "admin");
 
   // Check if user can delete (admin or superadmin)
-  const canDelete = user && 'rol' in user && (user.rol === 'admin' || user.rol === 'super-admin');
+  const canDelete =
+    user &&
+    "rol" in user &&
+    (user.rol === "admin" || user.rol === "super-admin");
 
   return (
     <div className="relative bg-[#1E1E1E] rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">
@@ -33,31 +39,30 @@ export const VehiculoCard: React.FC<VehiculoCardProps> = ({
         {/* Status badge */}
         <div
           className={`px-3 py-1 rounded-full text-xs font-semibold ${
-            vehiculo.status === 'disponible'
-              ? 'bg-[#80DD4B] text-gray-900'
-              : vehiculo.status === 'mantenimiento'
-                ? 'bg-yellow-500 text-gray-900'
-                : vehiculo.status === 'en_uso'
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-red-500 text-white'
+            vehiculo.status === "disponible"
+              ? "bg-[#80DD4B] text-gray-900"
+              : vehiculo.status === "mantenimiento"
+                ? "bg-yellow-500 text-gray-900"
+                : vehiculo.status === "en_uso"
+                  ? "bg-blue-500 text-white"
+                  : "bg-red-500 text-white"
           }`}
         >
-          {vehiculo.status === 'disponible' && '✓'}
-          {vehiculo.status === 'mantenimiento' && '⚙'}
-          {vehiculo.status === 'en_uso' && '→'}
-          {vehiculo.status === 'retirado' && '✕'}
+          {vehiculo.status === "disponible" && "✓"}
+          {vehiculo.status === "mantenimiento" && "⚙"}
+          {vehiculo.status === "en_uso" && "→"}
+          {vehiculo.status === "retirado" && "✕"}
         </div>
       </div>
 
       {/* Vehicle info */}
       <div className="mb-4">
-        <h3 className="text-lg font-bold text-white mb-2">Vehículo</h3>
+        <h3 className="text-lg font-bold text-white mb-2">
+          Vehículo {vehiculo.nombre}
+        </h3>
         <div className="space-y-2 text-sm text-gray-300">
           <p>
             <span className="text-gray-400">Código:</span> {vehiculo.codigo}
-          </p>
-          <p>
-            <span className="text-gray-400">Nombre:</span> {vehiculo.nombre}
           </p>
           <p>
             <span className="text-gray-400">Marca:</span> {vehiculo.marca}
