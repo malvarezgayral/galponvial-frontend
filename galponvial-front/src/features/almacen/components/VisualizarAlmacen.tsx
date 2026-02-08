@@ -13,7 +13,8 @@ import { ROUTES } from "@/app/routes";
 import { GrupoCard } from "./GrupoCard";
 import { EditGrupoModal } from "./EditGrupoModal";
 
-const PAGE_SIZE = 6;
+const ARTICLES_PER_PAGE = 6;
+const GROUPS_PER_PAGE = 4; 
 
 export const VisualizarAlmacen: React.FC = () => {
   const navigate = useNavigate();
@@ -24,24 +25,32 @@ export const VisualizarAlmacen: React.FC = () => {
     removeArticulo, 
     removeGrupo, 
     articulos, 
-    filteredArticulos, 
+    filteredArticulos,
     grupos, 
     filters, 
     setFilter, 
     resetFilters 
   } = useAlmacenStore();
   
-  const [localArticulos, setLocalArticulos] = useState<Articulo[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [gruposLoading, setGruposLoading] = useState(false);
   
-  // Paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   
-  // NUEVO: Calculamos el total de páginas
-  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+  const indexOfLastArticulo = currentPage * ARTICLES_PER_PAGE;
+  const indexOfFirstArticulo = indexOfLastArticulo - ARTICLES_PER_PAGE;
+  const currentRenderedArticulos = filteredArticulos.slice(indexOfFirstArticulo, indexOfLastArticulo);
+  
+  const totalPages = Math.ceil(filteredArticulos.length / ARTICLES_PER_PAGE);
+
+  const [currentGrupoPage, setCurrentGrupoPage] = useState(1);
+  
+  const indexOfLastGrupo = currentGrupoPage * GROUPS_PER_PAGE;
+  const indexOfFirstGrupo = indexOfLastGrupo - GROUPS_PER_PAGE;
+  const currentRenderedGrupos = grupos.slice(indexOfFirstGrupo, indexOfLastGrupo);
+  
+  const totalGrupoPages = Math.ceil(grupos.length / GROUPS_PER_PAGE);
 
   // Modales Artículos
   const [editingArticulo, setEditingArticulo] = useState<Articulo | null>(null);
@@ -57,54 +66,55 @@ export const VisualizarAlmacen: React.FC = () => {
   const [showDeleteGrupoModal, setShowDeleteGrupoModal] = useState(false);
   const [deleteGrupoLoading, setDeleteGrupoLoading] = useState(false);
 
-  // Cargar grupos
-  const fetchGrupos = async () => {
-    try {
-      setGruposLoading(true);
-      const data = await almacenService.getGrupos();
-      setGrupos(data);
-    } catch (err) {
-      console.error("Error fetching grupos:", err);
-    } finally {
-      setGruposLoading(false);
-    }
-  };
-
-  // Cargar artículos
-  const fetchArticulos = async () => {
-    try {
-      setLoading(true);
-      const response = await almacenService.getArticulos(currentPage, PAGE_SIZE);
-      setLocalArticulos(response.data);
-      setArticulos(response.data);
-      setTotalItems(response.total);
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err : new Error("Error al cargar artículos");
-      setError(errorMsg);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, articulos]); 
 
   useEffect(() => {
-    fetchArticulos();
-    fetchGrupos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage]);
+    const fetchAllData = async () => {
+        setLoading(true);
+        setGruposLoading(true);
+        try {
+            const [articulosData, gruposData] = await Promise.all([
+                almacenService.getArticulos(1, 10000), 
+                almacenService.getGrupos()
+            ]);
 
+            setArticulos(articulosData.data || articulosData); 
+            setGrupos(gruposData);
+        } catch (err) {
+            console.error(err);
+            setError(err instanceof Error ? err : new Error("Error cargando datos"));
+        } finally {
+            setLoading(false);
+            setGruposLoading(false);
+        }
+    };
+
+    fetchAllData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Handlers Paginación ARTÍCULOS
   const handlePrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prev) => prev - 1);
-    }
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
   };
 
   const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1);
-    }
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
-  // Handlers Artículos
+  // Handlers Paginación GRUPOS
+  const handlePrevGrupoPage = () => {
+    if (currentGrupoPage > 1) setCurrentGrupoPage((prev) => prev - 1);
+  };
+
+  const handleNextGrupoPage = () => {
+    if (currentGrupoPage < totalGrupoPages) setCurrentGrupoPage((prev) => prev + 1);
+  };
+
+
+  // Handlers Acciones
   const handleEdit = (articulo: Articulo) => {
     setEditingArticulo(articulo);
     setShowEditModal(true);
@@ -115,8 +125,9 @@ export const VisualizarAlmacen: React.FC = () => {
     setEditingArticulo(null);
   };
 
-  const handleEditSuccess = () => {
-    void fetchArticulos(); 
+  const handleEditSuccess = async () => {
+     const res = await almacenService.getArticulos(1, 10000);
+     setArticulos(res.data || res);
   };
 
   const handleDeleteClick = (articulo: Articulo) => {
@@ -129,11 +140,8 @@ export const VisualizarAlmacen: React.FC = () => {
     setDeleteLoading(true);
     try {
       await removeArticulo(Number(deletingArticulo.cod));
-      setLocalArticulos((prev) => prev.filter(a => a.cod !== deletingArticulo.cod));
-      setTotalItems((prev) => prev - 1);
       setShowDeleteModal(false);
       setDeletingArticulo(null);
-      if (articulos.length === 1 && currentPage > 1) setCurrentPage(currentPage - 1);
     } catch (err) {
       alert("Hubo un error al eliminar el artículo");
     } finally {
@@ -151,8 +159,9 @@ export const VisualizarAlmacen: React.FC = () => {
     setShowEditGrupoModal(true);
   };
 
-  const handleGrupoSuccess = () => {
-    fetchGrupos(); 
+  const handleGrupoSuccess = async () => {
+    const data = await almacenService.getGrupos();
+    setGrupos(data);
   };
 
   const handleDeleteGrupoClick = (grupo: Grupo) => {
@@ -260,16 +269,16 @@ export const VisualizarAlmacen: React.FC = () => {
         </div>
 
         {/* Content Artículos */}
-        {loading && currentPage === 1 ? (
+        {loading ? (
              <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>
         ) : filteredArticulos.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-                <p className="text-gray-500">No se encontraron artículos.</p>
+                <p className="text-gray-500">No se encontraron artículos con esos filtros.</p>
             </div>
         ) : (
             <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredArticulos.map((articulo) => (
+                {currentRenderedArticulos.map((articulo) => (
                     <ArticuloCard
                     key={articulo.cod}
                     articulo={articulo}
@@ -280,43 +289,46 @@ export const VisualizarAlmacen: React.FC = () => {
                 ))}
                 </div>
 
-                <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-6">
-                    <div className="text-sm text-gray-500">
-                         Mostrando {filteredArticulos.length} de {totalItems} artículos (Página {currentPage})
-                    </div>
-                    
-                    <div className="flex gap-2">
-                        <button
-                            onClick={handlePrevPage}
-                            disabled={currentPage === 1}
-                            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
-                                ${currentPage === 1 
-                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                                }`}
-                        >
-                            Anterior
-                        </button>
-                        
-                        <div className="hidden sm:flex items-center px-2">
-                            <span className="text-sm font-medium text-gray-700">
-                                {currentPage} <span className="text-gray-400">/</span> {totalPages}
-                            </span>
+                {/* BARRA DE PAGINACIÓN ARTÍCULOS */}
+                {totalPages > 1 && (
+                    <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-6">
+                        <div className="text-sm text-gray-500">
+                            Mostrando {indexOfFirstArticulo + 1} - {Math.min(indexOfLastArticulo, filteredArticulos.length)} de {filteredArticulos.length} resultados
                         </div>
+                        
+                        <div className="flex gap-2">
+                            <button
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 1}
+                                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
+                                    ${currentPage === 1 
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                    }`}
+                            >
+                                Anterior
+                            </button>
+                            
+                            <div className="hidden sm:flex items-center px-2">
+                                <span className="text-sm font-medium text-gray-700">
+                                    {currentPage} <span className="text-gray-400">/</span> {totalPages}
+                                </span>
+                            </div>
 
-                        <button
-                            onClick={handleNextPage}
-                            disabled={currentPage >= totalPages}
-                            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
-                                ${currentPage >= totalPages 
-                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
-                                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                                }`}
-                        >
-                            Siguiente
-                        </button>
+                            <button
+                                onClick={handleNextPage}
+                                disabled={currentPage >= totalPages}
+                                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
+                                    ${currentPage >= totalPages 
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                    }`}
+                            >
+                                Siguiente
+                            </button>
+                        </div>
                     </div>
-                </div>
+                )}
             </>
         )}
       </div>
@@ -335,17 +347,48 @@ export const VisualizarAlmacen: React.FC = () => {
         ) : grupos.length === 0 ? (
             <div className="text-center py-8 bg-gray-50 rounded border border-dashed">No hay grupos definidos.</div>
         ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {grupos.map(grupo => (
-                    <GrupoCard 
-                        key={grupo.id} 
-                        grupo={grupo} 
-                        onEdit={handleEditGrupo}
-                        onDelete={handleDeleteGrupoClick}
-                        onViewDetails={handleViewGrupoDetails} 
-                    />
-                ))}
-            </div>
+            <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {currentRenderedGrupos.map(grupo => (
+                        <GrupoCard 
+                            key={grupo.id} 
+                            grupo={grupo} 
+                            onEdit={handleEditGrupo}
+                            onDelete={handleDeleteGrupoClick}
+                            onViewDetails={handleViewGrupoDetails} 
+                        />
+                    ))}
+                </div>
+
+                 {/* BARRA DE PAGINACIÓN GRUPOS */}
+                 {totalGrupoPages > 1 && (
+                    <div className="mt-6 flex items-center justify-end border-t border-gray-100 pt-4 gap-2">
+                            <button
+                                onClick={handlePrevGrupoPage}
+                                disabled={currentGrupoPage === 1}
+                                className={`px-3 py-1 text-sm rounded transition-colors
+                                    ${currentGrupoPage === 1 
+                                        ? 'text-gray-300 cursor-not-allowed' 
+                                        : 'text-indigo-600 hover:bg-indigo-50'
+                                    }`}
+                            >
+                                Anterior
+                            </button>
+                            <span className="text-sm text-gray-500">{currentGrupoPage} / {totalGrupoPages}</span>
+                            <button
+                                onClick={handleNextGrupoPage}
+                                disabled={currentGrupoPage >= totalGrupoPages}
+                                className={`px-3 py-1 text-sm rounded transition-colors
+                                    ${currentGrupoPage >= totalGrupoPages 
+                                        ? 'text-gray-300 cursor-not-allowed' 
+                                        : 'text-indigo-600 hover:bg-indigo-50'
+                                    }`}
+                            >
+                                Siguiente
+                            </button>
+                    </div>
+                )}
+            </>
         )}
       </div>
 
