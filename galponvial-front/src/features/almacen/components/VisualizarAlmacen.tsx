@@ -8,7 +8,7 @@ import { ArticuloCard } from "./ArticuloCard";
 import { EditArticuloModal } from "./EditArticuloModal";
 import type { Articulo, Grupo } from "../types";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
-import { ROUTES } from "@/app/routes"; // <--- CHEQUEÁ QUE ESTA RUTA SEA CORRECTA
+import { ROUTES } from "@/app/routes"; 
 
 import { GrupoCard } from "./GrupoCard";
 import { EditGrupoModal } from "./EditGrupoModal";
@@ -40,6 +40,9 @@ export const VisualizarAlmacen: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   
+  // NUEVO: Calculamos el total de páginas
+  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
+
   // Modales Artículos
   const [editingArticulo, setEditingArticulo] = useState<Articulo | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -50,7 +53,6 @@ export const VisualizarAlmacen: React.FC = () => {
   // Modales Grupos
   const [editingGrupo, setEditingGrupo] = useState<Grupo | null>(null);
   const [showEditGrupoModal, setShowEditGrupoModal] = useState(false);
-  
   const [deletingGrupo, setDeletingGrupo] = useState<Grupo | null>(null);
   const [showDeleteGrupoModal, setShowDeleteGrupoModal] = useState(false);
   const [deleteGrupoLoading, setDeleteGrupoLoading] = useState(false);
@@ -87,7 +89,20 @@ export const VisualizarAlmacen: React.FC = () => {
   useEffect(() => {
     fetchArticulos();
     fetchGrupos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage((prev) => prev - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  };
 
   // Handlers Artículos
   const handleEdit = (articulo: Articulo) => {
@@ -159,9 +174,8 @@ export const VisualizarAlmacen: React.FC = () => {
     }
   };
 
-  // ESTA ES LA FUNCIÓN CLAVE
   const handleViewGrupoDetails = (grupo: Grupo) => {
-    if (!grupo || !grupo.id) return; // Protección extra
+    if (!grupo || !grupo.id) return; 
     navigate(ROUTES.grupoDetalles(grupo.id)); 
   };
 
@@ -208,7 +222,7 @@ export const VisualizarAlmacen: React.FC = () => {
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
                 <option value="">Todos</option>
-                {['pieza','caja','bulto','metro','litro','kg'].map(t => <option key={t} value={t}>{t}</option>)}
+                {['pieza', 'caja', 'kilogramo', 'metro', 'litro', 'unidad',  'volumen',  'distancia', 'paquete'].map(t => <option key={t} value={t}>{t}</option>)}
             </select>
             </div>
             {/* Grupo Filter */}
@@ -265,8 +279,43 @@ export const VisualizarAlmacen: React.FC = () => {
                     />
                 ))}
                 </div>
-                <div className="text-sm text-gray-500 text-center mt-6">
-                    Viendo {filteredArticulos.length} artículos
+
+                <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-6">
+                    <div className="text-sm text-gray-500">
+                         Mostrando {filteredArticulos.length} de {totalItems} artículos (Página {currentPage})
+                    </div>
+                    
+                    <div className="flex gap-2">
+                        <button
+                            onClick={handlePrevPage}
+                            disabled={currentPage === 1}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
+                                ${currentPage === 1 
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                }`}
+                        >
+                            Anterior
+                        </button>
+                        
+                        <div className="hidden sm:flex items-center px-2">
+                            <span className="text-sm font-medium text-gray-700">
+                                {currentPage} <span className="text-gray-400">/</span> {totalPages}
+                            </span>
+                        </div>
+
+                        <button
+                            onClick={handleNextPage}
+                            disabled={currentPage >= totalPages}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
+                                ${currentPage >= totalPages 
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                }`}
+                        >
+                            Siguiente
+                        </button>
+                    </div>
                 </div>
             </>
         )}
@@ -288,7 +337,6 @@ export const VisualizarAlmacen: React.FC = () => {
         ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {grupos.map(grupo => (
-                    // ACA ESTA EL TEMA: SI ESTA PROPIEDAD onViewDetails FALTA, EXPLOTA.
                     <GrupoCard 
                         key={grupo.id} 
                         grupo={grupo} 

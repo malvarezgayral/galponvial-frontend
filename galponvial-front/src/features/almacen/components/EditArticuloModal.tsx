@@ -94,10 +94,13 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
       switch (tipo) {
         case 'pieza': return 1;
         case 'caja': return 2;
-        case 'bulto': return 3;
+        case 'paquete': return 3;
         case 'metro': return 4;
         case 'litro': return 5;
-        case 'kg': return 6;
+        case 'kilogramo': return 6;
+        case 'unidad': return 1;
+        case 'distancia': return 2;
+        case 'volumen': return 2;
         default: throw new Error('Unidad no válida');
       }
     };
