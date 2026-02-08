@@ -15,6 +15,7 @@ import RecordatorioPage from "../features/servicios/pages/RecordatorioPage";
 import HomePage from "../features/home/pages/HomePage";
 import UsuariosPage from "../features/usuarios/pages/UsuariosPage";
 import LoginPage from "../features/auth/pages/LoginPage";
+import GrupoDetallesPage from "@/features/almacen/pages/GrupoDetallesPage";
 
 // Placeholder pages for routes without implementation yet
 const AuditoriaPage = () => <h1 className="text-3xl font-bold">Auditoría</h1>;
@@ -105,6 +106,14 @@ export const router = createBrowserRouter([
           <AdminProtectedRoute>
             <UsuariosPage />
           </AdminProtectedRoute>
+        ),
+      },
+      {
+        path: '/almacen/grupos/:id',
+        element: (
+          <ProtectedRoute>
+            <GrupoDetallesPage />
+          </ProtectedRoute>
         ),
       },
       { path: ROUTES.auditoria, element: <AuditoriaPage /> },

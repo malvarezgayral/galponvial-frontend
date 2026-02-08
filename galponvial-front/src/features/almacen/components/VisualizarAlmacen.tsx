@@ -8,7 +8,7 @@ import { ArticuloCard } from "./ArticuloCard";
 import { EditArticuloModal } from "./EditArticuloModal";
 import type { Articulo, Grupo } from "../types";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
-import { ROUTES } from "@/app/routes";
+import { ROUTES } from "@/app/routes"; // <--- CHEQUEÁ QUE ESTA RUTA SEA CORRECTA
 
 import { GrupoCard } from "./GrupoCard";
 import { EditGrupoModal } from "./EditGrupoModal";
@@ -17,7 +17,7 @@ const PAGE_SIZE = 6;
 
 export const VisualizarAlmacen: React.FC = () => {
   const navigate = useNavigate();
-  // Store
+  
   const { 
     setArticulos, 
     setGrupos, 
@@ -36,29 +36,24 @@ export const VisualizarAlmacen: React.FC = () => {
   const [error, setError] = useState<Error | null>(null);
   const [gruposLoading, setGruposLoading] = useState(false);
   
-  // Paginación Artículos
+  // Paginación
   const [currentPage, setCurrentPage] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
   
-  // --- Estados Modales Artículos ---
+  // Modales Artículos
   const [editingArticulo, setEditingArticulo] = useState<Articulo | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [deletingArticulo, setDeletingArticulo] = useState<Articulo | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  // --- Estados Modales Grupos ---
+  // Modales Grupos
   const [editingGrupo, setEditingGrupo] = useState<Grupo | null>(null);
   const [showEditGrupoModal, setShowEditGrupoModal] = useState(false);
   
   const [deletingGrupo, setDeletingGrupo] = useState<Grupo | null>(null);
   const [showDeleteGrupoModal, setShowDeleteGrupoModal] = useState(false);
   const [deleteGrupoLoading, setDeleteGrupoLoading] = useState(false);
-
-  const [viewingGrupo, setViewingGrupo] = useState<Grupo | null>(null);
-  const [showGrupoDetailModal, setShowGrupoDetailModal] = useState(false);
-
-  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
 
   // Cargar grupos
   const fetchGrupos = async () => {
@@ -94,7 +89,7 @@ export const VisualizarAlmacen: React.FC = () => {
     fetchGrupos();
   }, [currentPage]);
 
-  // --- Handlers Artículos ---
+  // Handlers Artículos
   const handleEdit = (articulo: Articulo) => {
     setEditingArticulo(articulo);
     setShowEditModal(true);
@@ -132,10 +127,10 @@ export const VisualizarAlmacen: React.FC = () => {
   };
 
   const handleViewDetails = (articulo: Articulo) => {
-    navigate(ROUTES.articuloDetalles(articulo.cod), { state: { articulo } });
+    navigate(ROUTES.articuloDetalles(articulo.cod));
   };
 
-  // --- Handlers Grupos ---
+  // Handlers Grupos
   const handleEditGrupo = (grupo: Grupo) => {
     setEditingGrupo(grupo);
     setShowEditGrupoModal(true);
@@ -164,12 +159,11 @@ export const VisualizarAlmacen: React.FC = () => {
     }
   };
 
+  // ESTA ES LA FUNCIÓN CLAVE
   const handleViewGrupoDetails = (grupo: Grupo) => {
+    if (!grupo || !grupo.id) return; // Protección extra
     navigate(ROUTES.grupoDetalles(grupo.id)); 
   };
-
-
-  // --- Render ---
 
   if (error && articulos.length === 0) {
     return (
@@ -279,7 +273,7 @@ export const VisualizarAlmacen: React.FC = () => {
       </div>
 
       {/* --- SECCIÓN 2: GRUPOS DE ARTÍCULOS --- */}
-      <div className="bg-white rounded-lg shadow p-6 border-t-4 border-indigo-500">
+      <div className="bg-white rounded-lg shadow p-6">
         <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                 <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
@@ -294,12 +288,13 @@ export const VisualizarAlmacen: React.FC = () => {
         ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {grupos.map(grupo => (
+                    // ACA ESTA EL TEMA: SI ESTA PROPIEDAD onViewDetails FALTA, EXPLOTA.
                     <GrupoCard 
                         key={grupo.id} 
                         grupo={grupo} 
                         onEdit={handleEditGrupo}
                         onDelete={handleDeleteGrupoClick}
-                        onViewDetails={handleViewGrupoDetails}
+                        onViewDetails={handleViewGrupoDetails} 
                     />
                 ))}
             </div>
@@ -307,8 +302,6 @@ export const VisualizarAlmacen: React.FC = () => {
       </div>
 
       {/* --- MODALES --- */}
-      
-      {/* Artículos */}
       <EditArticuloModal
         isOpen={showEditModal}
         articulo={editingArticulo}
@@ -324,7 +317,6 @@ export const VisualizarAlmacen: React.FC = () => {
         message={`¿Estás seguro de que deseas eliminar "${deletingArticulo?.nombre}"?`}
       />
 
-      {/* Grupos */}
       <EditGrupoModal
         isOpen={showEditGrupoModal}
         grupo={editingGrupo}

@@ -10,11 +10,14 @@ interface GrupoCardProps {
 
 export const GrupoCard: React.FC<GrupoCardProps> = ({ grupo, onEdit, onDelete, onViewDetails }) => {
   return (
-    <div className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col justify-between">
+    <div 
+      onClick={() => onViewDetails(grupo)}
+      className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden border border-gray-100 flex flex-col justify-between cursor-pointer"
+    >
       <div className="p-5">
         <div className="flex justify-between items-start mb-2">
           <span className="inline-block px-2 py-1 text-xs font-semibold tracking-wide text-indigo-500 bg-indigo-50 rounded-full">
-             ID: {grupo.id}
+              ID: {grupo.id}
           </span>
           {grupo.sector && (
              <span className="inline-block px-2 py-1 text-xs font-semibold text-gray-500 bg-gray-100 rounded-full">
@@ -32,18 +35,13 @@ export const GrupoCard: React.FC<GrupoCardProps> = ({ grupo, onEdit, onDelete, o
       </div>
 
       <div className="bg-gray-50 px-5 py-3 border-t border-gray-100 flex justify-end gap-2">
-         <button
-          onClick={() => onViewDetails(grupo)}
-          className="p-2 text-blue-600 hover:bg-blue-100 rounded-full transition-colors"
-          title="Ver detalles"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-          </svg>
-        </button>
+        {/* Sin ojito feo, y con stopPropagation en los botones */}
+        
         <button
-          onClick={() => onEdit(grupo)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit(grupo);
+          }}
           className="p-2 text-yellow-600 hover:bg-yellow-100 rounded-full transition-colors"
           title="Editar"
         >
@@ -52,7 +50,10 @@ export const GrupoCard: React.FC<GrupoCardProps> = ({ grupo, onEdit, onDelete, o
           </svg>
         </button>
         <button
-          onClick={() => onDelete(grupo)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDelete(grupo);
+          }}
           className="p-2 text-red-600 hover:bg-red-100 rounded-full transition-colors"
           title="Eliminar"
         >
