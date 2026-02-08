@@ -73,7 +73,9 @@ export interface Grupo {
   id: number;
   nombre: string;
   descripcion: string;
-  sector: Sector;
+  sector?: SectorDto;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  articulos?: any[]; 
 }
 
 export interface Movimiento {
@@ -90,4 +92,10 @@ export interface SectorDto {
   nro_sector: number;
   tipo: string;
   descripcion: string;
+}
+
+export interface UpdateGrupoPayload {
+    nombre: string;
+    descripcion: string;
+    sector_id: number;
 }

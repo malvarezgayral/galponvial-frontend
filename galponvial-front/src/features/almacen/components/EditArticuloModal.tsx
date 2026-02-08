@@ -26,7 +26,7 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
   const [nombre, setNombre] = useState('');
   const [modelo, setModelo] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [unidadTipo, setUnidadTipo] = useState<'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg'>('pieza');
+  const [unidadTipo, setUnidadTipo] = useState<'pieza' | 'caja' | 'kilogramo' | 'metro' | 'litro' | 'unidad' | 'volumen' | 'distancia' | 'paquete'>('pieza');
   const [stock, setStock] = useState<string>('');
   const [img, setImg] = useState('');
 
@@ -39,10 +39,13 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
   const unidadTipoOptions: UnidadTipoOption[] = [
     { value: 'pieza', label: 'Pieza', requiresStock: false },
     { value: 'caja', label: 'Caja', requiresStock: true },
-    { value: 'bulto', label: 'Bulto', requiresStock: true },
+    { value: 'paquete', label: 'Paquete', requiresStock: true },
     { value: 'metro', label: 'Metro', requiresStock: false },
     { value: 'litro', label: 'Litro', requiresStock: true },
-    { value: 'kg', label: 'Kilogramo', requiresStock: true },
+    { value: 'kilogramo', label: 'Kilogramo', requiresStock: true },
+    { value: 'unidad', label: 'Unidad', requiresStock: true },
+    { value: 'volumen', label: 'Volumen', requiresStock: true },
+    { value: 'distancia', label: 'Distancia', requiresStock: true },
   ];
 
   // Check if current unidad_tipo requires stock
