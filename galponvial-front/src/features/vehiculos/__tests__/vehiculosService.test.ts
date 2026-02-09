@@ -22,7 +22,10 @@ describe('vehiculosService', () => {
       color: 'rojo',
       seguro_empresa: 'Seguros Pernada S.A',
       poliza: 'unapolizadealguntipo',
-      id_sector_pertenencia: 2,
+      sector: {
+        id_sector: 2,
+        nombre: 'Sector 2',
+      },
     },
   };
 
@@ -76,7 +79,10 @@ describe('vehiculosService', () => {
           color: 'rojo',
           seguro_empresa: 'Seguros Pernada S.A',
           poliza: 'unapolizadealguntipo',
-          id_sector_pertenencia: 2,
+          sector: {
+            id_sector: 2,
+            nombre: 'Sector 2',
+          },
         },
       };
       (apiClient.post as jest.Mock).mockResolvedValue({ data: mockVehiculo });
@@ -84,19 +90,59 @@ describe('vehiculosService', () => {
       const result = await vehiculosService.create(newVehiculo);
 
       expect(result).toEqual(mockVehiculo);
-      expect(apiClient.post).toHaveBeenCalledWith(API_ENDPOINTS.VEHICULOS.CREATE, newVehiculo);
+      // Verify that the payload was transformed to send id_sector_pertenencia
+      expect(apiClient.post).toHaveBeenCalledWith(
+        API_ENDPOINTS.VEHICULOS.CREATE,
+        expect.objectContaining({
+          infoAdicional: expect.objectContaining({
+            id_sector_pertenencia: 2,
+          }),
+        })
+      );
     });
   });
 
   describe('update', () => {
     it('should update a vehiculo', async () => {
       const updates: Partial<Vehiculo> = { nombre: 'Updated Name' };
-      (apiClient.put as jest.Mock).mockResolvedValue({ data: mockVehiculo });
+      (apiClient.patch as jest.Mock).mockResolvedValue({ data: mockVehiculo });
 
       const result = await vehiculosService.update('1', updates);
 
       expect(result).toEqual(mockVehiculo);
-      expect(apiClient.put).toHaveBeenCalledWith(API_ENDPOINTS.VEHICULOS.UPDATE('1'), updates);
+      expect(apiClient.patch).toHaveBeenCalledWith(
+        API_ENDPOINTS.VEHICULOS.UPDATE('1'),
+        expect.any(Object)
+      );
+    });
+
+    it('should transform sector object to id_sector_pertenencia in update payload', async () => {
+      const updates: Partial<Vehiculo> = {
+        infoAdicional: {
+          numero_serie: 123,
+          licencia_conductor: 'LC123',
+          color: 'azul',
+          seguro_empresa: 'Seguros',
+          poliza: 'POL123',
+          sector: {
+            id_sector: 3,
+            nombre: 'Sector 3',
+          },
+        },
+      };
+      (apiClient.patch as jest.Mock).mockResolvedValue({ data: mockVehiculo });
+
+      const result = await vehiculosService.update('1', updates);
+
+      expect(result).toEqual(mockVehiculo);
+      expect(apiClient.patch).toHaveBeenCalledWith(
+        API_ENDPOINTS.VEHICULOS.UPDATE('1'),
+        expect.objectContaining({
+          infoAdicional: expect.objectContaining({
+            id_sector_pertenencia: 3,
+          }),
+        })
+      );
     });
   });
 

@@ -47,7 +47,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
           color: vehiculo.infoAdicional.color,
           seguro_empresa: vehiculo.infoAdicional.seguro_empresa,
           poliza: vehiculo.infoAdicional.poliza,
-          id_sector_pertenencia: vehiculo.infoAdicional.id_sector_pertenencia,
+          sector: vehiculo.infoAdicional.sector,
         },
       });
       setError(null);
@@ -101,8 +101,10 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
           color: prev.infoAdicional?.color ?? '',
           seguro_empresa: prev.infoAdicional?.seguro_empresa ?? '',
           poliza: prev.infoAdicional?.poliza ?? '',
-          id_sector_pertenencia: prev.infoAdicional?.id_sector_pertenencia ?? 0,
-          [nestedField]: value,
+          sector: nestedField === 'sector' 
+            ? { id_sector: value, nombre: prev.infoAdicional?.sector?.nombre ?? '' }
+            : prev.infoAdicional?.sector ?? { id_sector: 0, nombre: '' },
+          ...(nestedField !== 'sector' && { [nestedField]: value }),
         } as any,
       }));
     } else {
@@ -327,13 +329,13 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                   Sector Pertenencia
                 </label>
                 <select
-                  value={formData.infoAdicional?.id_sector_pertenencia || ''}
+                  value={formData.infoAdicional?.sector?.id_sector || ''}
                   onChange={(e) =>
                     handleInputChange(
-                      'id_sector_pertenencia',
+                      'sector',
                       parseInt(e.target.value),
                       true,
-                      'id_sector_pertenencia'
+                      'sector'
                     )
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"

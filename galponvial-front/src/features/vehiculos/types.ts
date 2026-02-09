@@ -5,7 +5,10 @@ export interface InfoAdicional {
   color: string;
   seguro_empresa: string;
   poliza: string;
-  id_sector_pertenencia: number;
+  sector: {
+    id_sector: number;
+    nombre: string;
+  };
 }
 
 export interface Vehiculo {

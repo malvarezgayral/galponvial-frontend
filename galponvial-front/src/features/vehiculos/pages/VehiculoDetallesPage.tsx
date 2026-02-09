@@ -349,7 +349,7 @@ const VehiculoDetallesPage: React.FC = () => {
           <div>
             <span className="text-gray-600 font-medium block mb-2">Sector de Pertenencia</span>
             <p className="text-gray-900 font-semibold">
-              {vehiculo.infoAdicional.id_sector_pertenencia}
+              {vehiculo.infoAdicional.sector.nombre}
             </p>
           </div>
         </div>
@@ -357,57 +357,6 @@ const VehiculoDetallesPage: React.FC = () => {
 
       {vehiculoId && (
         <>
-          {/* Recordatorios Table */}
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-gray-900">Recordatorios</h2>
-              <Button
-                variant="primary"
-                size="md"
-                onClick={() => setShowRecordatorioModal(true)}
-              >
-                + Añadir Recordatorio
-              </Button>
-            </div>
-            {recordatoriosError && (
-              <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-                <p className="font-medium">Error al cargar datos</p>
-                <p className="text-sm">{recordatoriosError.message}</p>
-              </div>
-            )}
-            {recordatoriosLoading && (
-              <div className="flex justify-center items-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Cargando...</span>
-              </div>
-            )}
-            {!recordatoriosLoading && recordatorios.length === 0 && (
-              <div className="text-center py-8">
-                <p className="text-gray-500">No hay recordatorios registrados para este vehículo</p>
-              </div>
-            )}
-            {!recordatoriosLoading && recordatorios.length > 0 && (
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b-2 border-gray-200">
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '20%' }}>Fecha</th>
-                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '80%' }}>Descripción</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recordatorios.map((item, idx) => (
-                      <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
-                        <td className="px-4 py-3 text-sm text-gray-700">{item.fecha}</td>
-                        <td className="px-4 py-3 text-sm text-gray-700">{item.descripcion}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
           {/* Status Updates Table */}
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Cambios de Estado</h2>

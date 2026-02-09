@@ -16,6 +16,47 @@ import type {
 } from '../types';
 
 /**
+ * Transform CreateVehiculoPayload to backend format
+ * Converts sector object to id_sector_pertenencia
+ */
+const transformVehiculoPayload = (
+  vehiculo: CreateVehiculoPayload
+): Record<string, any> => {
+  return {
+    ...vehiculo,
+    infoAdicional: {
+      ...vehiculo.infoAdicional,
+      id_sector_pertenencia: vehiculo.infoAdicional.sector.id_sector,
+      // Remove the sector object since backend expects id_sector_pertenencia
+      sector: undefined,
+    },
+  };
+};
+
+/**
+ * Transform Partial<Vehiculo> to backend format for updates
+ * Converts sector object to id_sector_pertenencia if present
+ */
+const transformUpdatePayload = (vehiculo: Partial<Vehiculo>): Record<string, any> => {
+  if (!vehiculo.infoAdicional) {
+    return vehiculo;
+  }
+
+  return {
+    ...vehiculo,
+    infoAdicional: {
+      ...vehiculo.infoAdicional,
+      numero_serie: Number(vehiculo.infoAdicional.numero_serie),
+      id_sector_pertenencia: vehiculo.infoAdicional.sector
+        ? vehiculo.infoAdicional.sector.id_sector
+        : undefined,
+      // Remove the sector object since backend expects id_sector_pertenencia
+      sector: undefined,
+    },
+  };
+};
+
+/**
  * Service for vehicle-related API calls
  */
 export const vehiculosService = {
@@ -71,7 +112,8 @@ export const vehiculosService = {
    * @returns Created vehicle with ID
    */
   create: async (vehiculo: CreateVehiculoPayload): Promise<Vehiculo> => {
-    const { data } = await apiClient.post(API_ENDPOINTS.VEHICULOS.CREATE, vehiculo);
+    const transformedPayload = transformVehiculoPayload(vehiculo);
+    const { data } = await apiClient.post(API_ENDPOINTS.VEHICULOS.CREATE, transformedPayload);
     return data;
   },
 
@@ -82,7 +124,8 @@ export const vehiculosService = {
    * @returns Updated vehicle
    */
   update: async (id: string, vehiculo: Partial<Vehiculo>): Promise<Vehiculo> => {
-    const { data } = await apiClient.patch(API_ENDPOINTS.VEHICULOS.UPDATE(id), vehiculo);
+    const transformedPayload = transformUpdatePayload(vehiculo);
+    const { data } = await apiClient.patch(API_ENDPOINTS.VEHICULOS.UPDATE(id), transformedPayload);
     // Handle both wrapped response and direct object response
     if (data && typeof data === 'object' && 'data' in data) {
       return data.data;
