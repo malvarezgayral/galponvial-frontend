@@ -62,7 +62,7 @@ const applyFilters = (vehiculos: Vehiculo[], filters: VehiculosFilters): Vehicul
     }
 
     // Filter by sector
-    if (filters.sector && vehiculo.infoAdicional.id_sector_pertenencia !== Number(filters.sector)) {
+    if (filters.sector && vehiculo.infoAdicional.sector.id_sector !== Number(filters.sector)) {
       return false;
     }
 

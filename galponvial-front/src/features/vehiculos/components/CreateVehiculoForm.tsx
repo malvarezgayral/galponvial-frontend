@@ -17,7 +17,10 @@ const INITIAL_FORM_STATE: CreateVehiculoPayload = {
     color: '',
     seguro_empresa: '',
     poliza: '',
-    id_sector_pertenencia: 0,
+    sector: {
+      id_sector: 0,
+      nombre: '',
+    },
   },
 };
 
@@ -60,13 +63,27 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
   ) => {
     const { value } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      infoAdicional: {
-        ...prev.infoAdicional,
-        [field]: field === 'numero_serie' || field === 'id_sector_pertenencia' ? parseInt(value, 10) : value,
-      },
-    }));
+    setFormData((prev) => {
+      if (field === 'sector') {
+        return {
+          ...prev,
+          infoAdicional: {
+            ...prev.infoAdicional,
+            sector: {
+              id_sector: parseInt(value, 10),
+              nombre: '',
+            },
+          },
+        };
+      }
+      return {
+        ...prev,
+        infoAdicional: {
+          ...prev.infoAdicional,
+          [field]: field === 'numero_serie' ? parseInt(value, 10) : value,
+        },
+      };
+    });
   };
 
   /**
@@ -88,7 +105,7 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
       'color',
       'seguro_empresa',
       'poliza',
-      'id_sector_pertenencia',
+      'sector',
     ];
 
     for (const field of requiredFields) {
@@ -98,9 +115,16 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
     }
 
     for (const field of requiredAdditionalFields) {
-      const value = formData.infoAdicional[field as keyof CreateVehiculoPayload['infoAdicional']];
-      if (value === '' || value === 0) {
-        return false;
+      if (field === 'sector') {
+        const sector = formData.infoAdicional.sector as { id_sector: number; nombre: string };
+        if (!sector || sector.id_sector === 0) {
+          return false;
+        }
+      } else {
+        const value = formData.infoAdicional[field as keyof Omit<typeof formData.infoAdicional, 'sector'>];
+        if (value === '' || value === 0) {
+          return false;
+        }
       }
     }
 
@@ -397,13 +421,13 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
 
             {/* Sector de pertenencia */}
             <div>
-              <label htmlFor="id_sector_pertenencia" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="sector" className="block text-sm font-medium text-gray-700 mb-1">
                 Sector de pertenencia
               </label>
               <select
-                id="id_sector_pertenencia"
-                value={formData.infoAdicional.id_sector_pertenencia || ''}
-                onChange={(e) => handleAdditionalInfoChange(e, 'id_sector_pertenencia')}
+                id="sector"
+                value={formData.infoAdicional.sector?.id_sector || ''}
+                onChange={(e) => handleAdditionalInfoChange(e, 'sector')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
               >
                 <option value="">Selecciona un sector</option>
