@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/api';
-import type { CreateArticuloPayload, ArticuloResponse, ArticulosListResponse, Grupo, Movimiento, Articulo, SectorDto } from '../types';
+import type { CreateArticuloPayload, ArticuloResponse, ArticulosListResponse, Grupo, Movimiento, Articulo, SectorDto, UpdateGrupoPayload } from '../types';
 import { API_ENDPOINTS } from '@/services/apiEndpoints';
 
 const BASE_URL = '/almacen/articulos';
@@ -78,6 +78,34 @@ getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
     return data.data || data;
   },
 
+  /**
+   * Obtener un grupo por ID (Detalle)
+   */
+  getGrupoById: async (id: number): Promise<Grupo> => {
+    const { data } = await apiClient.get(`${GRUPOS_URL}/${id}`);
+    return data.data || data;
+  },
+
+  /**
+   * Actualizar un grupo
+   */
+  updateGrupo: async (id: number, payload: Partial<UpdateGrupoPayload>): Promise<Grupo> => {
+    const { data } = await apiClient.put(`${GRUPOS_URL}/${id}`, payload);
+    return data.data || data;
+  },
+
+  /**
+   * Eliminar un grupo
+   */
+  deleteGrupo: async (id: number): Promise<void> => {
+    await apiClient.delete(`${GRUPOS_URL}/${id}`);
+  },
+
+  getSectores: async (): Promise<SectorDto[]> => {
+    const { data } = await apiClient.get(API_ENDPOINTS.ALMACEN.SECTORES);
+    return data.data || data;
+  },
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   createMovimiento: async (payload: any) => {
     const { data } = await apiClient.post(
@@ -87,16 +115,13 @@ getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
     return data;
 },
 
-createGrupoArticulo(payload: {
-    nombre: string;
-    descripcion: string;
-    sector_id: number;
-  }) {
-    return apiClient.post(API_ENDPOINTS.ALMACEN.GRUPOS, payload);
-  },
-  getSectores(): Promise<SectorDto[]> {
-    return apiClient.get(API_ENDPOINTS.ALMACEN.SECTORES).then((res) => res.data);
-  },
+  createGrupoArticulo(payload: {
+      nombre: string;
+      descripcion: string;
+      sector_id: number;
+    }) {
+      return apiClient.post(API_ENDPOINTS.ALMACEN.GRUPOS, payload);
+    },
 
 
 };

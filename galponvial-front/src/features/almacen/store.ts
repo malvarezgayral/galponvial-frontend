@@ -1,6 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { create } from 'zustand';
 import { almacenService } from './services/almacenService';
-import type { Articulo, Grupo } from './types';
+import type { Articulo, Grupo, SectorDto } from './types';
 
 interface AlmacenFilters {
   searchTerm: string;
@@ -13,14 +15,22 @@ interface AlmacenState {
   articulos: Articulo[];
   filteredArticulos: Articulo[];
   grupos: Grupo[];
+  sectores: SectorDto[]
   loading: boolean;
   error: string | null;
   filters: AlmacenFilters;
   
   setArticulos: (articulos: Articulo[]) => void;
-  setGrupos: (grupos: Grupo[]) => void;
   updateArticulo: (id: number, payload: Partial<Articulo>) => Promise<void>;
   removeArticulo: (id: number) => Promise<void>;
+
+  // Acciones Grupos
+  fetchGrupos: () => Promise<void>;
+  fetchSectores: () => Promise<void>; // Para llenar el select de edición
+  setGrupos: (grupos: Grupo[]) => void;
+  updateGrupo: (id: number, payload: any) => Promise<void>;
+  removeGrupo: (id: number) => Promise<void>;
+
   setFilter: (filterKey: keyof AlmacenFilters, value: any) => void;
   resetFilters: () => void;
 }
@@ -66,6 +76,7 @@ export const useAlmacenStore = create<AlmacenState>((set, get) => ({
   articulos: [],
   filteredArticulos: [],
   grupos: [],
+  sectores: [],
   loading: false,
   error: null,
   filters: {
@@ -121,6 +132,57 @@ export const useAlmacenStore = create<AlmacenState>((set, get) => ({
         loading: false 
       });
       throw error; // Re-lanzamos para que el componente sepa que falló
+    }
+  },
+
+  fetchGrupos: async () => {
+    set({ loading: true, error: null });
+    try {
+        const data = await almacenService.getGrupos();
+        set({ grupos: data, loading: false });
+    } catch (error) {
+        set({ error: 'Error al cargar grupos', loading: false });
+    }
+  },
+
+  fetchSectores: async () => {
+    try {
+        const data = await almacenService.getSectores();
+        set({ sectores: data });
+    } catch (error) {
+        console.error("Error cargando sectores", error);
+    }
+  },
+
+  updateGrupo: async (id, payload) => {
+    set({ loading: true, error: null });
+    try {
+        const updated = await almacenService.updateGrupo(id, payload);
+        const currentGrupos = get().grupos;
+        // Actualizamos el array local
+        const newGrupos = currentGrupos.map(g => g.id === id ? { ...g, ...updated } : g);
+        set({ grupos: newGrupos, loading: false });
+    } catch (err: any) {
+        const msg = err.response?.data?.message || err.message || 'Error al actualizar grupo';
+        set({ error: msg, loading: false });
+        throw err;
+    }
+  },
+
+  removeGrupo: async (id) => {
+    set({ loading: true, error: null });
+    try {
+        await almacenService.deleteGrupo(id);
+        const currentGrupos = get().grupos;
+        set({ 
+            grupos: currentGrupos.filter(g => g.id !== id),
+            loading: false 
+        });
+    } catch (err: any) {
+        // Aquí capturamos el mensaje del backend (ej: "Tiene artículos asociados")
+        const msg = err.response?.data?.message || 'Error al eliminar grupo';
+        set({ error: msg, loading: false });
+        throw err; // Re-lanzamos para manejarlo en la UI (ej. mostrar toast)
     }
   },
 

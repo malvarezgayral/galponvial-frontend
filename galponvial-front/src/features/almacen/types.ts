@@ -11,7 +11,7 @@ export interface Articulo {
   modelo: string;
   descripcion: string;
   img?: string;
-  unidad_tipo: 'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg';
+  unidad_tipo: 'pieza' | 'caja' | 'kilogramo' | 'metro' | 'litro' | 'unidad' | 'volumen' | 'distancia' | 'paquete';
   stock?: number; // Solo aplica para ciertos tipos de unidad
   grupo?: Grupo; // Objeto grupo al que pertenece el artículo
   fechaCreacion?: string;
@@ -24,7 +24,7 @@ export interface CreateArticuloPayload {
   modelo: string;
   descripcion: string;
   img?: string;
-  unidad_tipo: 'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg';
+  unidad_tipo: 'pieza' | 'caja' | 'kilogramo' | 'metro' | 'litro' | 'unidad' | 'volumen' | 'distancia' | 'paquete';
   stock?: number;
   grupo_id: number;
 }
@@ -36,7 +36,7 @@ export interface ArticuloResponse {
   modelo: string;
   descripcion: string;
   img?: string;
-  unidad_tipo: 'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg';
+  unidad_tipo: 'pieza' | 'caja' | 'kilogramo' | 'metro' | 'litro' | 'unidad' | 'volumen' | 'distancia' | 'paquete';
   stock?: number;
   fechaCreacion: string;
   ultimaModificacion: string;
@@ -57,7 +57,7 @@ export interface DropdownOption {
 }
 
 export interface UnidadTipoOption {
-  value: 'pieza' | 'caja' | 'bulto' | 'metro' | 'litro' | 'kg';
+  value: 'pieza' | 'caja' | 'kilogramo' | 'metro' | 'litro' | 'unidad' | 'volumen' | 'distancia' | 'paquete';
   label: string;
   requiresStock: boolean; // Si true, el campo stock es obligatorio
 }
@@ -73,7 +73,9 @@ export interface Grupo {
   id: number;
   nombre: string;
   descripcion: string;
-  sector: Sector;
+  sector?: SectorDto;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  articulos?: any[]; 
 }
 
 export interface Movimiento {
@@ -90,4 +92,10 @@ export interface SectorDto {
   nro_sector: number;
   tipo: string;
   descripcion: string;
+}
+
+export interface UpdateGrupoPayload {
+    nombre: string;
+    descripcion: string;
+    sector_id: number;
 }

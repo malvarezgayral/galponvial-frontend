@@ -9,4 +9,5 @@ export const ROUTES = {
   login: "/login",
   articuloDetallesRoute: "/almacen/:id", 
   articuloDetalles: (id: number) => `/almacen/${id}`,
+  grupoDetalles: (id: string | number) => `/almacen/grupos/${id}`,
 } as const;

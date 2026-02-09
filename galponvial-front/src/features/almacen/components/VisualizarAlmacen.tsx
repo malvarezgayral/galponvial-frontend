@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { almacenService } from "../services/almacenService";
@@ -6,78 +8,113 @@ import { ArticuloCard } from "./ArticuloCard";
 import { EditArticuloModal } from "./EditArticuloModal";
 import type { Articulo, Grupo } from "../types";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
-import { ROUTES } from "@/app/routes";
+import { ROUTES } from "@/app/routes"; 
 
-const PAGE_SIZE = 6;
+import { GrupoCard } from "./GrupoCard";
+import { EditGrupoModal } from "./EditGrupoModal";
 
-/**
- * Component for viewing warehouse articulos in card grid format
- */
+const ARTICLES_PER_PAGE = 6;
+const GROUPS_PER_PAGE = 4; 
+
 export const VisualizarAlmacen: React.FC = () => {
   const navigate = useNavigate();
-  // Traemos removeArticulo del store
-  const { setArticulos, setGrupos, removeArticulo, articulos, filteredArticulos, grupos, filters, setFilter, resetFilters } = useAlmacenStore(); 
   
-  const [localArticulos, setLocalArticulos] = useState<Articulo[]>([]);
+  const { 
+    setArticulos, 
+    setGrupos, 
+    removeArticulo, 
+    removeGrupo, 
+    articulos, 
+    filteredArticulos,
+    grupos, 
+    filters, 
+    setFilter, 
+    resetFilters 
+  } = useAlmacenStore();
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [gruposLoading, setGruposLoading] = useState(false);
   
-  // Paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalItems, setTotalItems] = useState(0);
   
-  // Estado para Edición
+  const indexOfLastArticulo = currentPage * ARTICLES_PER_PAGE;
+  const indexOfFirstArticulo = indexOfLastArticulo - ARTICLES_PER_PAGE;
+  const currentRenderedArticulos = filteredArticulos.slice(indexOfFirstArticulo, indexOfLastArticulo);
+  
+  const totalPages = Math.ceil(filteredArticulos.length / ARTICLES_PER_PAGE);
+
+  const [currentGrupoPage, setCurrentGrupoPage] = useState(1);
+  
+  const indexOfLastGrupo = currentGrupoPage * GROUPS_PER_PAGE;
+  const indexOfFirstGrupo = indexOfLastGrupo - GROUPS_PER_PAGE;
+  const currentRenderedGrupos = grupos.slice(indexOfFirstGrupo, indexOfLastGrupo);
+  
+  const totalGrupoPages = Math.ceil(grupos.length / GROUPS_PER_PAGE);
+
+  // Modales Artículos
   const [editingArticulo, setEditingArticulo] = useState<Articulo | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
-
-  // Estado para Eliminación (NUEVO)
   const [deletingArticulo, setDeletingArticulo] = useState<Articulo | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
 
-  const totalPages = Math.ceil(totalItems / PAGE_SIZE);
-
-  // Cargar grupos
-  const fetchGrupos = async () => {
-    try {
-      setGruposLoading(true);
-      const data = await almacenService.getGrupos();
-      setGrupos(data);
-    } catch (err) {
-      console.error("Error fetching grupos:", err);
-    } finally {
-      setGruposLoading(false);
-    }
-  };
-
-  // Cargar artículos
-  const fetchArticulos = async () => {
-    try {
-      setLoading(true);
-      const response = await almacenService.getArticulos(
-        currentPage,
-        PAGE_SIZE,
-      );
-      setLocalArticulos(response.data);
-      setArticulos(response.data);
-      setTotalItems(response.total);
-    } catch (err) {
-      const errorMsg =
-        err instanceof Error ? err : new Error("Error al cargar artículos");
-      setError(errorMsg);
-      console.error("Error fetching articulos:", errorMsg);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Modales Grupos
+  const [editingGrupo, setEditingGrupo] = useState<Grupo | null>(null);
+  const [showEditGrupoModal, setShowEditGrupoModal] = useState(false);
+  const [deletingGrupo, setDeletingGrupo] = useState<Grupo | null>(null);
+  const [showDeleteGrupoModal, setShowDeleteGrupoModal] = useState(false);
+  const [deleteGrupoLoading, setDeleteGrupoLoading] = useState(false);
 
   useEffect(() => {
-    fetchArticulos();
-    fetchGrupos();
-  }, [currentPage, setArticulos, setGrupos]);
+    setCurrentPage(1);
+  }, [filters, articulos]); 
 
-  // --- Lógica de Edición ---
+  useEffect(() => {
+    const fetchAllData = async () => {
+        setLoading(true);
+        setGruposLoading(true);
+        try {
+            const [articulosData, gruposData] = await Promise.all([
+                almacenService.getArticulos(1, 10000), 
+                almacenService.getGrupos()
+            ]);
+
+            setArticulos(articulosData.data || articulosData); 
+            setGrupos(gruposData);
+        } catch (err) {
+            console.error(err);
+            setError(err instanceof Error ? err : new Error("Error cargando datos"));
+        } finally {
+            setLoading(false);
+            setGruposLoading(false);
+        }
+    };
+
+    fetchAllData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Handlers Paginación ARTÍCULOS
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
+
+  // Handlers Paginación GRUPOS
+  const handlePrevGrupoPage = () => {
+    if (currentGrupoPage > 1) setCurrentGrupoPage((prev) => prev - 1);
+  };
+
+  const handleNextGrupoPage = () => {
+    if (currentGrupoPage < totalGrupoPages) setCurrentGrupoPage((prev) => prev + 1);
+  };
+
+
+  // Handlers Acciones
   const handleEdit = (articulo: Articulo) => {
     setEditingArticulo(articulo);
     setShowEditModal(true);
@@ -88,11 +125,11 @@ export const VisualizarAlmacen: React.FC = () => {
     setEditingArticulo(null);
   };
 
-  const handleEditSuccess = () => {
-    void fetchArticulos(); // Recargar datos tras editar
+  const handleEditSuccess = async () => {
+     const res = await almacenService.getArticulos(1, 10000);
+     setArticulos(res.data || res);
   };
 
-  // --- Lógica de Eliminación (NUEVO) ---
   const handleDeleteClick = (articulo: Articulo) => {
     setDeletingArticulo(articulo);
     setShowDeleteModal(true);
@@ -100,23 +137,12 @@ export const VisualizarAlmacen: React.FC = () => {
 
   const handleConfirmDelete = async () => {
     if (!deletingArticulo) return;
-
     setDeleteLoading(true);
     try {
       await removeArticulo(Number(deletingArticulo.cod));
-
-      setLocalArticulos((prev) => prev.filter(a => a.cod !== deletingArticulo.cod));
-      setTotalItems((prev) => prev - 1);
-      
       setShowDeleteModal(false);
       setDeletingArticulo(null);
-      
-      if (articulos.length === 1 && currentPage > 1) {
-          setCurrentPage(currentPage - 1);
-      }
-      
     } catch (err) {
-      console.error("Error eliminando:", err);
       alert("Hubo un error al eliminar el artículo");
     } finally {
       setDeleteLoading(false);
@@ -124,10 +150,43 @@ export const VisualizarAlmacen: React.FC = () => {
   };
 
   const handleViewDetails = (articulo: Articulo) => {
-    navigate(ROUTES.articuloDetalles(articulo.cod), { 
-    state: { articulo } 
-  });
-};
+    navigate(ROUTES.articuloDetalles(articulo.cod));
+  };
+
+  // Handlers Grupos
+  const handleEditGrupo = (grupo: Grupo) => {
+    setEditingGrupo(grupo);
+    setShowEditGrupoModal(true);
+  };
+
+  const handleGrupoSuccess = async () => {
+    const data = await almacenService.getGrupos();
+    setGrupos(data);
+  };
+
+  const handleDeleteGrupoClick = (grupo: Grupo) => {
+    setDeletingGrupo(grupo);
+    setShowDeleteGrupoModal(true);
+  };
+
+  const handleConfirmDeleteGrupo = async () => {
+    if(!deletingGrupo) return;
+    setDeleteGrupoLoading(true);
+    try {
+        await removeGrupo(deletingGrupo.id);
+        setShowDeleteGrupoModal(false);
+        setDeletingGrupo(null);
+    } catch (err: any) {
+        alert(err.response?.data?.message || "Error al eliminar");
+    } finally {
+        setDeleteGrupoLoading(false);
+    }
+  };
+
+  const handleViewGrupoDetails = (grupo: Grupo) => {
+    if (!grupo || !grupo.id) return; 
+    navigate(ROUTES.grupoDetalles(grupo.id)); 
+  };
 
   if (error && articulos.length === 0) {
     return (
@@ -140,162 +199,228 @@ export const VisualizarAlmacen: React.FC = () => {
     );
   }
 
-  if (articulos.length === 0 && !loading) {
-    return (
-      <div className="bg-white rounded-lg shadow p-8">
-        <div className="text-center py-12">
-          <p className="text-lg text-gray-500">
-            No hay artículos registrados en el almacén
-          </p>
-        </div>
-      </div>
-    );
-  }
-  console.log('articulos: ', articulos);
   return (
-    <div className="space-y-6">
-      {/* Filters Section */}
+    <div className="space-y-8 pb-10">
+      
+      {/* --- SECCIÓN 1: FILTROS Y ARTÍCULOS --- */}
       <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">Filtros</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-2">
+            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" /></svg>
+            Gestión de Artículos
+        </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Search by name, modelo or codigo */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Buscar por nombre, modelo o código
-            </label>
+        {/* Filters Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
+            {/* Search */}
+            <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Búsqueda</label>
             <input
-              type="text"
-              placeholder="Buscar..."
-              value={filters.searchTerm}
-              onChange={(e) => setFilter("searchTerm", e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                type="text"
+                placeholder="Nombre, modelo o código..."
+                value={filters.searchTerm}
+                onChange={(e) => setFilter("searchTerm", e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-          </div>
-
-          {/* Filter by unidad_tipo */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tipo de unidad
-            </label>
+            </div>
+            {/* Unidad Tipo */}
+            <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Unidad</label>
             <select
-              value={filters.unidad_tipo || ""}
-              onChange={(e) => setFilter("unidad_tipo", e.target.value || null)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={filters.unidad_tipo || ""}
+                onChange={(e) => setFilter("unidad_tipo", e.target.value || null)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
-              <option value="">Todos los tipos</option>
-              <option value="pieza">Pieza</option>
-              <option value="caja">Caja</option>
-              <option value="bulto">Bulto</option>
-              <option value="metro">Metro</option>
-              <option value="litro">Litro</option>
-              <option value="kg">Kilogramo</option>
+                <option value="">Todos</option>
+                {['pieza', 'caja', 'kilogramo', 'metro', 'litro', 'unidad',  'volumen',  'distancia', 'paquete'].map(t => <option key={t} value={t}>{t}</option>)}
             </select>
-          </div>
-
-          {/* Filter by grupo */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Grupo
-            </label>
+            </div>
+            {/* Grupo Filter */}
+            <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Filtrar por Grupo</label>
             <select
-              value={filters.grupo || ""}
-              onChange={(e) => setFilter("grupo", e.target.value || null)}
-              disabled={gruposLoading}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+                value={filters.grupo || ""}
+                onChange={(e) => setFilter("grupo", e.target.value || null)}
+                disabled={gruposLoading}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
-              <option value="">Todos los grupos</option>
-              {grupos.map((grupo) => (
-                <option key={grupo.id} value={grupo.id}>
-                  {grupo.nombre}
-                </option>
-              ))}
+                <option value="">Todos</option>
+                {grupos.map((g) => (<option key={g.id} value={g.id}>{g.nombre}</option>))}
             </select>
-          </div>
-
-          {/* Filter by stock range */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Stock
-            </label>
-            <input
-              type="number"
-              placeholder="Mín. stock"
-              min="0"
-              value={filters.stockRange?.min || ""}
-              onChange={(e) => {
-                const minValue = e.target.value ? Number(e.target.value) : 0;
-                const maxValue = filters.stockRange?.max || 999999;
-                setFilter("stockRange", { min: minValue, max: maxValue });
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+            </div>
+            {/* Stock */}
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Mínimo Stock</label>
+                <input
+                    type="number"
+                    min="0"
+                    placeholder="0"
+                    value={filters.stockRange?.min || ""}
+                    onChange={(e) => {
+                        const val = e.target.value ? Number(e.target.value) : 0;
+                        setFilter("stockRange", { min: val, max: 999999 });
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+            </div>
+        </div>
+        
+        <div className="flex justify-end mb-6">
+            <button onClick={resetFilters} className="text-sm text-blue-600 hover:underline">Limpiar filtros</button>
         </div>
 
-        {/* Reset filters button */}
-        <button
-          onClick={resetFilters}
-          className="mt-4 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-        >
-          Limpiar filtros
-        </button>
+        {/* Content Artículos */}
+        {loading ? (
+             <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>
+        ) : filteredArticulos.length === 0 ? (
+            <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                <p className="text-gray-500">No se encontraron artículos con esos filtros.</p>
+            </div>
+        ) : (
+            <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {currentRenderedArticulos.map((articulo) => (
+                    <ArticuloCard
+                    key={articulo.cod}
+                    articulo={articulo}
+                    onEdit={handleEdit}
+                    onDelete={handleDeleteClick}
+                    onViewDetails={handleViewDetails}
+                    />
+                ))}
+                </div>
+
+                {/* BARRA DE PAGINACIÓN ARTÍCULOS */}
+                {totalPages > 1 && (
+                    <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-6">
+                        <div className="text-sm text-gray-500">
+                            Mostrando {indexOfFirstArticulo + 1} - {Math.min(indexOfLastArticulo, filteredArticulos.length)} de {filteredArticulos.length} resultados
+                        </div>
+                        
+                        <div className="flex gap-2">
+                            <button
+                                onClick={handlePrevPage}
+                                disabled={currentPage === 1}
+                                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
+                                    ${currentPage === 1 
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                    }`}
+                            >
+                                Anterior
+                            </button>
+                            
+                            <div className="hidden sm:flex items-center px-2">
+                                <span className="text-sm font-medium text-gray-700">
+                                    {currentPage} <span className="text-gray-400">/</span> {totalPages}
+                                </span>
+                            </div>
+
+                            <button
+                                onClick={handleNextPage}
+                                disabled={currentPage >= totalPages}
+                                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
+                                    ${currentPage >= totalPages 
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                        : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                                    }`}
+                            >
+                                Siguiente
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </>
+        )}
       </div>
-      {/* Loading state */}
-      {loading && currentPage === 1 && (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-          <span className="ml-3 text-gray-600">Cargando artículos...</span>
-        </div>
-      )}
 
-      {/* Empty state */}
-      {!loading && filteredArticulos.length === 0 && articulos.length > 0 && (
-        <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">
-            No hay artículos que coincidan con los filtros
-          </p>
+      {/* --- SECCIÓN 2: GRUPOS DE ARTÍCULOS --- */}
+      <div className="bg-white rounded-lg shadow p-6">
+        <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
+                Grupos de Artículos
+            </h2>
         </div>
-      )}
 
-      {/* Cards grid */}
-      {!loading && filteredArticulos.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredArticulos.map((articulo) => (
-            <ArticuloCard
-              key={articulo.cod || articulo.cod} // Usar ID único
-              articulo={articulo}
-              onEdit={handleEdit}
-              onDelete={handleDeleteClick} // Conectado al click handler
-              onViewDetails={handleViewDetails}
-            />
-          ))}
-        </div>
-      )}
+        {gruposLoading ? (
+            <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div></div>
+        ) : grupos.length === 0 ? (
+            <div className="text-center py-8 bg-gray-50 rounded border border-dashed">No hay grupos definidos.</div>
+        ) : (
+            <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {currentRenderedGrupos.map(grupo => (
+                        <GrupoCard 
+                            key={grupo.id} 
+                            grupo={grupo} 
+                            onEdit={handleEditGrupo}
+                            onDelete={handleDeleteGrupoClick}
+                            onViewDetails={handleViewGrupoDetails} 
+                        />
+                    ))}
+                </div>
 
-      {/* Results count */}
-      {!loading && filteredArticulos.length > 0 && (
-        <div className="text-sm text-gray-600 text-center mt-6">
-          Mostrando {filteredArticulos.length} de {articulos.length} artículos
-        </div>
-      )}
+                 {/* BARRA DE PAGINACIÓN GRUPOS */}
+                 {totalGrupoPages > 1 && (
+                    <div className="mt-6 flex items-center justify-end border-t border-gray-100 pt-4 gap-2">
+                            <button
+                                onClick={handlePrevGrupoPage}
+                                disabled={currentGrupoPage === 1}
+                                className={`px-3 py-1 text-sm rounded transition-colors
+                                    ${currentGrupoPage === 1 
+                                        ? 'text-gray-300 cursor-not-allowed' 
+                                        : 'text-indigo-600 hover:bg-indigo-50'
+                                    }`}
+                            >
+                                Anterior
+                            </button>
+                            <span className="text-sm text-gray-500">{currentGrupoPage} / {totalGrupoPages}</span>
+                            <button
+                                onClick={handleNextGrupoPage}
+                                disabled={currentGrupoPage >= totalGrupoPages}
+                                className={`px-3 py-1 text-sm rounded transition-colors
+                                    ${currentGrupoPage >= totalGrupoPages 
+                                        ? 'text-gray-300 cursor-not-allowed' 
+                                        : 'text-indigo-600 hover:bg-indigo-50'
+                                    }`}
+                            >
+                                Siguiente
+                            </button>
+                    </div>
+                )}
+            </>
+        )}
+      </div>
 
-      {/* Edit Modal */}
+      {/* --- MODALES --- */}
       <EditArticuloModal
         isOpen={showEditModal}
         articulo={editingArticulo}
         onClose={handleCloseEditModal}
         onSuccess={handleEditSuccess}
       />
-
-      {/* Delete Modal */}
       <DeleteConfirmationModal
         isOpen={showDeleteModal}
         onClose={() => setShowDeleteModal(false)}
         onConfirm={handleConfirmDelete}
         loading={deleteLoading}
         title="Eliminar Artículo"
-        message={`¿Estás seguro de que deseas eliminar el artículo "${deletingArticulo?.nombre}"? Esta acción no se puede deshacer.`}
+        message={`¿Estás seguro de que deseas eliminar "${deletingArticulo?.nombre}"?`}
+      />
+
+      <EditGrupoModal
+        isOpen={showEditGrupoModal}
+        grupo={editingGrupo}
+        onClose={() => setShowEditGrupoModal(false)}
+        onSuccess={handleGrupoSuccess}
+      />
+      <DeleteConfirmationModal
+        isOpen={showDeleteGrupoModal}
+        onClose={() => setShowDeleteGrupoModal(false)}
+        onConfirm={handleConfirmDeleteGrupo}
+        loading={deleteGrupoLoading}
+        title="Eliminar Grupo"
+        message={`¿Eliminar el grupo "${deletingGrupo?.nombre}"? Si tiene artículos asociados no se podrá eliminar.`}
       />
     </div>
   );
