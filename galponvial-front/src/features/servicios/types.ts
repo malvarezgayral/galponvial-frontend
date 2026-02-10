@@ -109,3 +109,62 @@ export interface RecordatorioResponse {
     email: string;
   };
 }
+
+/**
+ * Tipos para Relaciones Usuario-Vehículo
+ */
+export interface RolAsignado {
+  dni: string;
+  rol_id: number;
+  fecha_asignacion: string;
+  fecha_actualizacion: string;
+}
+
+export interface UsuarioVehiculoRelacion {
+  id_usuario_vehiculo: number;
+  id_vehiculo: number;
+  id_usuario: string;
+  fecha_desde: string;
+  fecha_hasta: string | null;
+  usuario: {
+    dni: string;
+    nombre: string;
+    apellido: string;
+    email: string;
+    password: string;
+    isActive: boolean;
+    tokenVersion: number;
+    fecha_alta: string;
+    fecha_baja: string | null;
+    usuarioRoles: RolAsignado[];
+  };
+  vehiculo: {
+    id_vehiculo: number;
+    codigo: string;
+    nombre: string;
+    marca: string;
+    modelo: string;
+    anio: number;
+    status: string;
+    uso_combustible: number;
+    uso_km: number;
+    tipo_vehiculo: string;
+    eliminado: boolean;
+    created_at: string;
+  };
+}
+
+export interface UsuarioVehiculoResponse {
+  success: boolean;
+  data: {
+    data: UsuarioVehiculoRelacion[];
+    total: number;
+    page: number;
+    pageSize: number;
+  };
+  message: string;
+}
+
+export interface DesasignarVehiculoRequest {
+  fecha_hasta: string;
+}
