@@ -149,4 +149,64 @@ describe('usuarioVehiculoService', () => {
       await expect(usuarioVehiculoService.desasignarRelacion(1)).rejects.toThrow(errorMessage);
     });
   });
+
+  describe('asignarVehiculo', () => {
+    it('should assign a vehicle to a user', async () => {
+      const mockRelacion: UsuarioVehiculoRelacion = {
+        id_usuario_vehiculo: 1,
+        id_vehiculo: 1,
+        id_usuario: '12345678',
+        fecha_desde: '2026-02-10',
+        fecha_hasta: null,
+        usuario: {
+          dni: '12345678',
+          nombre: 'Juan',
+          apellido: 'Pérez',
+          email: 'juan@example.com',
+          password: 'hashed',
+          isActive: true,
+          tokenVersion: 0,
+          fecha_alta: '2026-02-01',
+          fecha_baja: null,
+          usuarioRoles: [],
+        },
+        vehiculo: {
+          id_vehiculo: 1,
+          codigo: 'VEH-001',
+          nombre: 'Vehículo 1',
+          marca: 'Toyota',
+          modelo: 'Corolla',
+          anio: 2020,
+          status: 'disponible',
+          uso_combustible: 15,
+          uso_km: 0.5,
+          tipo_vehiculo: 'sedan',
+          eliminado: false,
+          created_at: '2026-02-01T00:00:00Z',
+        },
+      };
+
+      (apiClient.post as jest.Mock).mockResolvedValue({ data: mockRelacion });
+
+      const result = await usuarioVehiculoService.asignarVehiculo('12345678', 1);
+
+      expect(result).toEqual(mockRelacion);
+      expect(apiClient.post).toHaveBeenCalledWith(
+        '/vehiculos/assign',
+        expect.objectContaining({
+          dni: '12345678',
+          id_vehiculo: 1,
+        })
+      );
+    });
+
+    it('should handle error when assigning fails', async () => {
+      const errorMessage = 'Vehicle already assigned';
+      (apiClient.post as jest.Mock).mockRejectedValue(new Error(errorMessage));
+
+      await expect(usuarioVehiculoService.asignarVehiculo('12345678', 1)).rejects.toThrow(
+        errorMessage
+      );
+    });
+  });
 });

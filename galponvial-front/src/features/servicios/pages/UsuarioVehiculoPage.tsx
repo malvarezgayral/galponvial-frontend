@@ -3,7 +3,10 @@ import { usuarioVehiculoService } from '../services/usuarioVehiculoService';
 import type { UsuarioVehiculoRelacion, UsuarioVehiculoResponse } from '../types';
 import { DetallesRelacionModal } from '../components/DetallesRelacionModal';
 import { ConfirmarDesasignarModal } from '../components/ConfirmarDesasignarModal';
+import { ConfirmarAsignarModal } from '../components/ConfirmarAsignarModal';
+import { AsignarForm } from '../components/AsignarForm';
 import { Button } from '@/shared/ui/Button';
+import type { User } from '@/features/usuarios/types';
 
 type FeedbackType = 'success' | 'error' | null;
 
@@ -12,9 +15,20 @@ interface FeedbackState {
   message: string;
 }
 
+interface VehiculoOption {
+  id_vehiculo: number;
+  codigo: string;
+  nombre: string;
+}
+
+interface AsignarState {
+  vehiculo: VehiculoOption | null;
+  usuario: User | null;
+}
+
 /**
  * Page for managing usuario-vehículo relationships
- * Shows a table with all relationships and allows viewing details and unassigning
+ * Shows a table with all relationships and allows viewing details, unassigning, and assigning new ones
  */
 const UsuarioVehiculoPage: React.FC = () => {
   const [relaciones, setRelaciones] = useState<UsuarioVehiculoRelacion[]>([]);
@@ -30,6 +44,9 @@ const UsuarioVehiculoPage: React.FC = () => {
   const [relacionParaDesasignar, setRelacionParaDesasignar] =
     useState<UsuarioVehiculoRelacion | null>(null);
   const [desasignando, setDesasignando] = useState(false);
+  const [showConfirmAsignarModal, setShowConfirmAsignarModal] = useState(false);
+  const [asignando, setAsignando] = useState(false);
+  const [asignarState, setAsignarState] = useState<AsignarState>({ vehiculo: null, usuario: null });
 
   // Fetch relaciones on mount and when page changes
   useEffect(() => {
@@ -118,6 +135,54 @@ const UsuarioVehiculoPage: React.FC = () => {
     setRelacionParaDesasignar(null);
   };
 
+  const handleAsignarClick = (vehiculo: VehiculoOption, usuario: User) => {
+    setAsignarState({ vehiculo, usuario });
+    setShowConfirmAsignarModal(true);
+  };
+
+  const handleConfirmarAsignar = async () => {
+    if (!asignarState.vehiculo || !asignarState.usuario) return;
+
+    try {
+      setAsignando(true);
+      await usuarioVehiculoService.asignarVehiculo(
+        asignarState.usuario.dni,
+        asignarState.vehiculo.id_vehiculo
+      );
+
+      // Success feedback
+      setFeedback({
+        type: 'success',
+        message: `El vehículo ${asignarState.vehiculo.nombre} ha sido asignado exitosamente a ${asignarState.usuario.nombre} ${asignarState.usuario.apellido}.`,
+      });
+
+      // Close modal and reset form
+      setShowConfirmAsignarModal(false);
+      setAsignarState({ vehiculo: null, usuario: null });
+
+      // Refetch data
+      const response: UsuarioVehiculoResponse = await usuarioVehiculoService.getAll(
+        currentPage,
+        pageSize
+      );
+      setRelaciones(response.data.data);
+      setTotalPages(Math.ceil(response.data.total / pageSize));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Error al asignar el vehículo';
+      setFeedback({
+        type: 'error',
+        message,
+      });
+      console.error(err);
+    } finally {
+      setAsignando(false);
+    }
+  };
+
+  const handleCancelarAsignar = () => {
+    setShowConfirmAsignarModal(false);
+  };
+
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
       <div className="max-w-7xl mx-auto">
@@ -152,6 +217,11 @@ const UsuarioVehiculoPage: React.FC = () => {
           </div>
         )}
 
+        {/* Asignar Form Section */}
+        <div className="mb-12">
+          <AsignarForm onAsignarClick={handleAsignarClick} />
+        </div>
+
         {/* Loading state */}
         {loading ? (
           <div className="flex justify-center items-center py-12">
@@ -165,6 +235,11 @@ const UsuarioVehiculoPage: React.FC = () => {
           </div>
         ) : (
           <>
+            {/* Table Title */}
+            <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">
+              Relaciones Existentes
+            </h2>
+
             {/* Table */}
             <div className="overflow-x-auto bg-white rounded-lg shadow">
               <table className="w-full border-collapse">
@@ -272,6 +347,20 @@ const UsuarioVehiculoPage: React.FC = () => {
           isLoading={desasignando}
           vehiculoNombre={relacionParaDesasignar.vehiculo.nombre}
           usuarioNombre={`${relacionParaDesasignar.usuario.nombre} ${relacionParaDesasignar.usuario.apellido}`}
+        />
+      )}
+
+      {/* Confirmar Asignar Modal */}
+      {asignarState.vehiculo && asignarState.usuario && (
+        <ConfirmarAsignarModal
+          isOpen={showConfirmAsignarModal}
+          onConfirm={handleConfirmarAsignar}
+          onCancel={handleCancelarAsignar}
+          isLoading={asignando}
+          vehiculoNombre={asignarState.vehiculo.nombre}
+          vehiculoCodigo={asignarState.vehiculo.codigo}
+          usuarioNombre={`${asignarState.usuario.nombre} ${asignarState.usuario.apellido}`}
+          usuarioDni={String(asignarState.usuario.dni)}
         />
       )}
     </div>

@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { recordatorioService } from '../services/recordatorioService';
-import { usuariosService } from '@/features/usuarios/services/usuariosService';
+import { useUsuariosStore } from '@/features/usuarios/store';
 import { RecordatorioSuccessModal } from './RecordatorioSuccessModal';
 import { useAppStore } from '@/app/stores/appStore';
 import type { RecordatorioRequest, RecordatorioResponse } from '../types';
-import type { User } from '@/features/usuarios/types';
 
 interface RecordatorioFormProps {
   onSuccess?: (response: RecordatorioResponse) => void;
@@ -26,8 +25,9 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
   });
   
   const [selectedUserDni, setSelectedUserDni] = useState<number | null>(null);
-  const [usuarios, setUsuarios] = useState<User[]>([]);
-  const [usuariosLoading, setUsuariosLoading] = useState(false);
+
+  // Get users from store
+  const { usuarios, isLoading: usuariosLoading, fetchUsuarios } = useUsuariosStore();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -40,29 +40,22 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
    */
   useEffect(() => {
     if (isAdmin) {
-      const loadUsuarios = async () => {
-        try {
-          setUsuariosLoading(true);
-          const response = await usuariosService.getAll();
-          // Si es una respuesta paginada, extraer el array de data
-          const usuariosList = Array.isArray(response) ? response : response.data || [];
-          setUsuarios(usuariosList);
-          if (usuariosList.length > 0) {
-            setSelectedUserDni(usuariosList[0].dni);
-          }
-        } catch (error) {
-          console.error('Error al cargar usuarios:', error);
-        } finally {
-          setUsuariosLoading(false);
-        }
-      };
-
-      loadUsuarios();
+      // Fetch usuarios from store
+      fetchUsuarios();
     } else if (user) {
       // Si no es admin, establecer su propio DNI
       setSelectedUserDni(user.dni);
     }
-  }, [isAdmin, user]);
+  }, [isAdmin, user, fetchUsuarios]);
+
+  /**
+   * Establece el primer usuario cuando se cargan desde el store
+   */
+  useEffect(() => {
+    if (isAdmin && usuarios.length > 0 && selectedUserDni === null) {
+      setSelectedUserDni(usuarios[0].dni);
+    }
+  }, [usuarios, isAdmin, selectedUserDni]);
 
   /**
    * Obtiene la fecha mínima permitida (hoy + 1 día)
