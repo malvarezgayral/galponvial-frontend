@@ -9,10 +9,10 @@ const HomePage = () => {
 
   const formatDate = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleDateString("es-ES", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
+      return new Date(dateString).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
       });
     } catch {
       return dateString;
@@ -21,9 +21,9 @@ const HomePage = () => {
 
   const getRolColor = (rol: string) => {
     const roles: Record<string, string> = {
-      "super-admin": "bg-red-100 text-red-800 border-red-300",
-      admin: "bg-blue-100 text-blue-800 border-blue-300",
-      usuario: "bg-green-100 text-green-800 border-green-300",
+      'super-admin': 'bg-red-100 text-red-800 border-red-300',
+      'admin': 'bg-blue-100 text-blue-800 border-blue-300',
+      'usuario': 'bg-green-100 text-green-800 border-green-300',
     };
     return roles[rol] || "bg-gray-100 text-gray-800 border-gray-300";
   };
@@ -48,7 +48,7 @@ const HomePage = () => {
               Mi Perfil
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {/* ... (Todo el bloque de perfil queda igual) ... */}
+              {/* Nombre y Apellido */}
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-(--color-text-secondary) mb-1">
                   Nombre Completo
@@ -57,6 +57,7 @@ const HomePage = () => {
                   {userData.nombre} {userData.apellido}
                 </span>
               </div>
+              {/* Email */}
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-[var(--color-text-secondary)] mb-1">
                   Correo Electrónico
@@ -65,6 +66,7 @@ const HomePage = () => {
                   {userData.email}
                 </span>
               </div>
+              {/* DNI */}
               <div className="flex flex-col">
                 <span className="text-sm font-semibold text-[var(--color-text-secondary)] mb-1">
                   DNI
