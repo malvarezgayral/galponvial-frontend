@@ -44,6 +44,8 @@ export const useLogin = (): UseLoginReturn => {
         email: userData.email,
         rol: userData.rol,
         dni: userData.dni,
+        nombre: userData.nombre,
+        apellido: userData.apellido,
         permisos: (userData.permisos || []).map((nombre) => ({
           id: '',
           nombre,
@@ -51,6 +53,7 @@ export const useLogin = (): UseLoginReturn => {
           modulo: 'almacen' as const,
           accion: 'crear' as const,
         })),
+        fechaCreacion: new Date().toISOString()
       };
       setUser(userWithPermisos);
 

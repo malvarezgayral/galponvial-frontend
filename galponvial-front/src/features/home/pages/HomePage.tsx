@@ -9,10 +9,10 @@ const HomePage = () => {
 
   const formatDate = (dateString: string) => {
     try {
-      return new Date(dateString).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
+      return new Date(dateString).toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
       });
     } catch {
       return dateString;
@@ -21,13 +21,13 @@ const HomePage = () => {
 
   const getRolColor = (rol: string) => {
     const roles: Record<string, string> = {
-      'super-admin': 'bg-red-100 text-red-800 border-red-300',
-      'admin': 'bg-blue-100 text-blue-800 border-blue-300',
-      'usuario': 'bg-green-100 text-green-800 border-green-300',
+      "super-admin": "bg-red-100 text-red-800 border-red-300",
+      admin: "bg-blue-100 text-blue-800 border-blue-300",
+      usuario: "bg-green-100 text-green-800 border-green-300",
     };
     return roles[rol] || "bg-gray-100 text-gray-800 border-gray-300";
   };
-
+console.log('DATOS REALES DEL USUARIO:', userData);
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
       <div className="max-w-7xl mx-auto">
@@ -50,10 +50,10 @@ const HomePage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {/* Nombre y Apellido */}
               <div className="flex flex-col">
-                <span className="text-sm font-semibold text-(--color-text-secondary) mb-1">
+                <span className="text-sm font-semibold text-[var(--color-text-secondary)] mb-1">
                   Nombre Completo
                 </span>
-                <span className="text-lg text-(--color-text-primary)">
+                <span className="text-lg text-[var(--color-text-primary)]">
                   {userData.nombre} {userData.apellido}
                 </span>
               </div>
