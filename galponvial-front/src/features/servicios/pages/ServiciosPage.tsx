@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useAppStore } from '@/app/stores/appStore';
 import { ServicioCard } from '../components/ServicioCard';
 
 /**
@@ -55,15 +56,37 @@ const ReminderIcon = () => (
   </svg>
 );
 
+const UserVehicleIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    strokeWidth={1.5}
+    stroke="currentColor"
+    className="w-10 h-10"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+    />
+  </svg>
+);
+
 /**
  * Página principal de Servicios
- * Muestra tres funcionalidades principales:
+ * Muestra funcionalidades principales:
  * 1. Carga de combustible
  * 2. Reporte de incidente
  * 3. Agregar recordatorio
+ * 4. Relaciones Usuario-Vehículo (solo para admin/superuser/superadmin)
  */
 const ServiciosPage = () => {
   const navigate = useNavigate();
+  const { user } = useAppStore();
+
+  const isAdmin =
+    user && (user.rol === 'admin' || user.rol === 'super-admin' || user.rol === 'superadmin' || user.rol === 'superuser');
 
   const handleCombustible = () => {
     navigate('/servicios/combustible');
@@ -75,6 +98,10 @@ const ServiciosPage = () => {
 
   const handleRecordatorio = () => {
     navigate('/servicios/recordatorio');
+  };
+
+  const handleUsuarioVehiculo = () => {
+    navigate('/servicios/usuario-vehiculo');
   };
 
   return (
@@ -121,6 +148,16 @@ const ServiciosPage = () => {
             icon={<ReminderIcon />}
             onClick={handleRecordatorio}
           />
+
+          {/* Tarjeta de Relaciones Usuario-Vehículo (solo para admin) */}
+          {isAdmin && (
+            <ServicioCard
+              title="Relaciones Usuario-Vehículo"
+              description="Administra las asignaciones de vehículos a usuarios"
+              icon={<UserVehicleIcon />}
+              onClick={handleUsuarioVehiculo}
+            />
+          )}
         </div>
       </div>
     </div>

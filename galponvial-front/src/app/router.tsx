@@ -12,6 +12,7 @@ import ServiciosPage from "../features/servicios/pages/ServiciosPage";
 import CombustiblePage from "../features/servicios/pages/CombustiblePage";
 import IncidentePage from "../features/servicios/pages/IncidentePage";
 import RecordatorioPage from "../features/servicios/pages/RecordatorioPage";
+import UsuarioVehiculoPage from "../features/servicios/pages/UsuarioVehiculoPage";
 import HomePage from "../features/home/pages/HomePage";
 import UsuariosPage from "../features/usuarios/pages/UsuariosPage";
 import LoginPage from "../features/auth/pages/LoginPage";
@@ -98,6 +99,14 @@ export const router = createBrowserRouter([
           <ProtectedRoute>
             <RecordatorioPage />
           </ProtectedRoute>
+        ),
+      },
+      {
+        path: "/servicios/usuario-vehiculo",
+        element: (
+          <AdminProtectedRoute>
+            <UsuarioVehiculoPage />
+          </AdminProtectedRoute>
         ),
       },
       {
