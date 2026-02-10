@@ -164,7 +164,3 @@ export interface UsuarioVehiculoResponse {
   };
   message: string;
 }
-
-export interface DesasignarVehiculoRequest {
-  fecha_hasta: string;
-}

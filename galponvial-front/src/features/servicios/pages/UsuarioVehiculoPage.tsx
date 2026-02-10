@@ -2,7 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { usuarioVehiculoService } from '../services/usuarioVehiculoService';
 import type { UsuarioVehiculoRelacion, UsuarioVehiculoResponse } from '../types';
 import { DetallesRelacionModal } from '../components/DetallesRelacionModal';
+import { ConfirmarDesasignarModal } from '../components/ConfirmarDesasignarModal';
 import { Button } from '@/shared/ui/Button';
+
+type FeedbackType = 'success' | 'error' | null;
+
+interface FeedbackState {
+  type: FeedbackType;
+  message: string;
+}
 
 /**
  * Page for managing usuario-vehículo relationships
@@ -17,7 +25,11 @@ const UsuarioVehiculoPage: React.FC = () => {
   const [pageSize] = useState(10);
   const [selectedRelacion, setSelectedRelacion] = useState<UsuarioVehiculoRelacion | null>(null);
   const [showDetallesModal, setShowDetallesModal] = useState(false);
-  const [desasignando, setDesasignando] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState<FeedbackState>({ type: null, message: '' });
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [relacionParaDesasignar, setRelacionParaDesasignar] =
+    useState<UsuarioVehiculoRelacion | null>(null);
+  const [desasignando, setDesasignando] = useState(false);
 
   // Fetch relaciones on mount and when page changes
   useEffect(() => {
@@ -44,33 +56,66 @@ const UsuarioVehiculoPage: React.FC = () => {
     fetchRelaciones();
   }, [currentPage, pageSize]);
 
+  // Auto-hide feedback after 5 seconds
+  useEffect(() => {
+    if (feedback.type) {
+      const timer = setTimeout(() => {
+        setFeedback({ type: null, message: '' });
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [feedback.type]);
+
   const handleVerDetalles = (relacion: UsuarioVehiculoRelacion) => {
     setSelectedRelacion(relacion);
     setShowDetallesModal(true);
   };
 
-  const handleDesasignar = async (id: number) => {
-    if (!window.confirm('¿Está seguro que desea desasignar esta relación?')) {
-      return;
-    }
+  const handleAbrirConfirmDesasignar = (relacion: UsuarioVehiculoRelacion) => {
+    setRelacionParaDesasignar(relacion);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmarDesasignar = async () => {
+    if (!relacionParaDesasignar) return;
 
     try {
-      setDesasignando(id);
-      await usuarioVehiculoService.desasignarRelacion(id);
-      // Refresh the list after successful unassignment
+      setDesasignando(true);
+      await usuarioVehiculoService.desasignarRelacion(relacionParaDesasignar.id_usuario_vehiculo);
+
+      // Success feedback
+      setFeedback({
+        type: 'success',
+        message: `La relación entre ${relacionParaDesasignar.usuario.nombre} ${relacionParaDesasignar.usuario.apellido} y ${relacionParaDesasignar.vehiculo.nombre} ha sido desasignada exitosamente.`,
+      });
+
+      // Close modal and refetch data
+      setShowConfirmModal(false);
+      setRelacionParaDesasignar(null);
+
+      // Refetch data
       const response: UsuarioVehiculoResponse = await usuarioVehiculoService.getAll(
         currentPage,
         pageSize
       );
       setRelaciones(response.data.data);
+      setTotalPages(Math.ceil(response.data.total / pageSize));
     } catch (err) {
       const message =
         err instanceof Error ? err.message : 'Error al desasignar la relación';
-      setError(message);
+      setFeedback({
+        type: 'error',
+        message,
+      });
       console.error(err);
     } finally {
-      setDesasignando(null);
+      setDesasignando(false);
     }
+  };
+
+  const handleCancelarDesasignar = () => {
+    setShowConfirmModal(false);
+    setRelacionParaDesasignar(null);
   };
 
   return (
@@ -90,6 +135,20 @@ const UsuarioVehiculoPage: React.FC = () => {
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
             <p className="text-red-800">{error}</p>
+          </div>
+        )}
+
+        {/* Success feedback */}
+        {feedback.type === 'success' && (
+          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <p className="text-green-800">{feedback.message}</p>
+          </div>
+        )}
+
+        {/* Error feedback */}
+        {feedback.type === 'error' && (
+          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-800">{feedback.message}</p>
           </div>
         )}
 
@@ -158,9 +217,8 @@ const UsuarioVehiculoPage: React.FC = () => {
                           <Button
                             variant="danger"
                             size="sm"
-                            onClick={() => handleDesasignar(relacion.id_usuario_vehiculo)}
-                            isLoading={desasignando === relacion.id_usuario_vehiculo}
-                            disabled={desasignando !== null || relacion.fecha_hasta !== null}
+                            onClick={() => handleAbrirConfirmDesasignar(relacion)}
+                            disabled={relacion.fecha_hasta !== null}
                           >
                             {relacion.fecha_hasta !== null ? 'Finalizada' : 'Desasignar'}
                           </Button>
@@ -204,6 +262,18 @@ const UsuarioVehiculoPage: React.FC = () => {
         relacion={selectedRelacion}
         onClose={() => setShowDetallesModal(false)}
       />
+
+      {/* Confirmar Desasignar Modal */}
+      {relacionParaDesasignar && (
+        <ConfirmarDesasignarModal
+          isOpen={showConfirmModal}
+          onConfirm={handleConfirmarDesasignar}
+          onCancel={handleCancelarDesasignar}
+          isLoading={desasignando}
+          vehiculoNombre={relacionParaDesasignar.vehiculo.nombre}
+          usuarioNombre={`${relacionParaDesasignar.usuario.nombre} ${relacionParaDesasignar.usuario.apellido}`}
+        />
+      )}
     </div>
   );
 };

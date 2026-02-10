@@ -1,9 +1,5 @@
 import { apiClient } from '@/services/api';
-import type {
-  UsuarioVehiculoResponse,
-  UsuarioVehiculoRelacion,
-  DesasignarVehiculoRequest,
-} from '../types';
+import type { UsuarioVehiculoResponse, UsuarioVehiculoRelacion } from '../types';
 
 /**
  * Service for managing usuario-vehículo relationships
@@ -41,19 +37,11 @@ export const usuarioVehiculoService = {
   },
 
   /**
-   * Unassign a usuario-vehículo relationship by setting fecha_hasta to today
+   * Unassign a usuario-vehículo relationship
    * @param id - ID of the usuario-vehículo relationship
-   * @returns Promise with the updated relationship
+   * @returns Promise with void
    */
-  desasignarRelacion: async (id: number): Promise<UsuarioVehiculoRelacion> => {
-    const today = new Date().toISOString().split('T')[0];
-    const request: DesasignarVehiculoRequest = {
-      fecha_hasta: today,
-    };
-    const { data } = await apiClient.put<UsuarioVehiculoRelacion>(
-      `/vehiculos/usuario-vehiculo/${id}`,
-      request
-    );
-    return data;
+  desasignarRelacion: async (id: number): Promise<void> => {
+    await apiClient.delete(`/vehiculos/usuario-vehiculo/${id}`);
   },
 };
