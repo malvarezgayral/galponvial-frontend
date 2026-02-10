@@ -10,7 +10,7 @@ export interface Articulo {
   nombre: string;
   modelo: string;
   descripcion: string;
-  img?: string;
+  img_url?: string;
   unidad_tipo: 'pieza' | 'caja' | 'kilogramo' | 'metro' | 'litro' | 'unidad' | 'volumen' | 'distancia' | 'paquete';
   stock?: number; // Solo aplica para ciertos tipos de unidad
   grupo?: Grupo; // Objeto grupo al que pertenece el artículo

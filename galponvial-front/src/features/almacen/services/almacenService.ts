@@ -47,10 +47,14 @@ getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
   /**
    * Create a new articulo
    */
-  createArticulo: async (payload: CreateArticuloPayload): Promise<ArticuloResponse> => {
-    const { data } = await apiClient.post(BASE_URL, payload);
+createArticulo: async (payload: FormData): Promise<ArticuloResponse> => {
+    const { data } = await apiClient.post(BASE_URL, payload, {
+        headers: {
+            'Content-Type': 'multipart/form-data', 
+        },
+    });
     return data.data || data;
-  },
+},
 
   /**
    * Update an existing articulo
