@@ -164,25 +164,6 @@ export const DetallesRelacionModal: React.FC<DetallesRelacionModalProps> = ({
             </div>
           </div>
 
-          {/* Roles Section */}
-          {usuario.usuarioRoles && usuario.usuarioRoles.length > 0 && (
-            <div className="mb-8">
-              <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-4">
-                Roles Asignados
-              </h3>
-              <div className="space-y-2">
-                {usuario.usuarioRoles.map((rol, index) => (
-                  <div key={index} className="bg-gray-50 p-3 rounded flex justify-between">
-                    <span className="text-[var(--color-text-primary)]">Rol ID: {rol.rol_id}</span>
-                    <span className="text-sm text-[var(--color-text-secondary)]">
-                      {new Date(rol.fecha_asignacion).toLocaleDateString('es-AR')}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {/* Footer */}
           <div className="flex justify-end gap-3">
             <Button variant="secondary" onClick={onClose}>
