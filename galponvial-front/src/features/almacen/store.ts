@@ -93,14 +93,17 @@ export const useAlmacenStore = create<AlmacenState>((set, get) => ({
 
   setGrupos: (grupos) => set({ grupos }),
 
-  updateArticulo: async (id, payload) => {
+  updateArticulo: async (id, payload) => { 
     try {
       set({ loading: true, error: null });
+      
       const updated = await almacenService.updateArticulo(id, payload);
+      
       const state = get();
       const updatedArticulos = state.articulos.map((a) =>
         a.cod === id ? { ...a, ...updated } : a
       );
+      
       set({ articulos: updatedArticulos });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Error al actualizar artículo';
@@ -109,7 +112,7 @@ export const useAlmacenStore = create<AlmacenState>((set, get) => ({
     } finally {
       set({ loading: false });
     }
-  },
+},
 
 
   removeArticulo: async (id: number) => {
