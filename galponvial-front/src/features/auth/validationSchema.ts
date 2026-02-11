@@ -5,14 +5,14 @@ const PASSWORD_REGEX = /(?:(?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$
 export const loginValidationSchema = yup.object().shape({
   email: yup
     .string()
-    .required('Email is required')
-    .email('Email must be a valid email address'),
+    .required('Email es requerido')
+    .email('El email debe ser valido'),
   password: yup
     .string()
-    .required('Password is required')
-    .min(8, 'Password must be at least 8 characters')
+    .required('La contraseña es requerida')
+    .min(8, 'La contraseña debe tener al menos 8 caracteres')
     .matches(PASSWORD_REGEX, {
-      message: 'La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número o símbolo',
+      message: 'La contraseña es incorrecta, debe contener al menos una letra mayúscula, una letra minúscula y un número o símbolo',
     }),
 });
 
