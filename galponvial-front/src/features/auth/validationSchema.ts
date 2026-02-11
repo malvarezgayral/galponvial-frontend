@@ -12,7 +12,7 @@ export const loginValidationSchema = yup.object().shape({
     .required('Password is required')
     .min(8, 'Password must be at least 8 characters')
     .matches(PASSWORD_REGEX, {
-      message: 'Password must have an Uppercase letter, lowercase letter and a number',
+      message: 'La contraseña debe contener al menos una letra mayúscula, una letra minúscula y un número o símbolo',
     }),
 });
 
