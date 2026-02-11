@@ -19,7 +19,7 @@ export const ArticuloCard: React.FC<ArticuloCardProps> = ({
   onViewDetails,
 }) => {
   // Mock image URL if not provided
-  const imageUrl = articulo.img || 'https://via.placeholder.com/300x200?text=Sin+Imagen';
+  const imageUrl = articulo.img_url || 'https://via.placeholder.com/300x200?text=Sin+Imagen';
 
   return (
     <div className="bg-white rounded-lg shadow-lg hover:shadow-xl transition-shadow overflow-hidden h-full flex flex-col">
@@ -37,7 +37,7 @@ export const ArticuloCard: React.FC<ArticuloCardProps> = ({
         {/* Stock badge - floating top right */}
         {articulo.stock !== undefined && (
           <div className="absolute top-3 right-3 bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-semibold">
-            Stock: {articulo.stock}
+            Stock: {articulo.stock | 0}
           </div>
         )}
 

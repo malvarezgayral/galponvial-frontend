@@ -18,7 +18,7 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
   const [descripcion, setDescripcion] = useState('');
   const [unidadTipo, setUnidadTipo] = useState<'pieza' | 'caja' | 'kilogramo' | 'metro' | 'litro' | 'unidad' | 'volumen' | 'distancia' | 'paquete'>('pieza');
   const [stock, setStock] = useState<string>('');
-  const [img, setImg] = useState('');
+  const [file, setFile] = useState<File | null>(null);
   const [grupoId, setGrupoId] = useState<number | ''>('');
 
   // UI state
@@ -74,7 +74,7 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
     setDescripcion('');
     setUnidadTipo('pieza');
     setStock('');
-    setImg('');
+    setFile(null);
     setGrupoId('');
     setError(null);
     setSuccess(false);
@@ -86,7 +86,7 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
     setError(null);
     setSuccess(false);
 
-    // Validation
+    // Validation (Igual que antes)
     if (!codProveedor.trim() || !nombre.trim() || !modelo.trim() || !descripcion.trim()) {
       setError('Todos los campos obligatorios deben estar completados');
       return;
@@ -104,21 +104,29 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
 
     setLoading(true);
     try {
-      const payload = {
-        cod_proveedor: codProveedor.trim(),
-        nombre: nombre.trim(),
-        modelo: modelo.trim(),
-        descripcion: descripcion.trim(),
-        unidad_tipo: unidadTipo,
-        grupo_id: grupoId as number,
-        ...(img.trim() && { img: img.trim() }),
-        ...(requiresStock && { stock: parseInt(stock, 10) }),
-      };
+      const formData = new FormData();
+      
+      formData.append('cod_proveedor', codProveedor.trim());
+      formData.append('nombre', nombre.trim());
+      formData.append('modelo', modelo.trim());
+      formData.append('descripcion', descripcion.trim());
+      formData.append('unidad_tipo', unidadTipo);
+      formData.append('grupo_id', String(grupoId)); 
 
-      await almacenService.createArticulo(payload);
+      if (requiresStock) {
+          formData.append('stock', stock);
+      }
+      
+      if (file) {
+          formData.append('file', file); 
+      }
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      await almacenService.createArticulo(formData as any); 
 
       setSuccess(true);
-      // Clear form after success
+      
+      // Clear form
       setTimeout(() => {
         setCodProveedor('');
         setNombre('');
@@ -126,11 +134,12 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
         setDescripcion('');
         setUnidadTipo('pieza');
         setStock('');
-        setImg('');
+        setFile(null); 
         setGrupoId('');
         setSuccess(false);
         onSuccess?.();
       }, 1500);
+
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error al crear artículo';
       setError(errorMessage);
@@ -300,21 +309,24 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
           </div>
         )}
 
-        {/* Imagen URL */}
+        {/* Imagen Archivo */}
         <div>
-          <label htmlFor="img" className="block text-sm font-medium text-gray-700 mb-2">
-            URL de Imagen (opcional)
+          <label htmlFor="file" className="block text-sm font-medium text-gray-700 mb-2">
+            Imagen del artículo (opcional)
           </label>
           <input
-            type="url"
-            id="img"
-            value={img}
-            onChange={(e) => setImg(e.target.value)}
-            placeholder="https://ejemplo.com/imagen.jpg"
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            type="file"
+            id="file"
+            accept="image/*" 
+            onChange={(e) => {
+                if (e.target.files && e.target.files[0]) {
+                    setFile(e.target.files[0]);
+                }
+            }}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
             disabled={loading}
           />
-          <p className="text-xs text-gray-500 mt-1">Campo opcional. Se mostrará una imagen por defecto si no se proporciona</p>
+          <p className="text-xs text-gray-500 mt-1">Formatos: JPG, PNG, WEBP.</p>
         </div>
       </div>
 

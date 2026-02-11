@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/api';
-import type { CreateArticuloPayload, ArticuloResponse, ArticulosListResponse, Grupo, Movimiento, Articulo, SectorDto, UpdateGrupoPayload } from '../types';
+import type { ArticuloResponse, ArticulosListResponse, Grupo, Movimiento, Articulo, SectorDto, UpdateGrupoPayload } from '../types';
 import { API_ENDPOINTS } from '@/services/apiEndpoints';
 
 const BASE_URL = '/almacen/articulos';
@@ -47,21 +47,34 @@ getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
   /**
    * Create a new articulo
    */
-  createArticulo: async (payload: CreateArticuloPayload): Promise<ArticuloResponse> => {
-    const { data } = await apiClient.post(BASE_URL, payload);
+createArticulo: async (payload: FormData): Promise<ArticuloResponse> => {
+    const { data } = await apiClient.post(BASE_URL, payload, {
+        headers: {
+            'Content-Type': 'multipart/form-data', 
+        },
+    });
     return data.data || data;
-  },
+},
 
   /**
    * Update an existing articulo
    */
-  updateArticulo: async (
-    id: number,
-    payload: Partial<CreateArticuloPayload>
-  ): Promise<ArticuloResponse> => {
-    const { data } = await apiClient.put(`${BASE_URL}/${id}`, payload);
-    return data.data || data;
-  },
+updateArticulo: async (
+  id: number, 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  payload: FormData | any 
+): Promise<ArticuloResponse> => {
+  
+  const isFormData = payload instanceof FormData;
+
+  const { data } = await apiClient.put(`${BASE_URL}/${id}`, payload, {
+    headers: {
+      'Content-Type': isFormData ? null : 'application/json',
+    }
+  });
+  
+  return data.data || data;
+},
 
   /**
    * Delete an articulo
