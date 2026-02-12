@@ -62,6 +62,15 @@ export const IncidenteForm: React.FC<IncidenteFormProps> = ({
 
     if (!formData.fecha) {
       newErrors.fecha = 'La fecha del incidente es obligatoria';
+    } else {
+      // ✅ CORRECCIÓN: Validar que la fecha no sea futura
+      const fechaIncidente = new Date(formData.fecha);
+      const hoy = new Date();
+      hoy.setHours(0, 0, 0, 0); // Reset time to compare only dates
+      
+      if (fechaIncidente > hoy) {
+        newErrors.fecha = 'La fecha del incidente no puede ser futura';
+      }
     }
 
     if (!formData.tipo || formData.tipo.trim() === '') {
@@ -123,9 +132,18 @@ export const IncidenteForm: React.FC<IncidenteFormProps> = ({
       if (onSuccess) {
         onSuccess(response);
       }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Error al registrar el incidente';
+    } catch (error: any) {
+      // ✅ MEJORA: Manejar mejor los errores del backend
+      let errorMessage = 'Error al registrar el incidente';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setGeneralError(errorMessage);
     } finally {
       setLoading(false);
@@ -215,6 +233,7 @@ export const IncidenteForm: React.FC<IncidenteFormProps> = ({
               name="fecha"
               value={formData.fecha}
               onChange={handleChange}
+              max={new Date().toISOString().split('T')[0]} 
               className={`
                 w-full px-4 py-2 border rounded-lg
                 focus:outline-none focus:ring-2 focus:ring-[#378AFE]

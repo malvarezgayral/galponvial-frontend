@@ -38,12 +38,14 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       newErrors.fecha_carga = 'La fecha de carga es obligatoria';
     }
 
-    if (formData.km_actual < 0) {
-      newErrors.km_actual = 'Los km actuales no pueden ser negativos';
+    // ✅ CORRECCIÓN: Validar que km_actual sea mayor a 0
+    if (!formData.km_actual || formData.km_actual <= 0) {
+      newErrors.km_actual = 'Los km actuales son obligatorios y deben ser mayor a 0';
     }
 
-    if (formData.cant_combustible_despachado <= 0) {
-      newErrors.cant_combustible_despachado = 'La cantidad de combustible debe ser mayor a 0';
+    // ✅ MEJORA: Validación consistente para combustible
+    if (!formData.cant_combustible_despachado || formData.cant_combustible_despachado <= 0) {
+      newErrors.cant_combustible_despachado = 'La cantidad de combustible es obligatoria y debe ser mayor a 0';
     }
 
     setErrors(newErrors);
@@ -92,9 +94,18 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       if (onSuccess) {
         onSuccess(response);
       }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Error al registrar la carga de combustible';
+    } catch (error: any) {
+      // ✅ MEJORA: Manejar mejor los errores del backend
+      let errorMessage = 'Error al registrar la carga de combustible';
+      
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
       setGeneralError(errorMessage);
     } finally {
       setLoading(false);

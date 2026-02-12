@@ -155,15 +155,28 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
     setShowError(false);
   };
 
-  // Handle success message
+  // ✅ CORRECCIÓN: Handle success message
   useEffect(() => {
     if (createSuccess) {
       setShowSuccess(true);
-      cleanForm();
-      const timer = setTimeout(() => setShowSuccess(false), 3000);
-      return () => clearTimeout(timer);
+      
+      // Ocultar mensaje después de 3 segundos
+      const hideTimer = setTimeout(() => {
+        setShowSuccess(false);
+      }, 3000);
+      
+      // Limpiar formulario después de 3.5 segundos (después de ocultar el mensaje)
+      const cleanTimer = setTimeout(() => {
+        setFormData(INITIAL_FORM_STATE);
+        resetCreateState();
+      }, 3500);
+      
+      return () => {
+        clearTimeout(hideTimer);
+        clearTimeout(cleanTimer);
+      };
     }
-  }, [createSuccess]);
+  }, [createSuccess, resetCreateState]);
 
   // Handle error message
   useEffect(() => {

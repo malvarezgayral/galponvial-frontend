@@ -4,6 +4,7 @@ import { IncidenteForm } from '../components/IncidenteForm';
 import { vehiculosService } from '@/features/vehiculos/services/vehiculosService';
 import { useAppStore } from '@/app/stores/appStore';
 import type { Vehiculo } from '@/features/vehiculos/types';
+import type { IncidenteResponse } from '../types';
 
 /**
  * Página para reportar incidentes
@@ -15,6 +16,7 @@ const IncidentePage = () => {
   const [selectedVehiculo, setSelectedVehiculo] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null); // ✅ AGREGADO
 
   /**
    * Carga la lista de vehículos al montar el componente
@@ -38,6 +40,16 @@ const IncidentePage = () => {
 
     loadVehiculos();
   }, []);
+
+  // ✅ AGREGADO: Maneja el éxito del registro
+  const handleSuccess = (response: IncidenteResponse) => {
+    setSuccessMessage(`Incidente #${response.id} registrado exitosamente. Puedes registrar otro.`);
+    
+    // Ocultar mensaje después de 5 segundos
+    setTimeout(() => {
+      setSuccessMessage(null);
+    }, 5000);
+  };
 
   if (loading) {
     return (
@@ -158,6 +170,27 @@ const IncidentePage = () => {
           Volver a Servicios
         </button>
 
+        {/* ✅ AGREGADO: Mensaje de éxito persistente */}
+        {successMessage && (
+          <div className="mb-6 p-4 bg-green-100 border border-green-400 rounded-lg flex items-start gap-3">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              strokeWidth={2}
+              stroke="currentColor"
+              className="w-6 h-6 text-green-600 flex-shrink-0"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p className="text-green-700 font-medium">{successMessage}</p>
+          </div>
+        )}
+
         {/* Selector de vehículo */}
         <div className="bg-white rounded-lg shadow-md p-8 mb-6">
           <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-3">
@@ -183,7 +216,11 @@ const IncidentePage = () => {
 
         {/* Formulario de incidente */}
         {selectedVehiculo && userId > 0 && (
-          <IncidenteForm vehiculoId={selectedVehiculo} userId={userId} />
+          <IncidenteForm 
+            vehiculoId={selectedVehiculo} 
+            userId={userId}
+            onSuccess={handleSuccess} 
+          />
         )}
       </div>
     </div>

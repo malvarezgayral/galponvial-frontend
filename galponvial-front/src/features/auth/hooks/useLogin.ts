@@ -12,6 +12,54 @@ interface UseLoginReturn {
 }
 
 /**
+ * Traduce mensajes de error del backend al español
+ */
+const translateErrorMessage = (error: any): string => {
+  // Si el error tiene una respuesta del backend
+  if (error.response?.data?.message) {
+    const backendMessage = error.response.data.message.toLowerCase();
+    
+    // Mapeo de errores comunes
+    if (backendMessage.includes('password') && backendMessage.includes('incorrect')) {
+      return 'Contraseña incorrecta';
+    }
+    if (backendMessage.includes('invalid password')) {
+      return 'Contraseña incorrecta';
+    }
+    if (backendMessage.includes('wrong password')) {
+      return 'Contraseña incorrecta';
+    }
+    if (backendMessage.includes('user not found')) {
+      return 'Usuario no encontrado';
+    }
+    if (backendMessage.includes('invalid credentials')) {
+      return 'Credenciales incorrectas';
+    }
+    if (backendMessage.includes('unauthorized')) {
+      return 'Acceso no autorizado';
+    }
+    if (backendMessage.includes('account disabled') || backendMessage.includes('account locked')) {
+      return 'Cuenta deshabilitada. Contacta al administrador';
+    }
+    
+    // Si no coincide con ninguno, devolver el mensaje original
+    return error.response.data.message;
+  }
+  
+  // Si es un error de red
+  if (error.message?.includes('Network Error')) {
+    return 'Error de conexión. Verifica tu internet';
+  }
+  
+  // Error genérico
+  if (error instanceof Error) {
+    return error.message;
+  }
+  
+  return 'Error al iniciar sesión. Intenta nuevamente';
+};
+
+/**
  * Custom hook for handling user login
  * @returns Object with loading state, error, login function and clearError function
  */
@@ -29,7 +77,7 @@ export const useLogin = (): UseLoginReturn => {
       const response = await authService.login(email, password);
 
       if (!response.success) {
-        setError(response.message || 'Login failed');
+        setError(response.message || 'Error al iniciar sesión');
         return;
       }
 
@@ -63,7 +111,8 @@ export const useLogin = (): UseLoginReturn => {
       // Redirect to home page on successful login
       navigate('/');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred during login';
+      // ✅ CORRECCIÓN: Traducir errores al español
+      const errorMessage = translateErrorMessage(err);
       setError(errorMessage);
     } finally {
       setLoading(false);
