@@ -16,8 +16,7 @@ const IncidentePage = () => {
   const [selectedVehiculo, setSelectedVehiculo] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null); // ✅ AGREGADO
-
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   /**
    * Carga la lista de vehículos al montar el componente
    */
@@ -41,7 +40,6 @@ const IncidentePage = () => {
     loadVehiculos();
   }, []);
 
-  // ✅ AGREGADO: Maneja el éxito del registro
   const handleSuccess = (response: IncidenteResponse) => {
     setSuccessMessage(`Incidente #${response.id} registrado exitosamente. Puedes registrar otro.`);
     
@@ -170,7 +168,6 @@ const IncidentePage = () => {
           Volver a Servicios
         </button>
 
-        {/* ✅ AGREGADO: Mensaje de éxito persistente */}
         {successMessage && (
           <div className="mb-6 p-4 bg-green-100 border border-green-400 rounded-lg flex items-start gap-3">
             <svg

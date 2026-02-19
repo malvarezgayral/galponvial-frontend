@@ -63,7 +63,6 @@ export const IncidenteForm: React.FC<IncidenteFormProps> = ({
     if (!formData.fecha) {
       newErrors.fecha = 'La fecha del incidente es obligatoria';
     } else {
-      // ✅ CORRECCIÓN: Validar que la fecha no sea futura
       const fechaIncidente = new Date(formData.fecha);
       const hoy = new Date();
       hoy.setHours(0, 0, 0, 0); // Reset time to compare only dates
@@ -133,7 +132,6 @@ export const IncidenteForm: React.FC<IncidenteFormProps> = ({
         onSuccess(response);
       }
     } catch (error: any) {
-      // ✅ MEJORA: Manejar mejor los errores del backend
       let errorMessage = 'Error al registrar el incidente';
       
       if (error.response?.data?.message) {
