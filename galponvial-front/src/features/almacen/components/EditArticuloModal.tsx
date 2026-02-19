@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/Button';
 import { useAlmacenStore } from '../store';
+import { handleApiError, type ApiError } from '@/services/errorHandler';
 import type { Articulo, UnidadTipoOption } from '../types';
 
 interface EditArticuloModalProps {
@@ -29,7 +30,7 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
   const [currentImgUrl, setCurrentImgUrl] = useState(''); 
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ApiError | null>(null);
   const [success, setSuccess] = useState(false);
 
   const unidadTipoOptions: UnidadTipoOption[] = [
@@ -74,12 +75,18 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
     setSuccess(false);
 
     if (!codProveedor.trim() || !nombre.trim() || !modelo.trim() || !descripcion.trim()) {
-      setError('Todos los campos obligatorios deben estar completados');
+      setError({
+        message: 'Todos los campos obligatorios deben estar completados',
+        isPermissionError: false,
+      });
       return;
     }
 
     if (requiresStock && (!stock.trim() || parseInt(stock, 10) <= 0)) {
-      setError('El stock es obligatorio y debe ser mayor a 0 para este tipo de unidad');
+      setError({
+        message: 'El stock es obligatorio y debe ser mayor a 0 para este tipo de unidad',
+        isPermissionError: false,
+      });
       return;
     }
 
@@ -142,12 +149,8 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
 
     } catch (err) {
       console.error(err);
-      const errorMessage = err instanceof Error ? err.message : 'Error al actualizar artículo';
-      if (errorMessage.includes('400')) {
-         setError('Error de validación (400). Verifica que el servidor acepte archivos o que los datos sean correctos.');
-      } else {
-         setError(errorMessage);
-      }
+      const apiError = handleApiError(err);
+      setError(apiError);
     } finally {
       setLoading(false);
     }
@@ -165,9 +168,20 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
 
         <form onSubmit={handleSubmit} className="p-6">
           {error && (
-            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-              <p className="font-medium">Error</p>
-              <p className="text-sm">{error}</p>
+            <div className={`mb-6 p-4 border rounded-lg flex items-start gap-3 ${
+              error.isPermissionError 
+                ? 'bg-amber-50 border-amber-200' 
+                : 'bg-red-50 border-red-200'
+            }`}>
+              <span className="text-2xl mt-0.5">
+                {error.isPermissionError ? '🔒' : '⚠️'}
+              </span>
+              <div className={error.isPermissionError ? 'text-amber-900' : 'text-red-800'}>
+                <p className="font-medium">
+                  {error.isPermissionError ? 'Permiso Insuficiente' : 'Error'}
+                </p>
+                <p className="text-sm">{error.message}</p>
+              </div>
             </div>
           )}
 
