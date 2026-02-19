@@ -21,14 +21,24 @@ import type {
  */
 const transformVehiculoPayload = (
   vehiculo: CreateVehiculoPayload
-): Record<string, any> => {
+): Record<string, unknown> => {
   return {
-    ...vehiculo,
+    codigo: vehiculo.codigo,
+    nombre: vehiculo.nombre,
+    marca: vehiculo.marca,
+    modelo: vehiculo.modelo,
+    anio: vehiculo.anio,
+    tipo_vehiculo: vehiculo.tipo_vehiculo,
+    status: vehiculo.status,
+    uso_combustible: vehiculo.uso_combustible,
+    uso_km: vehiculo.uso_km,
     infoAdicional: {
-      ...vehiculo.infoAdicional,
+      numero_serie: vehiculo.infoAdicional.numero_serie,
+      licencia_conductor: vehiculo.infoAdicional.licencia_conductor,
+      color: vehiculo.infoAdicional.color,
+      seguro_empresa: vehiculo.infoAdicional.seguro_empresa,
+      poliza: vehiculo.infoAdicional.poliza,
       id_sector_pertenencia: vehiculo.infoAdicional.sector.id_sector,
-      // Remove the sector object since backend expects id_sector_pertenencia
-      sector: undefined,
     },
   };
 };
@@ -37,7 +47,7 @@ const transformVehiculoPayload = (
  * Transform Partial<Vehiculo> to backend format for updates
  * Converts sector object to id_sector_pertenencia if present
  */
-const transformUpdatePayload = (vehiculo: Partial<Vehiculo>): Record<string, any> => {
+const transformUpdatePayload = (vehiculo: Partial<Vehiculo>): Record<string, unknown> => {
   if (!vehiculo.infoAdicional) {
     return vehiculo;
   }
