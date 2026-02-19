@@ -40,7 +40,6 @@ const UserFormModal: React.FC = () => {
         { value: 'user', label: 'Usuario' },
         { value: 'admin', label: 'Admin' },
         { value: 'superuser', label: 'Super usuario' },
-        { value: 'super-admin', label: 'Super Admin' },
       ];
     }
     // Admin can only assign user and superuser

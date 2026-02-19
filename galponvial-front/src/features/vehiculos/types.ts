@@ -20,6 +20,7 @@ export interface Vehiculo {
   anio: number;
   tipo_vehiculo: string;
   status: 'disponible' | 'mantenimiento' | 'en_uso' | 'retirado';
+  uso_combustible: number;
   infoAdicional: InfoAdicional;
   fechaCreacion?: string;
   ultimaModificacion?: string;
@@ -33,6 +34,8 @@ export interface CreateVehiculoPayload {
   anio: number;
   tipo_vehiculo: string;
   status: 'disponible' | 'mantenimiento' | 'en_uso' | 'retirado';
+  uso_combustible: number;
+  uso_km: number;
   infoAdicional: InfoAdicional;
 }
 

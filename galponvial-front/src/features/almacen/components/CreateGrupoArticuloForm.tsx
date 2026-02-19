@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/shared/ui/Button';
 import { almacenService } from '../services/almacenService';
+import { handleApiError, type ApiError } from '@/services/errorHandler';
 import type { SectorDto } from '../types';
 
 interface CreateGrupoArticuloFormProps {
@@ -18,7 +19,7 @@ export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = (
   const [loadingSectores, setLoadingSectores] = useState(true);
 
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ApiError | null>(null);
   const [success, setSuccess] = useState(false);
 
   // 🔁 Cargar sectores
@@ -27,8 +28,9 @@ export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = (
       try {
         const data = await almacenService.getSectores();
         setSectores(data);
-      } catch {
-        setError('Error al cargar los sectores');
+      } catch (err) {
+        const apiError = handleApiError(err);
+        setError(apiError);
       } finally {
         setLoadingSectores(false);
       }
@@ -43,12 +45,18 @@ export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = (
     setSuccess(false);
 
     if (!nombre.trim() || !descripcion.trim()) {
-      setError('Nombre y descripción son obligatorios');
+      setError({
+        message: 'Nombre y descripción son obligatorios',
+        isPermissionError: false,
+      });
       return;
     }
 
     if (!sectorId) {
-      setError('Debe seleccionar un sector');
+      setError({
+        message: 'Debe seleccionar un sector',
+        isPermissionError: false,
+      });
       return;
     }
 
@@ -69,13 +77,9 @@ export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = (
         setSuccess(false);
         onSuccess?.();
       }, 1500);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      if (err?.response?.status === 403) {
-        setError('No contás con los permisos necesarios para crear grupos');
-      } else {
-        setError('Error al crear el grupo');
-      }
+    } catch (err) {
+      const apiError = handleApiError(err);
+      setError(apiError);
     } finally {
       setLoading(false);
     }
@@ -88,9 +92,20 @@ export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = (
       </h2>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-          <p className="font-medium">Error</p>
-          <p className="text-sm">{error}</p>
+        <div className={`mb-6 p-4 border rounded-lg flex items-start gap-3 ${
+          error.isPermissionError 
+            ? 'bg-amber-50 border-amber-200' 
+            : 'bg-red-50 border-red-200'
+        }`}>
+          <span className="text-2xl mt-0.5">
+            {error.isPermissionError ? '🔒' : '⚠️'}
+          </span>
+          <div className={error.isPermissionError ? 'text-amber-900' : 'text-red-800'}>
+            <p className="font-medium">
+              {error.isPermissionError ? 'Permiso Insuficiente' : 'Error'}
+            </p>
+            <p className="text-sm">{error.message}</p>
+          </div>
         </div>
       )}
 

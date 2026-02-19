@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/Button';
 import { almacenService } from '../services/almacenService';
+import { handleApiError, type ApiError } from '@/services/errorHandler';
 import type { UnidadTipoOption, Grupo } from '../types';
 
 interface CreateArticuloFormProps {
@@ -23,14 +24,14 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
 
   // UI state
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<ApiError | null>(null);
   const [success, setSuccess] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   // Grupos state
   const [grupos, setGrupos] = useState<Grupo[]>([]);
   const [gruposLoading, setGruposLoading] = useState(true);
-  const [gruposError, setGruposError] = useState<string | null>(null);
+  const [gruposError, setGruposError] = useState<ApiError | null>(null);
 
   // Fetch grupos on component mount
   useEffect(() => {
@@ -40,8 +41,8 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
         setGrupos(data);
         setGruposError(null);
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Error al cargar grupos';
-        setGruposError(errorMessage);
+        const apiError = handleApiError(err);
+        setGruposError(apiError);
       } finally {
         setGruposLoading(false);
       }
@@ -88,17 +89,26 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
 
     // Validation (Igual que antes)
     if (!codProveedor.trim() || !nombre.trim() || !modelo.trim() || !descripcion.trim()) {
-      setError('Todos los campos obligatorios deben estar completados');
+      setError({
+        message: 'Todos los campos obligatorios deben estar completados',
+        isPermissionError: false,
+      });
       return;
     }
 
     if (!grupoId) {
-      setError('Debe seleccionar un grupo');
+      setError({
+        message: 'Debe seleccionar un grupo',
+        isPermissionError: false,
+      });
       return;
     }
 
     if (requiresStock && (!stock.trim() || parseInt(stock, 10) <= 0)) {
-      setError('El stock es obligatorio y debe ser mayor a 0 para este tipo de unidad');
+      setError({
+        message: 'El stock es obligatorio y debe ser mayor a 0 para este tipo de unidad',
+        isPermissionError: false,
+      });
       return;
     }
 
@@ -141,8 +151,8 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
       }, 1500);
 
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error al crear artículo';
-      setError(errorMessage);
+      const apiError = handleApiError(err);
+      setError(apiError);
     } finally {
       setLoading(false);
     }
@@ -153,9 +163,20 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
       <h2 className="text-2xl font-semibold text-gray-900 mb-6">Crear Nuevo Artículo</h2>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-          <p className="font-medium">Error</p>
-          <p className="text-sm">{error}</p>
+        <div className={`mb-6 p-4 border rounded-lg flex items-start gap-3 ${
+          error.isPermissionError 
+            ? 'bg-amber-50 border-amber-200' 
+            : 'bg-red-50 border-red-200'
+        }`}>
+          <span className="text-2xl mt-0.5">
+            {error.isPermissionError ? '🔒' : '⚠️'}
+          </span>
+          <div className={error.isPermissionError ? 'text-amber-900' : 'text-red-800'}>
+            <p className="font-medium">
+              {error.isPermissionError ? 'Permiso Insuficiente' : 'Error'}
+            </p>
+            <p className="text-sm">{error.message}</p>
+          </div>
         </div>
       )}
 
@@ -246,7 +267,7 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
             Grupo *
           </label>
           {gruposError && (
-            <div className="text-red-600 text-sm mb-2">{gruposError}</div>
+            <div className="text-red-600 text-sm mb-2">{gruposError.message}</div>
           )}
           <select
             id="grupo"

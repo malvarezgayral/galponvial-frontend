@@ -29,7 +29,7 @@ export const useLogin = (): UseLoginReturn => {
       const response = await authService.login(email, password);
 
       if (!response.success) {
-        setError(response.message || 'Login failed');
+        setError(response.message || 'Error al iniciar sesión');
         return;
       }
 
@@ -63,8 +63,7 @@ export const useLogin = (): UseLoginReturn => {
       // Redirect to home page on successful login
       navigate('/');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'An error occurred during login';
-      setError(errorMessage);
+      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
     } finally {
       setLoading(false);
     }
