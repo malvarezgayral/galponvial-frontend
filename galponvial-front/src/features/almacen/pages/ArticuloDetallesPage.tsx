@@ -176,6 +176,16 @@ const ArticuloDetallesPage: React.FC = () => {
 
           <div className="md:col-span-2 flex flex-col h-full">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-6 gap-x-12 mb-8">
+              {/* AQUÍ ESTÁ EL CAMBIO: Se agregó el bloque del Código */}
+              <div>
+                <span className="text-gray-500 text-xs uppercase tracking-wider block mb-1">
+                  Código
+                </span>
+                <span className="text-gray-900 font-semibold">
+                  {articulo.cod || "-"}
+                </span>
+              </div>
+              
               <div>
                 <span className="text-gray-500 text-xs uppercase tracking-wider block mb-1">
                   Código Proveedor
