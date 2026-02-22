@@ -1,117 +1,82 @@
-import axios, { AxiosError } from 'axios';
+import axios, { AxiosError } from "axios";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
-  withCredentials: true, // Allow sending cookies with requests
+  withCredentials: true,
 });
-
-let isRefreshing = false;
-let failedQueue: Array<{ resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }> = [];
-
-const processQueue = (error: AxiosError | null): void => {
-  failedQueue.forEach((prom) => {
-    if (error) {
-      prom.reject(error);
-    } else {
-      prom.resolve();
-    }
-  });
-
-  failedQueue = [];
-};
 
 // Request interceptor - add auth token
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem('accessToken');
+  const token = localStorage.getItem("accessToken");
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
 
-// Response interceptor - handle errors and token refresh
+// Response interceptor - handle token refresh
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as any;
-
-    // Only attempt refresh for 401 errors and non-login/refresh endpoints
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      originalRequest.url !== '/usuario/login' &&
-      originalRequest.url !== '/usuario/refresh'
+      !originalRequest.url?.includes("/usuario/refresh")
     ) {
-      if (isRefreshing) {
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then(() => apiClient(originalRequest))
-          .catch((err) => Promise.reject(err));
-      }
-
       originalRequest._retry = true;
-      isRefreshing = true;
+      // Remove expired access token
+      localStorage.removeItem("accessToken");
 
-      try {
-        // Try to refresh the token with refresh token from localStorage
-        const refreshToken = localStorage.getItem('refreshToken');
-        if (!refreshToken) {
-          throw new Error('No refresh token available');
-        }
-
-        const response = await axios.post(
-          `${API_BASE_URL}/usuario/refresh`,
-          { refreshToken },
-          { withCredentials: true }
-        );
-
-        if (response.status === 201 && response.data.success && response.data.data.accessToken) {
-          const newTokenData = response.data.data;
+      // Try to refresh
+      const refreshToken = localStorage.getItem("refreshToken");
+      console.log("Attempting token refresh with refresh token:", refreshToken);
+      if (refreshToken) {
+        try {
+          const response = await axios.post(
+            `${API_BASE_URL}/usuario/refresh`,
+            {},
+            {
+              withCredentials: true,
+              headers: {
+                Authorization: `Bearer ${refreshToken}`,
+              },
+            },
+          );
           
+          const { accessToken, rol, permisos } = response.data.data;
+
           // Update access token
-          localStorage.setItem('accessToken', newTokenData.accessToken);
-          
-          // Update user data with new rol and permisos if provided
-          if (newTokenData.rol) {
-            const userData = JSON.parse(localStorage.getItem('user') || '{}');
-            userData.rol = newTokenData.rol;
-            if (newTokenData.permisos) {
-              userData.permisos = newTokenData.permisos;
-            }
-            localStorage.setItem('user', JSON.stringify(userData));
-          }
-          
-          apiClient.defaults.headers.common.Authorization = `Bearer ${newTokenData.accessToken}`;
-          processQueue(null);
-          return apiClient(originalRequest);
-        }
-      } catch (refreshError) {
-        // Refresh token expired or invalid
-        processQueue(refreshError as AxiosError);
-        localStorage.removeItem('accessToken');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
-      }
-    }
+          localStorage.setItem("accessToken", accessToken);
 
-    if (error.response?.status === 401) {
-      // Token expired and refresh failed, or couldn't attempt refresh
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+          // Update user data with only rol and permisos
+          const userData = JSON.parse(localStorage.getItem("user") || "{}");
+          userData.rol = rol;
+          userData.permisos = permisos;
+          localStorage.setItem("user", JSON.stringify(userData));
+
+          // Retry original request with new token
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+          return apiClient(originalRequest);
+        } catch {
+          // Refresh failed - clear all and redirect to login
+          localStorage.removeItem("refreshToken");
+          localStorage.removeItem("user");
+          window.location.href = "/login";
+        }
+      } else {
+        // No refresh token - redirect to login
+        localStorage.removeItem("user");
+        window.location.href = "/login";
+      }
     }
 
     return Promise.reject(error);
-  }
+  },
 );
