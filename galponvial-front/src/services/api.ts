@@ -25,14 +25,12 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as any;
-    console.log("HOLA LA RE PUTA MADRE LINEA 28");
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
       !originalRequest.url?.includes("/usuario/refresh")
     ) {
       originalRequest._retry = true;
-      console.log("HOLA LA RE PUTA MADRE");
       // Remove expired access token
       localStorage.removeItem("accessToken");
 
@@ -51,7 +49,7 @@ apiClient.interceptors.response.use(
               },
             },
           );
-          console.log("Token refreshed successfully", response.data);
+          
           const { accessToken, rol, permisos } = response.data.data;
 
           // Update access token
