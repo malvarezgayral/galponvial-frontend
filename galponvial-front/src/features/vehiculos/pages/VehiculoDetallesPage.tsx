@@ -33,9 +33,6 @@ const VehiculoDetallesPage: React.FC = () => {
   const [combustibleLoading, setCombustibleLoading] = useState(false);
   const [combustibleError, setCombustibleError] = useState<Error | null>(null);
 
-  // Solo mantenemos el modal de recordatorio, los otros redirigen a sus respectivas páginas
-  const [showRecordatorioModal, setShowRecordatorioModal] = useState(false);
-
   // Function to refetch all data
   const refetchAllData = async () => {
     if (!vehiculoId) return;
