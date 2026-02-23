@@ -4,10 +4,7 @@ import { useVehiculosStore } from '../store';
 import { Badge } from '@/shared/ui/Badge';
 import { Button } from '@/shared/ui/Button';
 import { vehiculosService } from '../services/vehiculosService';
-import { AddRecordatorioModal } from '../components/AddRecordatorioModal';
-import { AddCargaCombustibleModal } from '../components/AddCargaCombustibleModal';
-import { AddIncidenteModal } from '../components/AddIncidenteModal';
-import type { Recordatorio, StatusUpdate, Incidente, CargaCombustible } from '../types';
+import type { StatusUpdate, Incidente, CargaCombustible } from '../types';
 
 /**
  * Page for displaying vehicle details
@@ -20,11 +17,6 @@ const VehiculoDetallesPage: React.FC = () => {
   // Find the vehicle by ID
   const vehiculo = id ? vehiculos.find((v) => v.id_vehiculo === parseInt(id)) : null;
   const vehiculoId = vehiculo?.id_vehiculo;
-
-  // Local state for recordatorios
-  const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]);
-  const [recordatoriosLoading, setRecordatoriosLoading] = useState(false);
-  const [recordatoriosError, setRecordatoriosError] = useState<Error | null>(null);
 
   // Local state for status updates
   const [statusUpdates, setStatusUpdates] = useState<StatusUpdate[]>([]);
@@ -41,27 +33,12 @@ const VehiculoDetallesPage: React.FC = () => {
   const [combustibleLoading, setCombustibleLoading] = useState(false);
   const [combustibleError, setCombustibleError] = useState<Error | null>(null);
 
-  // Modal states
+  // Solo mantenemos el modal de recordatorio, los otros redirigen a sus respectivas páginas
   const [showRecordatorioModal, setShowRecordatorioModal] = useState(false);
-  const [showCargaCombustibleModal, setShowCargaCombustibleModal] = useState(false);
-  const [showIncidenteModal, setShowIncidenteModal] = useState(false);
 
   // Function to refetch all data
   const refetchAllData = async () => {
     if (!vehiculoId) return;
-
-    // Fetch recordatorios
-    try {
-      setRecordatoriosLoading(true);
-      const recordatoriosData = await vehiculosService.getRecordatorios(vehiculoId, 1, 5);
-      setRecordatorios(recordatoriosData.data);
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Error al cargar recordatorios');
-      setRecordatoriosError(error);
-      console.error('Error fetching recordatorios:', error);
-    } finally {
-      setRecordatoriosLoading(false);
-    }
 
     // Fetch status updates
     try {
@@ -142,6 +119,17 @@ const VehiculoDetallesPage: React.FC = () => {
         return status;
     }
   };
+
+  // Handlers para redireccionar a los formularios principales
+  // NOTA: Ajusta estas rutas a las que uses en tu configuración de React Router
+  const handleRedirectIncidente = () => {
+    navigate('/servicios/incidente', { state: { vehiculoId } });
+  };
+
+  const handleRedirectCombustible = () => {
+    navigate('/servicios/combustible', { state: { vehiculoId } });
+  };
+
 
   // If vehicle not found
   if (!vehiculo) {
@@ -425,7 +413,7 @@ const VehiculoDetallesPage: React.FC = () => {
               <Button
                 variant="primary"
                 size="md"
-                onClick={() => setShowIncidenteModal(true)}
+                onClick={handleRedirectIncidente}
               >
                 + Reportar Incidente
               </Button>
@@ -463,9 +451,9 @@ const VehiculoDetallesPage: React.FC = () => {
                   <tbody>
                     {incidentes.map((item, idx) => {
                       const fallaColor =
-                        item.falla === 'critica' || item.falla === 'alta'
+                        item.falla === 'critica'
                           ? 'bg-red-100 text-red-800'
-                          : item.falla === 'moderada' || item.falla === 'media'
+                          : item.falla === 'moderada'
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-green-100 text-green-800';
                       const estadoColor =
@@ -508,7 +496,7 @@ const VehiculoDetallesPage: React.FC = () => {
               <Button
                 variant="primary"
                 size="md"
-                onClick={() => setShowCargaCombustibleModal(true)}
+                onClick={handleRedirectCombustible}
               >
                 + Añadir Carga
               </Button>
@@ -564,30 +552,6 @@ const VehiculoDetallesPage: React.FC = () => {
           Volver
         </Button>
       </div>
-
-      {/* Modals */}
-      {vehiculoId && (
-        <>
-          <AddRecordatorioModal
-            vehiculoId={vehiculoId}
-            isOpen={showRecordatorioModal}
-            onClose={() => setShowRecordatorioModal(false)}
-            onSuccess={refetchAllData}
-          />
-          <AddCargaCombustibleModal
-            vehiculoId={vehiculoId}
-            isOpen={showCargaCombustibleModal}
-            onClose={() => setShowCargaCombustibleModal(false)}
-            onSuccess={refetchAllData}
-          />
-          <AddIncidenteModal
-            vehiculoId={vehiculoId}
-            isOpen={showIncidenteModal}
-            onClose={() => setShowIncidenteModal(false)}
-            onSuccess={refetchAllData}
-          />
-        </>
-      )}
     </div>
   );
 };

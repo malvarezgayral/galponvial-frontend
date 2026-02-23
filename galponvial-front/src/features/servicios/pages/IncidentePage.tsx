@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { IncidenteForm } from '../components/IncidenteForm';
 import { vehiculosService } from '@/features/vehiculos/services/vehiculosService';
 import { useAppStore } from '@/app/stores/appStore';
@@ -11,14 +11,17 @@ import type { IncidenteResponse } from '../types';
  */
 const IncidentePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAppStore();
   const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
   const [selectedVehiculo, setSelectedVehiculo] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
   /**
    * Carga la lista de vehículos al montar el componente
+   * y preselecciona el vehículo si viene por URL o State
    */
   useEffect(() => {
     const loadVehiculos = async () => {
@@ -26,8 +29,20 @@ const IncidentePage = () => {
         setLoading(true);
         const data = await vehiculosService.getAll();
         setVehiculos(data);
+        
         if (data.length > 0) {
-          setSelectedVehiculo(data[0].id_vehiculo);
+          // Buscamos si viene un vehiculoId por state o query param
+          const queryParams = new URLSearchParams(location.search);
+          const initialVehiculoId = location.state?.vehiculoId || queryParams.get('vehiculoId');
+          
+          if (initialVehiculoId) {
+            const targetId = parseInt(initialVehiculoId as string, 10);
+            const exists = data.some(v => v.id_vehiculo === targetId);
+            setSelectedVehiculo(exists ? targetId : data[0].id_vehiculo);
+          } else {
+            // Si no viene ninguno, seleccionamos el primero por defecto
+            setSelectedVehiculo(data[0].id_vehiculo);
+          }
         }
       } catch (err) {
         const errorMessage = err instanceof Error ? err.message : 'Error al cargar vehículos';
@@ -38,6 +53,7 @@ const IncidentePage = () => {
     };
 
     loadVehiculos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleSuccess = (response: IncidenteResponse) => {
