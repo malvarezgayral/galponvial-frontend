@@ -118,9 +118,9 @@ const VehiculoDetallesPage: React.FC = () => {
         return 'bg-green-100 text-green-800';
       case 'en_uso':
         return 'bg-blue-100 text-blue-800';
-      case 'mantenimiento':
+      case 'en_taller':
         return 'bg-yellow-100 text-yellow-800';
-      case 'retirado':
+      case 'fuera_de_servicio':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -134,10 +134,10 @@ const VehiculoDetallesPage: React.FC = () => {
         return 'Disponible';
       case 'en_uso':
         return 'En Uso';
-      case 'mantenimiento':
-        return 'En Mantenimiento';
-      case 'retirado':
-        return 'Retirado';
+      case 'en_taller':
+        return 'En Taller';
+      case 'fuera_de_servicio':
+        return 'Fuera de Servicio';
       default:
         return status;
     }
@@ -313,7 +313,7 @@ const VehiculoDetallesPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div>
             <span className="text-gray-600 font-medium block mb-2">Número de Serie</span>
-            <p className="text-gray-900 font-semibold text-lg">{vehiculo.infoAdicional.numero_serie}</p>
+            <p className="text-gray-900 font-semibold text-lg">{vehiculo.infoAdicional?.numero_serie || "Sin info"}</p>
           </div>
 
           <div>
@@ -322,34 +322,51 @@ const VehiculoDetallesPage: React.FC = () => {
               <div
                 className="w-8 h-8 rounded border border-gray-300 shadow-sm"
                 style={{
-                  backgroundColor: vehiculo.infoAdicional.color?.toLowerCase() || '#cccccc',
+                  backgroundColor: (() => {
+                    const color = vehiculo.infoAdicional?.color?.toLowerCase().trim() || '';
+                    const colorMap: Record<string, string> = {
+                      blanco: 'white',
+                      negro: 'black',
+                      rojo: 'red',
+                      azul: 'blue',
+                      verde: 'green',
+                      amarillo: 'yellow',
+                      gris: 'gray',
+                      plateado: 'silver',
+                      naranja: 'orange',
+                      marrón: 'brown',
+                      marron: 'brown',
+                      celeste: 'skyblue'
+                    };
+                    return colorMap[color] || color || '#cccccc';
+                  })(),
                 }}
               />
               <p className="text-gray-900 font-semibold capitalize">
-                {vehiculo.infoAdicional.color}
+                {vehiculo.infoAdicional?.color || "Sin info"}
               </p>
             </div>
           </div>
 
           <div>
             <span className="text-gray-600 font-medium block mb-2">Licencia del Conductor</span>
-            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional.licencia_conductor}</p>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.licencia_conductor || "Sin info"}</p>
           </div>
 
           <div>
             <span className="text-gray-600 font-medium block mb-2">Seguro Empresa</span>
-            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional.seguro_empresa}</p>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.seguro_empresa || "Sin info"}</p>
           </div>
 
           <div>
             <span className="text-gray-600 font-medium block mb-2">Póliza</span>
-            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional.poliza}</p>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.poliza || "Sin info"}</p>
           </div>
 
           <div>
             <span className="text-gray-600 font-medium block mb-2">Sector de Pertenencia</span>
             <p className="text-gray-900 font-semibold">
-              {vehiculo.infoAdicional.sector.nombre}
+              {vehiculo.infoAdicional?.sector?.nombre || "Sin info"}
             </p>
           </div>
         </div>
@@ -446,9 +463,9 @@ const VehiculoDetallesPage: React.FC = () => {
                   <tbody>
                     {incidentes.map((item, idx) => {
                       const fallaColor =
-                        item.falla === 'alta'
+                        item.falla === 'critica' || item.falla === 'alta'
                           ? 'bg-red-100 text-red-800'
-                          : item.falla === 'media'
+                          : item.falla === 'moderada' || item.falla === 'media'
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-green-100 text-green-800';
                       const estadoColor =
