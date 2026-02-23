@@ -104,7 +104,7 @@ const ArticuloDetallesPage: React.FC = () => {
       </div>
     );
   }
-
+  console.log("Datos REALES en el estado de React:", movimientos);
   return (
     <div className="space-y-6 pb-10">
       <div className="flex items-center justify-between mb-6">
@@ -185,7 +185,7 @@ const ArticuloDetallesPage: React.FC = () => {
                   {articulo.cod || "-"}
                 </span>
               </div>
-              
+
               <div>
                 <span className="text-gray-500 text-xs uppercase tracking-wider block mb-1">
                   Código Proveedor
@@ -256,6 +256,7 @@ const ArticuloDetallesPage: React.FC = () => {
           <h2 className="text-lg font-semibold text-gray-900">
             Historial de Movimientos
           </h2>
+
           <div className="text-sm text-gray-500">
             {movimientos.length} registros
           </div>
@@ -283,20 +284,29 @@ const ArticuloDetallesPage: React.FC = () => {
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Tipo
                   </th>
+
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Fecha
                   </th>
+
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Usuario
                   </th>
+
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Motivo
+                    Motivo principal
                   </th>
+
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Info Extra
+                  </th>
+
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Detalle
                   </th>
                 </tr>
               </thead>
+
               <tbody className="bg-white divide-y divide-gray-100">
                 {movimientos.map((mov, idx) => (
                   <tr key={idx} className="hover:bg-gray-50 transition-colors">
@@ -308,17 +318,48 @@ const ArticuloDetallesPage: React.FC = () => {
                         {mov.tipoMovimiento.toUpperCase()}
                       </Badge>
                     </td>
+
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       {new Date(mov.fecha).toLocaleString()}
                     </td>
+
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
                       {mov.dniUsuario}
                     </td>
+
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
                       {mov.motivo}
                     </td>
+
                     <td className="px-6 py-4 text-sm text-gray-600">
-                      {mov.detalle}
+                      {/* Lógica basada puramente en la existencia de los datos para evitar errores de case-sensitive */}
+                      
+                      {mov.proveedor ? (
+                        <div>
+                          <span className="font-medium text-gray-900">
+                            Proveedor:
+                          </span>{" "}
+                          {mov.proveedor}
+                        </div>
+                      ) : mov.motivo_salida ? (
+                        <div>
+                          <span className="font-medium text-gray-900">
+                            Causa:
+                          </span>{" "}
+                          {mov.motivo_salida}
+                          {mov.detalle_motivo && (
+                            <p className="text-xs mt-1 text-gray-500">
+                              ({mov.detalle_motivo})
+                            </p>
+                          )}
+                        </div>
+                      ) : (
+                        <span>-</span>
+                      )}
+                    </td>
+
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {mov.detalle || "-"}
                     </td>
                   </tr>
                 ))}
@@ -326,6 +367,7 @@ const ArticuloDetallesPage: React.FC = () => {
             </table>
           </div>
         )}
+
         {openMovimientoModal && articulo && (
           <CreateMovimientoModal
             codArticulo={articulo.cod}
