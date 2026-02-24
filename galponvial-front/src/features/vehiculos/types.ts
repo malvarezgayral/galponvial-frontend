@@ -19,7 +19,7 @@ export interface Vehiculo {
   modelo: string;
   anio: number;
   tipo_vehiculo: string;
-  status: 'disponible' | 'mantenimiento' | 'en_uso' | 'retirado';
+  status: 'disponible' | 'en_taller' | 'en_uso' | 'fuera_de_servicio';
   uso_combustible: number;
   infoAdicional: InfoAdicional;
   fechaCreacion?: string;

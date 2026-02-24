@@ -104,7 +104,7 @@ const AdminDashboard: React.FC = () => {
     setModalAbierto(true);
   };
 
-  const totalPages = Math.ceil(usuariosTotal / usuariosPageSize);
+  const totalPages = Math.max(1, Math.ceil((Number(usuariosTotal) || 0) / (Number(usuariosPageSize) || 10)));
 
   const handleEditarUsuario = (usuario: User) => {
     setUsuarioSeleccionado(usuario);

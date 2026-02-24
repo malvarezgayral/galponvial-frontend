@@ -62,10 +62,31 @@ export const usuarioVehiculoService = {
       dni,
       id_vehiculo,
     };
-    const { data } = await apiClient.post<UsuarioVehiculoRelacion>(
-      '/vehiculos/assign',
-      request
-    );
-    return data;
+    
+    try {
+      const { data } = await apiClient.post<UsuarioVehiculoRelacion>(
+        '/vehiculos/assign',
+        request
+      );
+      return data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const dataError = error.response?.data;
+      const backendMsg = dataError?.message || dataError?.error;
+      
+      let errorMessage = 'Error al asignar el vehículo.';
+
+      if (Array.isArray(backendMsg)) {
+        errorMessage = backendMsg.join('. ');
+      } else if (typeof backendMsg === 'string') {
+        errorMessage = backendMsg;
+      } else if (error.message) {
+        if (error.message === 'Network Error') errorMessage = 'Error de red. Verifica tu conexión a internet.';
+        else if (error.message.includes('400')) errorMessage = 'Solicitud incorrecta. Verifica los datos.';
+        else if (error.message.includes('500')) errorMessage = 'Error interno del servidor.';
+      }
+      
+      throw new Error(errorMessage);
+    }
   },
 };
