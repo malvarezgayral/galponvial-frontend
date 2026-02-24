@@ -43,6 +43,11 @@ export const AsignarForm: React.FC<AsignarFormProps> = ({ onAsignarClick }) => {
     setUsuarioSeleccionado(null);
   };
 
+  // --- FILTROS DE DATOS ---
+  const usuariosActivos = usuarios.filter((u) => u.isActive);
+  
+  const vehiculosDisponibles = vehiculos.filter((v) => v.status !== 'fuera_de_servicio');
+
   return (
     <div className="bg-white rounded-lg shadow p-6">
       <h3 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">
@@ -59,7 +64,7 @@ export const AsignarForm: React.FC<AsignarFormProps> = ({ onAsignarClick }) => {
             <select
               value={vehiculoSeleccionado?.id_vehiculo || ''}
               onChange={(e) => {
-                const vehiculo = vehiculos.find((v) => v.id_vehiculo === parseInt(e.target.value));
+                const vehiculo = vehiculosDisponibles.find((v) => v.id_vehiculo === parseInt(e.target.value));
                 setVehiculoSeleccionado(vehiculo || null);
               }}
               disabled={loadingVehiculos}
@@ -68,7 +73,7 @@ export const AsignarForm: React.FC<AsignarFormProps> = ({ onAsignarClick }) => {
               <option value="">
                 {loadingVehiculos ? 'Cargando vehículos...' : 'Elige un vehículo'}
               </option>
-              {vehiculos.map((v) => (
+              {vehiculosDisponibles.map((v) => (
                 <option key={v.id_vehiculo} value={v.id_vehiculo}>
                   {v.codigo} - {v.nombre}
                 </option>
@@ -96,7 +101,7 @@ export const AsignarForm: React.FC<AsignarFormProps> = ({ onAsignarClick }) => {
             <select
               value={usuarioSeleccionado?.dni || ''}
               onChange={(e) => {
-                const usuario = usuarios.find((u) => String(u.dni) === e.target.value);
+                const usuario = usuariosActivos.find((u) => String(u.dni) === e.target.value);
                 setUsuarioSeleccionado(usuario || null);
               }}
               disabled={loadingUsuarios}
@@ -105,7 +110,7 @@ export const AsignarForm: React.FC<AsignarFormProps> = ({ onAsignarClick }) => {
               <option value="">
                 {loadingUsuarios ? 'Cargando usuarios...' : 'Elige un usuario'}
               </option>
-              {usuarios.map((u) => (
+              {usuariosActivos.map((u) => (
                 <option key={u.dni} value={u.dni}>
                   {u.nombre} {u.apellido} ({u.dni})
                 </option>
