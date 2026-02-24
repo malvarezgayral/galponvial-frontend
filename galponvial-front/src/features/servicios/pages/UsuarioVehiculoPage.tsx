@@ -125,6 +125,9 @@ const UsuarioVehiculoPage: React.FC = () => {
         message,
       });
       console.error(err);
+      
+      // Asegurarnos de cerrar el modal también si falla
+      setShowConfirmModal(false);
     } finally {
       setDesasignando(false);
     }
@@ -174,6 +177,8 @@ const UsuarioVehiculoPage: React.FC = () => {
         message,
       });
       console.error(err);
+      
+      setShowConfirmAsignarModal(false);
     } finally {
       setAsignando(false);
     }
