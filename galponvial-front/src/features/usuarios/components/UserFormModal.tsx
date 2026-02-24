@@ -140,7 +140,6 @@ const UserFormModal: React.FC = () => {
     e.preventDefault();
     setFeedbackMessage(null);
 
-    // Validate DNI
     const dniNum = parseInt(formData.dni, 10);
     if (!formData.dni || dniNum < 1000000 || dniNum > 99999999) {
       setFeedbackMessage({
@@ -151,7 +150,6 @@ const UserFormModal: React.FC = () => {
     }
 
     if (modoEdicion && usuarioSeleccionado) {
-      // Edit mode
       try {
         const updateData: UpdateUserDto = {};
         let hasChanges = false;
@@ -195,28 +193,14 @@ const UserFormModal: React.FC = () => {
             setModalAbierto(false);
             setUsuarioSeleccionado(null);
           }, 1500);
-        } else {
-          setFeedbackMessage({
-            type: 'error',
-            text: 'Error al actualizar el usuario',
-          });
         }
       } catch (error: any) {
-        console.error('Error updating user:', error);
-        
-        // Extraer mensaje del backend si existe para actualización también
-        const backendMsg = error.response?.data?.message;
-        const errorMessage = Array.isArray(backendMsg) 
-          ? backendMsg.join('. ') 
-          : backendMsg || error.message || 'Error desconocido';
-
         setFeedbackMessage({
           type: 'error',
-          text: errorMessage,
+          text: error.message || 'Error al actualizar el usuario',
         });
       }
     } else {
-      // Create mode
       if (!formData.password) {
         setFeedbackMessage({
           type: 'error',

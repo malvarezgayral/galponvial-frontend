@@ -109,30 +109,6 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
     }
   },
 
-  crearUsuario: async (data: CreateUserDto) => {
-    try {
-      set({ isLoading: true, error: null });
-      const usuario = await usuariosService.create(data);
-      set((state: UsuariosState) => ({
-        usuarios: [usuario, ...state.usuarios],
-        usuariosTotal: state.usuariosTotal + 1,
-      }));
-      return usuario;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      const backendMsg = error.response?.data?.message;
-      const errorMessage = Array.isArray(backendMsg) 
-        ? backendMsg.join('. ') 
-        : backendMsg || 'Error al conectar con el servidor';
-        
-      set({ error: errorMessage });
-      
-      throw new Error(errorMessage); 
-    } finally {
-      set({ isLoading: false });
-    }
-  },
-
   actualizarUsuario: async (id: string, data: UpdateUserDto) => {
     try {
       set({ isLoading: true, error: null });
@@ -151,6 +127,43 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
     }
   },
 
+crearUsuario: async (data: CreateUserDto) => {
+    try {
+      set({ isLoading: true, error: null });
+      const usuario = await usuariosService.create(data);
+      set((state: UsuariosState) => ({
+        usuarios: [usuario, ...state.usuarios],
+        usuariosTotal: state.usuariosTotal + 1,
+      }));
+      return usuario;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      // 1. Intentamos obtener el mensaje del backend (ej: "La contraseña debe contener...")
+      const dataError = error.response?.data;
+      const backendMsg = dataError?.message || dataError?.error;
+      
+      let errorMessage = 'Error desconocido al comunicarse con el servidor.';
+
+      if (Array.isArray(backendMsg)) {
+        errorMessage = backendMsg.join('. ');
+      } else if (typeof backendMsg === 'string') {
+        errorMessage = backendMsg;
+      } else if (error.message) {
+        if (error.message === 'Network Error') errorMessage = 'Error de red. Verifica tu conexión a internet.';
+        else if (error.message.includes('400')) errorMessage = 'Solicitud incorrecta. Verifica los datos ingresados.';
+        else if (error.message.includes('401')) errorMessage = 'No tienes autorización para realizar esta acción.';
+        else if (error.message.includes('403')) errorMessage = 'Acceso denegado.';
+        else if (error.message.includes('404')) errorMessage = 'Recurso no encontrado.';
+        else if (error.message.includes('500')) errorMessage = 'Error interno del servidor. Intenta más tarde.';
+      }
+        
+      set({ error: errorMessage });
+      throw new Error(errorMessage); 
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
   actualizarPorDni: async (dni: number, data: UpdateUserDto) => {
     try {
       set({ isLoading: true, error: null });
@@ -160,10 +173,28 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
         usuarioSeleccionado: usuario,
       }));
       return usuario;
-    } catch (error) {
-      const apiError = handleApiError(error);
-      set({ error: apiError.message });
-      return null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const dataError = error.response?.data;
+      const backendMsg = dataError?.message || dataError?.error;
+      
+      let errorMessage = 'Error desconocido al comunicarse con el servidor.';
+
+      if (Array.isArray(backendMsg)) {
+        errorMessage = backendMsg.join('. ');
+      } else if (typeof backendMsg === 'string') {
+        errorMessage = backendMsg;
+      } else if (error.message) {
+        if (error.message === 'Network Error') errorMessage = 'Error de red. Verifica tu conexión a internet.';
+        else if (error.message.includes('400')) errorMessage = 'Solicitud incorrecta. Verifica los datos ingresados.';
+        else if (error.message.includes('401')) errorMessage = 'No tienes autorización para realizar esta acción.';
+        else if (error.message.includes('403')) errorMessage = 'Acceso denegado.';
+        else if (error.message.includes('404')) errorMessage = 'Recurso no encontrado.';
+        else if (error.message.includes('500')) errorMessage = 'Error interno del servidor. Intenta más tarde.';
+      }
+        
+      set({ error: errorMessage });
+      throw new Error(errorMessage);
     } finally {
       set({ isLoading: false });
     }
