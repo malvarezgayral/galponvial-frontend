@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { useUsuariosStore } from '../store';
 import { useAppStore } from '@/app/stores/appStore';
@@ -83,8 +84,6 @@ const UserFormModal: React.FC = () => {
   };
 
   // Initialize form when editing a user
-  // This effect initializes the form with user data when entering edit mode
-  // The setState call is safe here as it's synchronizing with external state (usuarioSeleccionado)
   useEffect(() => {
     if (modoEdicion && usuarioSeleccionado) {
       setFormData({
@@ -152,7 +151,7 @@ const UserFormModal: React.FC = () => {
     }
 
     if (modoEdicion && usuarioSeleccionado) {
-      // Edit mode - Single request with rol_ids
+      // Edit mode
       try {
         const updateData: UpdateUserDto = {};
         let hasChanges = false;
@@ -202,11 +201,18 @@ const UserFormModal: React.FC = () => {
             text: 'Error al actualizar el usuario',
           });
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error updating user:', error);
+        
+        // Extraer mensaje del backend si existe para actualización también
+        const backendMsg = error.response?.data?.message;
+        const errorMessage = Array.isArray(backendMsg) 
+          ? backendMsg.join('. ') 
+          : backendMsg || error.message || 'Error desconocido';
+
         setFeedbackMessage({
           type: 'error',
-          text: `Error al actualizar el usuario: ${error instanceof Error ? error.message : 'Error desconocido'}`,
+          text: errorMessage,
         });
       }
     } else {
@@ -227,20 +233,22 @@ const UserFormModal: React.FC = () => {
         password: formData.password,
       };
 
-      const result = await crearUsuario(createData);
-      if (result) {
-        setFeedbackMessage({
-          type: 'success',
-          text: 'Usuario creado correctamente',
-        });
-        setTimeout(() => {
-          setModalAbierto(false);
-          setUsuarioSeleccionado(null);
-        }, 1500);
-      } else {
+      try {
+        const result = await crearUsuario(createData);
+        if (result) {
+          setFeedbackMessage({
+            type: 'success',
+            text: 'Usuario creado correctamente',
+          });
+          setTimeout(() => {
+            setModalAbierto(false);
+            setUsuarioSeleccionado(null);
+          }, 1500);
+        }
+      } catch (error: any) {
         setFeedbackMessage({
           type: 'error',
-          text: 'Error al crear el usuario',
+          text: error.message || 'Error al crear el usuario',
         });
       }
     }

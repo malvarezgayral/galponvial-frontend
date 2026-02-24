@@ -118,10 +118,16 @@ export const useUsuariosStore = create<UsuariosState>((set) => ({
         usuariosTotal: state.usuariosTotal + 1,
       }));
       return usuario;
-    } catch (error) {
-      const apiError = handleApiError(error);
-      set({ error: apiError.message });
-      return null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      const backendMsg = error.response?.data?.message;
+      const errorMessage = Array.isArray(backendMsg) 
+        ? backendMsg.join('. ') 
+        : backendMsg || 'Error al conectar con el servidor';
+        
+      set({ error: errorMessage });
+      
+      throw new Error(errorMessage); 
     } finally {
       set({ isLoading: false });
     }
