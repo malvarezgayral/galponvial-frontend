@@ -62,15 +62,32 @@ const applyFilters = (vehiculos: Vehiculo[], filters: VehiculosFilters): Vehicul
     }
 
     // Filter by sector
-    if (filters.sector && vehiculo.infoAdicional.sector.id_sector !== Number(filters.sector)) {
-      return false;
+    if (filters.sector) {
+      // 1. Usamos ?. para que no crashee si infoAdicional o sector son null/undefined
+      const sectorDelVehiculo = vehiculo.infoAdicional?.sector;
+      
+      // Si el filtro está activo pero el vehículo no tiene sector, lo descartamos
+      if (!sectorDelVehiculo) return false;
+
+      // 2. Comparamos de forma segura (soporta si el filtro es el ID o el Nombre)
+      const filtroComoNumero = Number(filters.sector);
+      
+      if (!isNaN(filtroComoNumero)) {
+        // Si el filtro es un número (ID)
+        if (sectorDelVehiculo.id_sector !== filtroComoNumero) return false;
+      } else {
+        // Si el filtro es texto (Nombre del sector)
+        if (sectorDelVehiculo.nombre !== filters.sector) return false;
+      }
     }
 
     // Filter by search term (nombre or codigo)
     if (filters.searchTerm) {
       const searchLower = filters.searchTerm.toLowerCase();
-      const codigoMatch = vehiculo.codigo.toLowerCase().includes(searchLower);
-      const nombreMatch = vehiculo.nombre.toLowerCase().includes(searchLower);
+      // Agregamos ?. por si nombre o codigo vienen vacíos desde la API
+      const codigoMatch = vehiculo.codigo?.toLowerCase().includes(searchLower) || false;
+      const nombreMatch = vehiculo.nombre?.toLowerCase().includes(searchLower) || false;
+      
       if (!codigoMatch && !nombreMatch) {
         return false;
       }
