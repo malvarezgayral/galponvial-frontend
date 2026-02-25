@@ -8,6 +8,8 @@ import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { EditVehiculoModal } from "./EditVehiculoModal";
 import type { Vehiculo } from "../types";
 
+const VEHICLES_PER_PAGE = 9;
+
 /**
  * View component for displaying and filtering vehicles
  */
@@ -42,6 +44,13 @@ export const VehiculosView: React.FC = () => {
     number | null
   >(null);
 
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const indexOfLastVehiculo = currentPage * VEHICLES_PER_PAGE;
+  const indexOfFirstVehiculo = indexOfLastVehiculo - VEHICLES_PER_PAGE;
+  const currentRenderedVehiculos = filteredVehiculos.slice(indexOfFirstVehiculo, indexOfLastVehiculo);
+  const totalPages = Math.ceil(filteredVehiculos.length / VEHICLES_PER_PAGE);
+
   // Check if user can delete (admin or superadmin)
   const canDelete =
     user &&
@@ -56,6 +65,18 @@ export const VehiculosView: React.FC = () => {
     fetchDropdownOptions();
     fetchEnums();
   }, [fetchAllVehiculos, fetchDropdownOptions, fetchEnums]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, vehiculos]);
+
+  const handlePrevPage = () => {
+    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+  };
 
   /**
    * Handle edit vehicle
@@ -225,10 +246,10 @@ export const VehiculosView: React.FC = () => {
         </div>
       )}
 
-      {/* Vehicles grid */}
+      {/* Vehicles grid  */}
       {!listLoading && filteredVehiculos.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredVehiculos.map((vehiculo) => (
+          {currentRenderedVehiculos.map((vehiculo) => (
             <VehiculoCard
               key={vehiculo.id_vehiculo}
               vehiculo={vehiculo}
@@ -240,10 +261,46 @@ export const VehiculosView: React.FC = () => {
         </div>
       )}
 
-      {/* Results count */}
+      {/* Pagination */}
       {!listLoading && filteredVehiculos.length > 0 && (
-        <div className="text-sm text-gray-600 text-center mt-6">
-          Mostrando {filteredVehiculos.length} de {vehiculos.length} vehículos
+        <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-6">
+          <div className="text-sm text-gray-500">
+            Mostrando {indexOfFirstVehiculo + 1} - {Math.min(indexOfLastVehiculo, filteredVehiculos.length)} de {filteredVehiculos.length} vehículos
+          </div>
+          
+          {totalPages > 1 && (
+            <div className="flex gap-2">
+              <button
+                onClick={handlePrevPage}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
+                  ${currentPage === 1 
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  }`}
+              >
+                Anterior
+              </button>
+              
+              <div className="hidden sm:flex items-center px-2">
+                <span className="text-sm font-medium text-gray-700">
+                  {currentPage} <span className="text-gray-400">/</span> {totalPages}
+                </span>
+              </div>
+
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage >= totalPages}
+                className={`px-4 py-2 text-sm font-medium rounded-md transition-colors
+                  ${currentPage >= totalPages 
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  }`}
+              >
+                Siguiente
+              </button>
+            </div>
+          )}
         </div>
       )}
 
