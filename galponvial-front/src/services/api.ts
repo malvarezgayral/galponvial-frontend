@@ -25,10 +25,14 @@ apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as any;
+    const isLoginRequest = originalRequest.url?.includes("/usuario/login");
+    const isRefreshRequest = originalRequest.url?.includes("/usuario/refresh");
+    
     if (
       error.response?.status === 401 &&
       !originalRequest._retry &&
-      !originalRequest.url?.includes("/usuario/refresh")
+      !isLoginRequest &&
+      !isRefreshRequest
     ) {
       originalRequest._retry = true;
       // Remove expired access token

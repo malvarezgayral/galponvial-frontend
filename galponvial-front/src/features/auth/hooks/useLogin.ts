@@ -30,6 +30,7 @@ export const useLogin = (): UseLoginReturn => {
 
       if (!response.success) {
         setError(response.message || 'Error al iniciar sesión');
+        setLoading(false);
         return;
       }
 
@@ -63,8 +64,19 @@ export const useLogin = (): UseLoginReturn => {
       // Redirect to home page on successful login
       navigate('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al iniciar sesión');
-    } finally {
+      // Extract error message from axios error
+      let errorMessage = 'Error al iniciar sesión';
+      
+      if (err instanceof Error) {
+        // Check if it's an axios error with response data
+        if ('response' in err && (err as any).response?.data?.message) {
+          errorMessage = (err as any).response.data.message;
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(errorMessage);
       setLoading(false);
     }
   };
