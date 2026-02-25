@@ -340,4 +340,20 @@ export const vehiculosService = {
     );
     return data.data || data;
   },
+
+  /**
+   * Update the status of an incidente
+   * @param incidenteId - Incidente ID
+   * @param estado - New status for the incidente
+   * @returns Updated incidente
+   */
+  updateIncidenteStatus: async (
+    incidenteId: number,
+    estado: 'pendiente' | 'resuelto' | 'cerrado'
+  ): Promise<Incidente> => {
+    const { data } = await apiClient.patch(`/incidentes/${incidenteId}/estado`, {
+      estado,
+    });
+    return data.data || data;
+  },
 };
