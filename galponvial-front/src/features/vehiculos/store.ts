@@ -62,15 +62,27 @@ const applyFilters = (vehiculos: Vehiculo[], filters: VehiculosFilters): Vehicul
     }
 
     // Filter by sector
-    if (filters.sector && vehiculo.infoAdicional.sector.id_sector !== Number(filters.sector)) {
-      return false;
+    if (filters.sector) {
+      // 1. Usamos ?. para que no crashee si infoAdicional o sector son null/undefined
+      const sectorDelVehiculo = vehiculo.infoAdicional?.sector;
+      
+      if (!sectorDelVehiculo) return false;
+
+      const filtroComoNumero = Number(filters.sector);
+      
+      if (!isNaN(filtroComoNumero)) {
+        if (sectorDelVehiculo.id_sector !== filtroComoNumero) return false;
+      } else {
+        if (sectorDelVehiculo.nombre !== filters.sector) return false;
+      }
     }
 
     // Filter by search term (nombre or codigo)
     if (filters.searchTerm) {
       const searchLower = filters.searchTerm.toLowerCase();
-      const codigoMatch = vehiculo.codigo.toLowerCase().includes(searchLower);
-      const nombreMatch = vehiculo.nombre.toLowerCase().includes(searchLower);
+      const codigoMatch = vehiculo.codigo?.toLowerCase().includes(searchLower) || false;
+      const nombreMatch = vehiculo.nombre?.toLowerCase().includes(searchLower) || false;
+      
       if (!codigoMatch && !nombreMatch) {
         return false;
       }
