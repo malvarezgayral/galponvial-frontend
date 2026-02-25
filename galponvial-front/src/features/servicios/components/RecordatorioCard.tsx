@@ -59,10 +59,13 @@ export const RecordatorioCard: React.FC<RecordatorioCardProps> = ({
   }, [recordatorio.fecha]);
 
   /**
-   * Separa fecha y hora
+   * Separa fecha y hora del formato ISO 8601
+   * Convierte "2026-02-28T12:30:00.000Z" a fecha y hora legibles
    */
   const parseFechaHora = (fechaString: string) => {
-    const [fecha, hora] = fechaString.split(' ');
+    const date = new Date(fechaString);
+    const fecha = date.toISOString().split('T')[0]; // YYYY-MM-DD
+    const hora = date.toISOString().split('T')[1]?.substring(0, 5) || '00:00'; // HH:MM
     return { fecha, hora };
   };
 
@@ -99,8 +102,7 @@ export const RecordatorioCard: React.FC<RecordatorioCardProps> = ({
       {/* Header con fecha y hora */}
       <div className="flex justify-between items-start mb-4">
         <div>
-          <p className="text-sm font-semibold opacity-90">📅 {fecha}</p>
-          <p className="text-sm font-semibold opacity-90">🕐 {hora}</p>
+          <p className="text-sm font-semibold opacity-90">📅 {fecha} / {hora}</p>
         </div>
         <div className="text-right">
           <p className="text-xs opacity-75">Faltan:</p>
