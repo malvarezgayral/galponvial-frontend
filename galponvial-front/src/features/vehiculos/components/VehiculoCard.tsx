@@ -24,13 +24,13 @@ export const VehiculoCard: React.FC<VehiculoCardProps> = ({
   const canEdit =
     user &&
     "rol" in user &&
-    (user.rol === "super-admin" || user.rol === "admin");
+    (user.rol === "superadmin" || user.rol === "admin");
 
   // Check if user can delete (admin or superadmin)
   const canDelete =
     user &&
     "rol" in user &&
-    (user.rol === "admin" || user.rol === "super-admin");
+    (user.rol === "admin" || user.rol === "superadmin");
 
   return (
     <div className="relative bg-[#1E1E1E] rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">
@@ -41,7 +41,7 @@ export const VehiculoCard: React.FC<VehiculoCardProps> = ({
           className={`px-3 py-1 rounded-full text-xs font-semibold ${
             vehiculo.status === "disponible"
               ? "bg-[#80DD4B] text-gray-900"
-              : vehiculo.status === "mantenimiento"
+              : vehiculo.status === "fuera_de_servicio"
                 ? "bg-yellow-500 text-gray-900"
                 : vehiculo.status === "en_uso"
                   ? "bg-blue-500 text-white"
