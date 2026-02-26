@@ -26,17 +26,32 @@ export const EditRecordatorioModal: React.FC<EditRecordatorioModalProps> = ({
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Initializa los valores cuando se abre el modal
+   * Cargar los datos cuando se abre el modal con un recordatorio
    */
   useEffect(() => {
     if (isOpen && recordatorio) {
       // Convierte el formato de fecha de 'YYYY-MM-DD HH:MM' a 'YYYY-MM-DDTHH:MM'
       const [date, time] = recordatorio.fecha.split(' ');
-      setFecha(`${date}T${time || '00:00'}`);
+      const formattedTime = time || '00:00';
+      setFecha(`${date}T${formattedTime}`);
       setDescripcion(recordatorio.descripcion);
       setError(null);
     }
   }, [isOpen, recordatorio]);
+
+  /**
+   * Limpiar estados cuando se cierra el modal
+   */
+  useEffect(() => {
+    if (!isOpen) {
+      setFecha('');
+      setDescripcion('');
+      setError(null);
+    }
+  }, [isOpen]);
+
+  // Validar que ambos campos tengan contenido
+  const isFormValid = fecha !== '' && descripcion.trim() !== '';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,7 +118,7 @@ export const EditRecordatorioModal: React.FC<EditRecordatorioModalProps> = ({
           {/* Fecha */}
           <div>
             <label htmlFor="fecha" className="block text-sm font-medium text-gray-700 mb-2">
-              Fecha y hora
+              Fecha y hora <span className="text-red-500">*</span>
             </label>
             <input
               id="fecha"
@@ -111,6 +126,7 @@ export const EditRecordatorioModal: React.FC<EditRecordatorioModalProps> = ({
               value={fecha}
               onChange={(e) => setFecha(e.target.value)}
               disabled={loading}
+              required
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#378AFE] disabled:opacity-50 disabled:cursor-not-allowed"
             />
           </div>
@@ -118,13 +134,14 @@ export const EditRecordatorioModal: React.FC<EditRecordatorioModalProps> = ({
           {/* Descripción */}
           <div>
             <label htmlFor="descripcion" className="block text-sm font-medium text-gray-700 mb-2">
-              Descripción
+              Descripción <span className="text-red-500">*</span>
             </label>
             <textarea
               id="descripcion"
               value={descripcion}
               onChange={(e) => setDescripcion(e.target.value)}
               disabled={loading}
+              required
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#378AFE] resize-none disabled:opacity-50 disabled:cursor-not-allowed"
               rows={3}
               maxLength={500}
@@ -150,7 +167,7 @@ export const EditRecordatorioModal: React.FC<EditRecordatorioModalProps> = ({
               variant="primary"
               size="md"
               isLoading={loading}
-              disabled={loading}
+              disabled={loading || !isFormValid}
             >
               Guardar cambios
             </Button>
