@@ -38,19 +38,29 @@ export const VisualizarAlmacen: React.FC = () => {
   
   const [currentPage, setCurrentPage] = useState(1);
   
+  // ✅ MODIFICADO: Ordenar artículos alfabéticamente antes de paginar
+  const sortedFilteredArticulos = [...filteredArticulos].sort((a, b) => 
+    a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
+  );
+  
   const indexOfLastArticulo = currentPage * ARTICLES_PER_PAGE;
   const indexOfFirstArticulo = indexOfLastArticulo - ARTICLES_PER_PAGE;
-  const currentRenderedArticulos = filteredArticulos.slice(indexOfFirstArticulo, indexOfLastArticulo);
+  const currentRenderedArticulos = sortedFilteredArticulos.slice(indexOfFirstArticulo, indexOfLastArticulo);
   
-  const totalPages = Math.ceil(filteredArticulos.length / ARTICLES_PER_PAGE);
+  const totalPages = Math.ceil(sortedFilteredArticulos.length / ARTICLES_PER_PAGE);
 
   const [currentGrupoPage, setCurrentGrupoPage] = useState(1);
   
+  // ✅ MODIFICADO: Ordenar grupos alfabéticamente antes de paginar
+  const sortedGrupos = [...grupos].sort((a, b) => 
+    a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
+  );
+  
   const indexOfLastGrupo = currentGrupoPage * GROUPS_PER_PAGE;
   const indexOfFirstGrupo = indexOfLastGrupo - GROUPS_PER_PAGE;
-  const currentRenderedGrupos = grupos.slice(indexOfFirstGrupo, indexOfLastGrupo);
+  const currentRenderedGrupos = sortedGrupos.slice(indexOfFirstGrupo, indexOfLastGrupo);
   
-  const totalGrupoPages = Math.ceil(grupos.length / GROUPS_PER_PAGE);
+  const totalGrupoPages = Math.ceil(sortedGrupos.length / GROUPS_PER_PAGE);
 
   // Modales Artículos
   const [editingArticulo, setEditingArticulo] = useState<Articulo | null>(null);
@@ -271,7 +281,7 @@ export const VisualizarAlmacen: React.FC = () => {
         {/* Content Artículos */}
         {loading ? (
              <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div></div>
-        ) : filteredArticulos.length === 0 ? (
+        ) : sortedFilteredArticulos.length === 0 ? (
             <div className="text-center py-12 bg-gray-50 rounded-lg border border-dashed border-gray-300">
                 <p className="text-gray-500">No se encontraron artículos con esos filtros.</p>
             </div>
@@ -293,7 +303,7 @@ export const VisualizarAlmacen: React.FC = () => {
                 {totalPages > 1 && (
                     <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-6">
                         <div className="text-sm text-gray-500">
-                            Mostrando {indexOfFirstArticulo + 1} - {Math.min(indexOfLastArticulo, filteredArticulos.length)} de {filteredArticulos.length} resultados
+                            Mostrando {indexOfFirstArticulo + 1} - {Math.min(indexOfLastArticulo, sortedFilteredArticulos.length)} de {sortedFilteredArticulos.length} resultados
                         </div>
                         
                         <div className="flex gap-2">
@@ -344,7 +354,7 @@ export const VisualizarAlmacen: React.FC = () => {
 
         {gruposLoading ? (
             <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div></div>
-        ) : grupos.length === 0 ? (
+        ) : sortedGrupos.length === 0 ? (
             <div className="text-center py-8 bg-gray-50 rounded border border-dashed">No hay grupos definidos.</div>
         ) : (
             <>

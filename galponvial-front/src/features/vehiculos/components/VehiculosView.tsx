@@ -38,15 +38,18 @@ export const VehiculosView: React.FC = () => {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [selectedVehiculoIdForEdit, setSelectedVehiculoIdForEdit] = useState<
-    number | null
-  >(null);
+  const [selectedVehiculoIdForEdit, setSelectedVehiculoIdForEdit] = useState <number | null>(null);
 
   // Check if user can delete (admin or superadmin)
   const canDelete =
     user &&
     "rol" in user &&
     (user.rol === "admin" || user.rol === "super-admin");
+
+  // ✅ AGREGADO: Ordenar vehículos alfabéticamente por nombre
+  const sortedFilteredVehiculos = [...filteredVehiculos].sort((a, b) => 
+    a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
+  );
 
   /**
    * Load vehicles on component mount
@@ -215,7 +218,7 @@ export const VehiculosView: React.FC = () => {
       )}
 
       {/* Empty state */}
-      {!listLoading && filteredVehiculos.length === 0 && (
+      {!listLoading && sortedFilteredVehiculos.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
             {vehiculos.length === 0
@@ -226,9 +229,9 @@ export const VehiculosView: React.FC = () => {
       )}
 
       {/* Vehicles grid */}
-      {!listLoading && filteredVehiculos.length > 0 && (
+      {!listLoading && sortedFilteredVehiculos.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredVehiculos.map((vehiculo) => (
+          {sortedFilteredVehiculos.map((vehiculo) => (
             <VehiculoCard
               key={vehiculo.id_vehiculo}
               vehiculo={vehiculo}
@@ -241,9 +244,9 @@ export const VehiculosView: React.FC = () => {
       )}
 
       {/* Results count */}
-      {!listLoading && filteredVehiculos.length > 0 && (
+      {!listLoading && sortedFilteredVehiculos.length > 0 && (
         <div className="text-sm text-gray-600 text-center mt-6">
-          Mostrando {filteredVehiculos.length} de {vehiculos.length} vehículos
+          Mostrando {sortedFilteredVehiculos.length} de {vehiculos.length} vehículos
         </div>
       )}
 

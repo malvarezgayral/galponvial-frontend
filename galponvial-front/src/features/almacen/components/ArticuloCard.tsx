@@ -1,5 +1,6 @@
 import type { Articulo } from '../types';
 import { Button } from '@/shared/ui/Button';
+import { useAlmacenPermissions } from '../hooks/useAlmacenPermissions';
 
 interface ArticuloCardProps {
   articulo: Articulo;
@@ -18,6 +19,10 @@ export const ArticuloCard: React.FC<ArticuloCardProps> = ({
   onDelete,
   onViewDetails,
 }) => {
+  // ✅ AGREGAR: Hook de permisos
+  const { hasWritePermission } = useAlmacenPermissions();
+  const canEdit = hasWritePermission();
+
   // Mock image URL if not provided
   const imageUrl = articulo.img_url || 'https://via.placeholder.com/300x200?text=Sin+Imagen';
 
@@ -69,40 +74,42 @@ export const ArticuloCard: React.FC<ArticuloCardProps> = ({
           VER MÁS
         </Button>
 
-        {/* Action buttons */}
-        <div className="flex gap-2">
-          <button
-            onClick={() => onEdit(articulo)}
-            className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
-            title="Editar artículo"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-              />
-            </svg>
-            Editar
-          </button>
+        {/* ✅ MODIFICADO: Action buttons - Solo mostrar si tiene permisos de escritura */}
+        {canEdit && (
+          <div className="flex gap-2">
+            <button
+              onClick={() => onEdit(articulo)}
+              className="flex-1 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+              title="Editar artículo"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
+              </svg>
+              Editar
+            </button>
 
-          <button
-            onClick={() => onDelete(articulo)}
-            className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
-            title="Eliminar artículo"
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-              />
-            </svg>
-            Eliminar
-          </button>
-        </div>
+            <button
+              onClick={() => onDelete(articulo)}
+              className="flex-1 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg transition-colors flex items-center justify-center gap-2"
+              title="Eliminar artículo"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                />
+              </svg>
+              Eliminar
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
