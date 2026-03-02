@@ -46,10 +46,15 @@ export const VehiculosView: React.FC = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Sort filteredVehiculos alphabetically before paginating
+  const sortedVehiculos = [...filteredVehiculos].sort((a, b) =>
+    a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
+  );
+
   const indexOfLastVehiculo = currentPage * VEHICLES_PER_PAGE;
   const indexOfFirstVehiculo = indexOfLastVehiculo - VEHICLES_PER_PAGE;
-  const currentRenderedVehiculos = filteredVehiculos.slice(indexOfFirstVehiculo, indexOfLastVehiculo);
-  const totalPages = Math.ceil(filteredVehiculos.length / VEHICLES_PER_PAGE);
+  const currentRenderedVehiculos = sortedVehiculos.slice(indexOfFirstVehiculo, indexOfLastVehiculo);
+  const totalPages = Math.ceil(sortedVehiculos.length / VEHICLES_PER_PAGE);
 
   // Check if user can delete (admin or superadmin)
   const canDelete =
@@ -247,7 +252,7 @@ export const VehiculosView: React.FC = () => {
       )}
 
       {/* Vehicles grid  */}
-      {!listLoading && filteredVehiculos.length > 0 && (
+      {!listLoading && sortedVehiculos.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {currentRenderedVehiculos.map((vehiculo) => (
             <VehiculoCard
@@ -262,10 +267,10 @@ export const VehiculosView: React.FC = () => {
       )}
 
       {/* Pagination */}
-      {!listLoading && filteredVehiculos.length > 0 && (
+      {!listLoading && sortedVehiculos.length > 0 && (
         <div className="mt-8 flex items-center justify-between border-t border-gray-100 pt-6">
           <div className="text-sm text-gray-500">
-            Mostrando {indexOfFirstVehiculo + 1} - {Math.min(indexOfLastVehiculo, filteredVehiculos.length)} de {filteredVehiculos.length} vehículos
+            Mostrando {indexOfFirstVehiculo + 1} - {Math.min(indexOfLastVehiculo, sortedVehiculos.length)} de {sortedVehiculos.length} vehículos
           </div>
           
           {totalPages > 1 && (
