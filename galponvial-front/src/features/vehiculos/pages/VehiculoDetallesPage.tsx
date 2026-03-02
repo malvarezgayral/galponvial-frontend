@@ -4,10 +4,8 @@ import { useVehiculosStore } from '../store';
 import { Badge } from '@/shared/ui/Badge';
 import { Button } from '@/shared/ui/Button';
 import { vehiculosService } from '../services/vehiculosService';
-import { AddRecordatorioModal } from '../components/AddRecordatorioModal';
-import { AddCargaCombustibleModal } from '../components/AddCargaCombustibleModal';
-import { AddIncidenteModal } from '../components/AddIncidenteModal';
-import type { Recordatorio, StatusUpdate, Incidente, CargaCombustible } from '../types';
+import { EditIncidenteStatusModal } from '../components/EditIncidenteStatusModal';
+import type { StatusUpdate, Incidente, CargaCombustible } from '../types';
 
 /**
  * Page for displaying vehicle details
@@ -20,11 +18,6 @@ const VehiculoDetallesPage: React.FC = () => {
   // Find the vehicle by ID
   const vehiculo = id ? vehiculos.find((v) => v.id_vehiculo === parseInt(id)) : null;
   const vehiculoId = vehiculo?.id_vehiculo;
-
-  // Local state for recordatorios
-  const [recordatorios, setRecordatorios] = useState<Recordatorio[]>([]);
-  const [recordatoriosLoading, setRecordatoriosLoading] = useState(false);
-  const [recordatoriosError, setRecordatoriosError] = useState<Error | null>(null);
 
   // Local state for status updates
   const [statusUpdates, setStatusUpdates] = useState<StatusUpdate[]>([]);
@@ -41,27 +34,14 @@ const VehiculoDetallesPage: React.FC = () => {
   const [combustibleLoading, setCombustibleLoading] = useState(false);
   const [combustibleError, setCombustibleError] = useState<Error | null>(null);
 
-  // Modal states
-  const [showRecordatorioModal, setShowRecordatorioModal] = useState(false);
-  const [showCargaCombustibleModal, setShowCargaCombustibleModal] = useState(false);
-  const [showIncidenteModal, setShowIncidenteModal] = useState(false);
+  // Local state for modal
+  const [isEditStatusModalOpen, setIsEditStatusModalOpen] = useState(false);
+  const [selectedIncidente, setSelectedIncidente] = useState<Incidente | null>(null);
+  const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
 
   // Function to refetch all data
   const refetchAllData = async () => {
     if (!vehiculoId) return;
-
-    // Fetch recordatorios
-    try {
-      setRecordatoriosLoading(true);
-      const recordatoriosData = await vehiculosService.getRecordatorios(vehiculoId, 1, 5);
-      setRecordatorios(recordatoriosData.data);
-    } catch (err) {
-      const error = err instanceof Error ? err : new Error('Error al cargar recordatorios');
-      setRecordatoriosError(error);
-      console.error('Error fetching recordatorios:', error);
-    } finally {
-      setRecordatoriosLoading(false);
-    }
 
     // Fetch status updates
     try {
@@ -118,9 +98,9 @@ const VehiculoDetallesPage: React.FC = () => {
         return 'bg-green-100 text-green-800';
       case 'en_uso':
         return 'bg-blue-100 text-blue-800';
-      case 'mantenimiento':
+      case 'en_taller':
         return 'bg-yellow-100 text-yellow-800';
-      case 'retirado':
+      case 'fuera_de_servicio':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -134,14 +114,52 @@ const VehiculoDetallesPage: React.FC = () => {
         return 'Disponible';
       case 'en_uso':
         return 'En Uso';
-      case 'mantenimiento':
-        return 'En Mantenimiento';
-      case 'retirado':
-        return 'Retirado';
+      case 'en_taller':
+        return 'En Taller';
+      case 'fuera_de_servicio':
+        return 'Fuera de Servicio';
       default:
         return status;
     }
   };
+
+  // Handlers para redireccionar a los formularios principales
+  // NOTA: Ajusta estas rutas a las que uses en tu configuración de React Router
+  const handleRedirectIncidente = () => {
+    navigate('/servicios/incidente', { state: { vehiculoId } });
+  };
+
+  const handleRedirectCombustible = () => {
+    navigate('/servicios/combustible', { state: { vehiculoId } });
+  };
+
+  const handleEditIncidenteStatus = (incidente: Incidente) => {
+    setSelectedIncidente(incidente);
+    setIsEditStatusModalOpen(true);
+  };
+
+  const handleUpdateIncidenteStatus = async (
+    incidenteId: number,
+    estado: 'pendiente' | 'resuelto' | 'cerrado'
+  ) => {
+    setIsUpdatingStatus(true);
+    try {
+      await vehiculosService.updateIncidenteStatus(incidenteId, estado);
+      // Close modal and refetch incidentes
+      setIsEditStatusModalOpen(false);
+      setSelectedIncidente(null);
+      if (vehiculoId) {
+        const incidentesData = await vehiculosService.getIncidentes(vehiculoId, 1, 10);
+        setIncidentes(incidentesData.data);
+      }
+    } catch (err) {
+      const error = err instanceof Error ? err : new Error('Error al actualizar el estado');
+      throw error;
+    } finally {
+      setIsUpdatingStatus(false);
+    }
+  };
+
 
   // If vehicle not found
   if (!vehiculo) {
@@ -313,7 +331,7 @@ const VehiculoDetallesPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div>
             <span className="text-gray-600 font-medium block mb-2">Número de Serie</span>
-            <p className="text-gray-900 font-semibold text-lg">{vehiculo.infoAdicional.numero_serie}</p>
+            <p className="text-gray-900 font-semibold text-lg">{vehiculo.infoAdicional?.numero_serie || "Sin info"}</p>
           </div>
 
           <div>
@@ -322,34 +340,51 @@ const VehiculoDetallesPage: React.FC = () => {
               <div
                 className="w-8 h-8 rounded border border-gray-300 shadow-sm"
                 style={{
-                  backgroundColor: vehiculo.infoAdicional.color?.toLowerCase() || '#cccccc',
+                  backgroundColor: (() => {
+                    const color = vehiculo.infoAdicional?.color?.toLowerCase().trim() || '';
+                    const colorMap: Record<string, string> = {
+                      blanco: 'white',
+                      negro: 'black',
+                      rojo: 'red',
+                      azul: 'blue',
+                      verde: 'green',
+                      amarillo: 'yellow',
+                      gris: 'gray',
+                      plateado: 'silver',
+                      naranja: 'orange',
+                      marrón: 'brown',
+                      marron: 'brown',
+                      celeste: 'skyblue'
+                    };
+                    return colorMap[color] || color || '#cccccc';
+                  })(),
                 }}
               />
               <p className="text-gray-900 font-semibold capitalize">
-                {vehiculo.infoAdicional.color}
+                {vehiculo.infoAdicional?.color || "Sin info"}
               </p>
             </div>
           </div>
 
           <div>
             <span className="text-gray-600 font-medium block mb-2">Licencia del Conductor</span>
-            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional.licencia_conductor}</p>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.licencia_conductor || "Sin info"}</p>
           </div>
 
           <div>
             <span className="text-gray-600 font-medium block mb-2">Seguro Empresa</span>
-            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional.seguro_empresa}</p>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.seguro_empresa || "Sin info"}</p>
           </div>
 
           <div>
             <span className="text-gray-600 font-medium block mb-2">Póliza</span>
-            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional.poliza}</p>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.poliza || "Sin info"}</p>
           </div>
 
           <div>
             <span className="text-gray-600 font-medium block mb-2">Sector de Pertenencia</span>
             <p className="text-gray-900 font-semibold">
-              {vehiculo.infoAdicional.sector.nombre}
+              {vehiculo.infoAdicional?.sector?.nombre || "Sin info"}
             </p>
           </div>
         </div>
@@ -408,7 +443,7 @@ const VehiculoDetallesPage: React.FC = () => {
               <Button
                 variant="primary"
                 size="md"
-                onClick={() => setShowIncidenteModal(true)}
+                onClick={handleRedirectIncidente}
               >
                 + Reportar Incidente
               </Button>
@@ -446,9 +481,9 @@ const VehiculoDetallesPage: React.FC = () => {
                   <tbody>
                     {incidentes.map((item, idx) => {
                       const fallaColor =
-                        item.falla === 'alta'
+                        item.falla === 'critica'
                           ? 'bg-red-100 text-red-800'
-                          : item.falla === 'media'
+                          : item.falla === 'moderada'
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-green-100 text-green-800';
                       const estadoColor =
@@ -456,7 +491,9 @@ const VehiculoDetallesPage: React.FC = () => {
                           ? 'bg-green-100 text-green-800'
                           : item.estado === 'en_proceso'
                             ? 'bg-blue-100 text-blue-800'
-                            : 'bg-yellow-100 text-yellow-800';
+                            : item.estado === 'cerrado'
+                              ? 'bg-gray-100 text-gray-800'
+                              : 'bg-yellow-100 text-yellow-800';
                       return (
                         <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
                           <td className="px-4 py-3 text-sm text-gray-700">{item.fecha}</td>
@@ -471,9 +508,32 @@ const VehiculoDetallesPage: React.FC = () => {
                             </Badge>
                           </td>
                           <td className="px-4 py-3 text-sm">
-                            <Badge variant="primary" className={estadoColor}>
-                              {item.estado}
-                            </Badge>
+                            <div className="flex items-center gap-2">
+                              <Badge variant="primary" className={estadoColor}>
+                                {item.estado}
+                              </Badge>
+                              <button
+                                onClick={() => handleEditIncidenteStatus(item)}
+                                className="p-1.5 hover:bg-blue-100 rounded transition-colors"
+                                title="Editar estado del incidente"
+                                type="button"
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth={1.5}
+                                  stroke="currentColor"
+                                  className="w-4 h-4 text-blue-600"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="m16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 9.75a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       );
@@ -491,7 +551,7 @@ const VehiculoDetallesPage: React.FC = () => {
               <Button
                 variant="primary"
                 size="md"
-                onClick={() => setShowCargaCombustibleModal(true)}
+                onClick={handleRedirectCombustible}
               >
                 + Añadir Carga
               </Button>
@@ -548,29 +608,17 @@ const VehiculoDetallesPage: React.FC = () => {
         </Button>
       </div>
 
-      {/* Modals */}
-      {vehiculoId && (
-        <>
-          <AddRecordatorioModal
-            vehiculoId={vehiculoId}
-            isOpen={showRecordatorioModal}
-            onClose={() => setShowRecordatorioModal(false)}
-            onSuccess={refetchAllData}
-          />
-          <AddCargaCombustibleModal
-            vehiculoId={vehiculoId}
-            isOpen={showCargaCombustibleModal}
-            onClose={() => setShowCargaCombustibleModal(false)}
-            onSuccess={refetchAllData}
-          />
-          <AddIncidenteModal
-            vehiculoId={vehiculoId}
-            isOpen={showIncidenteModal}
-            onClose={() => setShowIncidenteModal(false)}
-            onSuccess={refetchAllData}
-          />
-        </>
-      )}
+      {/* Edit Incidente Status Modal */}
+      <EditIncidenteStatusModal
+        isOpen={isEditStatusModalOpen}
+        incidente={selectedIncidente}
+        onClose={() => {
+          setIsEditStatusModalOpen(false);
+          setSelectedIncidente(null);
+        }}
+        onSubmit={handleUpdateIncidenteStatus}
+        isLoading={isUpdatingStatus}
+      />
     </div>
   );
 };

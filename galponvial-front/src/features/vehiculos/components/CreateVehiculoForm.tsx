@@ -11,6 +11,8 @@ const INITIAL_FORM_STATE: CreateVehiculoPayload = {
   anio: new Date().getFullYear(),
   tipo_vehiculo: '',
   status: 'disponible',
+  uso_combustible: 0,
+  uso_km: 0,
   infoAdicional: {
     numero_serie: 0,
     licencia_conductor: '',
@@ -50,7 +52,7 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
 
     setFormData((prev) => ({
       ...prev,
-      [field]: field === 'anio' ? parseInt(value, 10) : value,
+      [field]: field === 'anio' ? parseInt(value, 10) : (field === 'uso_combustible' || field === 'uso_km') ? parseFloat(value) : value,
     }));
   };
 
@@ -97,6 +99,8 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
       'modelo',
       'tipo_vehiculo',
       'status',
+      'uso_combustible',
+      'uso_km',
     ];
 
     const requiredAdditionalFields = [
@@ -109,8 +113,16 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
     ];
 
     for (const field of requiredFields) {
-      if (!formData[field as keyof Omit<CreateVehiculoPayload, 'infoAdicional'>]) {
-        return false;
+      const value = formData[field as keyof Omit<CreateVehiculoPayload, 'infoAdicional'>];
+      // Para campos numéricos como uso_combustible y uso_km, validar que sean >= 0
+      if (field === 'uso_combustible' || field === 'uso_km') {
+        if (typeof value !== 'number' || value < 0) {
+          return false;
+        }
+      } else {
+        if (!value) {
+          return false;
+        }
       }
     }
 
@@ -259,13 +271,17 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
 
             {/* Uso de Combustible */}
             <div>
-              <label htmlFor="combustible" className="block text-sm font-medium text-gray-700 mb-1">
-                Uso de Combustible
+              <label htmlFor="uso_combustible" className="block text-sm font-medium text-gray-700 mb-1">
+                Uso de Combustible (L/100km)
               </label>
               <input
-                id="combustible"
-                type="text"
-                placeholder="Ej: Gasolina"
+                id="uso_combustible"
+                type="number"
+                min="0"
+                step="0.1"
+                placeholder="Ej: 8.5"
+                value={formData.uso_combustible}
+                onChange={(e) => handleInputChange(e, 'uso_combustible')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -287,13 +303,17 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
 
             {/* Uso de Kilometraje */}
             <div>
-              <label htmlFor="kilometraje" className="block text-sm font-medium text-gray-700 mb-1">
-                Uso de kilometraje
+              <label htmlFor="uso_km" className="block text-sm font-medium text-gray-700 mb-1">
+                Uso de kilometraje (km/año)
               </label>
               <input
-                id="kilometraje"
+                id="uso_km"
                 type="number"
+                min="0"
+                step="100"
                 placeholder="Ej: 50000"
+                value={formData.uso_km}
+                onChange={(e) => handleInputChange(e, 'uso_km')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

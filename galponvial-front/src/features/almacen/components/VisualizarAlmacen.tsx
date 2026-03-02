@@ -8,7 +8,8 @@ import { ArticuloCard } from "./ArticuloCard";
 import { EditArticuloModal } from "./EditArticuloModal";
 import type { Articulo, Grupo } from "../types";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
-import { ROUTES } from "@/app/routes"; 
+import { ROUTES } from "@/app/routes";
+import { handleApiError, type ApiError } from "@/services/errorHandler";
 
 import { GrupoCard } from "./GrupoCard";
 import { EditGrupoModal } from "./EditGrupoModal";
@@ -33,7 +34,7 @@ export const VisualizarAlmacen: React.FC = () => {
   } = useAlmacenStore();
   
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useState<ApiError | null>(null);
   const [gruposLoading, setGruposLoading] = useState(false);
   
   const [currentPage, setCurrentPage] = useState(1);
@@ -94,7 +95,8 @@ export const VisualizarAlmacen: React.FC = () => {
             setGrupos(gruposData);
         } catch (err) {
             console.error(err);
-            setError(err instanceof Error ? err : new Error("Error cargando datos"));
+            const apiError = handleApiError(err);
+            setError(apiError);
         } finally {
             setLoading(false);
             setGruposLoading(false);
@@ -199,11 +201,43 @@ export const VisualizarAlmacen: React.FC = () => {
   };
 
   if (error && articulos.length === 0) {
+    const isPermissionError = error.isPermissionError;
+    const permissionIcon = isPermissionError ? '🔒' : '⚠️';
+    
     return (
       <div className="bg-white rounded-lg shadow p-8">
-        <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
-          <p className="font-medium">Error al cargar datos</p>
-          <p className="text-sm">{error.message}</p>
+        <div className={`p-6 border rounded-lg ${
+          isPermissionError 
+            ? 'bg-amber-50 border-amber-200' 
+            : 'bg-red-50 border-red-200'
+        }`}>
+          <div className="flex items-start gap-4">
+            <span className="text-3xl">{permissionIcon}</span>
+            <div className="flex-1">
+              <p className={`font-semibold ${
+                isPermissionError 
+                  ? 'text-amber-900' 
+                  : 'text-red-800'
+              }`}>
+                {isPermissionError ? 'Permiso Insuficiente' : 'Error al Cargar'}
+              </p>
+              <p className={`text-sm mt-2 ${
+                isPermissionError 
+                  ? 'text-amber-800' 
+                  : 'text-red-700'
+              }`}>
+                {error.message}
+              </p>
+              {error.details && (
+                <details className="mt-3 text-xs opacity-75 cursor-pointer">
+                  <summary className="font-medium">Detalles técnicos</summary>
+                  <pre className="mt-2 overflow-auto rounded bg-black/5 p-2">
+                    {JSON.stringify(error.details, null, 2)}
+                  </pre>
+                </details>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     );

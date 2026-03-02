@@ -15,8 +15,11 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
   vehiculoId,
   onSuccess,
 }) => {
+  // Obtenemos la fecha de hoy en formato YYYY-MM-DD para usarla en las validaciones
+  const todayString = new Date().toISOString().split('T')[0];
+
   const [formData, setFormData] = useState<CombustibleCargaRequest>({
-    fecha_carga: new Date().toISOString().slice(0, 19).replace('T', ' '),
+    fecha_carga: todayString, // Ajustado para que el input type="date" lo lea perfecto de entrada
     despachante: '',
     km_actual: 0,
     cant_combustible_despachado: 0,
@@ -36,6 +39,12 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
 
     if (!formData.fecha_carga) {
       newErrors.fecha_carga = 'La fecha de carga es obligatoria';
+    } else {
+      // Validamos que la fecha ingresada no sea mayor a hoy
+      const selectedDate = formData.fecha_carga.split(' ')[0]; 
+      if (selectedDate > todayString) {
+        newErrors.fecha_carga = 'La fecha no puede ser mayor al día actual';
+      }
     }
 
     if (!formData.km_actual || formData.km_actual <= 0) {
@@ -114,7 +123,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
    */
   const handleReset = () => {
     setFormData({
-      fecha_carga: new Date().toISOString().split('T')[0],
+      fecha_carga: todayString,
       despachante: '',
       km_actual: 0,
       cant_combustible_despachado: 0,
@@ -156,6 +165,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
               type="date"
               name="fecha_carga"
               value={formData.fecha_carga}
+              max={todayString} // ATENCIÓN: Esta propiedad bloquea fechas futuras en el calendario
               onChange={handleChange}
               className={`
                 w-full px-4 py-2 border rounded-lg
@@ -265,7 +275,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
             </button>
           </div>
 
-          <p className="text-sm text-[var(--color-text-secondary)] mt-4">
+          <p className="text-sm text-(--color-text-secondary) mt-4">
             * Campos obligatorios
           </p>
         </form>

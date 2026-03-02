@@ -54,9 +54,9 @@ export interface Permission {
 
 export interface CreateUserDto {
   dni: number;
-  email: string;
   nombre: string;
   apellido: string;
+  email: string;
   password: string;
 }
 

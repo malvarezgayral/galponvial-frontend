@@ -85,6 +85,9 @@ export interface Movimiento {
   dniUsuario: string | number; 
   motivo: string;
   detalle: string;
+  proveedor?: string;
+  motivo_salida?: string;
+  detalle_motivo?: string;
 }
 
 export interface SectorDto {

@@ -41,7 +41,11 @@ getMovimientos: async (idArticulo: number): Promise<Movimiento[]> => {
         dniUsuario: m.dniUsuario || 'Sistema',
         
         motivo: m.motivo || '-',
-        detalle: m.detalle || '-'
+        detalle: m.detalle || '-',
+        proveedor: m.proveedor || null,
+        motivo_salida: m.motivo_salida,
+        detalle_motivo: m.detalle_motivo
+
     }));
 },
   /**

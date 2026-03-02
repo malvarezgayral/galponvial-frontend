@@ -43,9 +43,12 @@ const AdminDashboard: React.FC = () => {
     if (isSuperAdmin()) return true;
     // Admin can only manage users, not other admins or super-admins
     // Verificar ambas variaciones de super-admin
-    const usuarioRoles = targetUser.usuarioRoles;
+    const usuarioRoles = targetUser?.usuarioRoles;
+    if (!usuarioRoles || !Array.isArray(usuarioRoles) || usuarioRoles.length === 0) {
+      return true; // Si no tiene roles, es un usuario regular
+    }
     const isAdminOrSuperAdmin = usuarioRoles.find(
-      (ur: any) => ur.rol.rol === "superadmin" || ur.rol.rol === "admin",
+      (ur: any) => ur.rol?.rol === "superadmin" || ur.rol?.rol === "admin",
     );
     return !isAdminOrSuperAdmin;
   };
@@ -101,7 +104,7 @@ const AdminDashboard: React.FC = () => {
     setModalAbierto(true);
   };
 
-  const totalPages = Math.ceil(usuariosTotal / usuariosPageSize);
+  const totalPages = Math.max(1, Math.ceil((Number(usuariosTotal) || 0) / (Number(usuariosPageSize) || 10)));
 
   const handleEditarUsuario = (usuario: User) => {
     setUsuarioSeleccionado(usuario);
@@ -259,13 +262,14 @@ const AdminDashboard: React.FC = () => {
       render: (value: boolean, row: any) => {
         // No mostrar estado para super-admin (siempre activo)
         // Verificar ambas variaciones de super-admin
-        const usuarioRoles = row.usuarioRoles;
-        const superAdminFound = usuarioRoles.find(
-          (ur: any) => ur.rol.rol === "superadmin",
-        );
-
-        if (superAdminFound) {
-          return <span className="text-gray-400 text-sm"></span>;
+        const usuarioRoles = row?.usuarioRoles;
+        if (usuarioRoles && Array.isArray(usuarioRoles) && usuarioRoles.length > 0) {
+          const superAdminFound = usuarioRoles.find(
+            (ur: any) => ur.rol?.rol === "superadmin",
+          );
+          if (superAdminFound) {
+            return <span className="text-gray-400 text-sm"></span>;
+          }
         }
 
         const canToggle = canManageUser(row);

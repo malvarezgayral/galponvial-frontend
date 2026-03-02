@@ -27,7 +27,6 @@ const HomePage = () => {
     };
     return roles[rol] || "bg-gray-100 text-gray-800 border-gray-300";
   };
-console.log('DATOS REALES DEL USUARIO:', userData);
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
       <div className="max-w-7xl mx-auto">
