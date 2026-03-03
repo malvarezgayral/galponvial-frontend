@@ -87,6 +87,16 @@ updateArticulo: async (
     await apiClient.delete(`${BASE_URL}/${id}`);
   },
 
+  getDeletedArticulos: async () => {
+    const response = await apiClient.get(API_ENDPOINTS.ALMACEN.DELETED_ARTICLES);
+    return response.data;
+  },
+
+  restoreArticulo: async (id: number) => {
+    const response = await apiClient.patch(API_ENDPOINTS.ALMACEN.RESTORE_ARTICLE(id));
+    return response.data;
+  },
+
   /**
    * Fetch all grupos (groups)
    */

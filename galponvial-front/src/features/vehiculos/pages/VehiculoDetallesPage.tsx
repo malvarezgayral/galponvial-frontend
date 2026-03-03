@@ -548,13 +548,17 @@ const VehiculoDetallesPage: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Cargas de Combustible</h2>
-              <Button
-                variant="primary"
-                size="md"
-                onClick={handleRedirectCombustible}
-              >
-                + Añadir Carga
-              </Button>
+              
+              {/* Renderizado condicional: solo muestra el botón si el vehículo NO está fuera de servicio */}
+              {vehiculo.status !== 'fuera_de_servicio' && (
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={handleRedirectCombustible}
+                >
+                  + Añadir Carga
+                </Button>
+              )}
             </div>
             {combustibleError && (
               <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
@@ -580,6 +584,7 @@ const VehiculoDetallesPage: React.FC = () => {
                     <tr className="border-b-2 border-gray-200">
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '20%' }}>Fecha</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '25%' }}>Despachante</th>
+                      <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '20%' }}>Tipo</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '18%' }}>KM Actual</th>
                       <th className="px-4 py-3 text-left text-sm font-semibold text-gray-900" style={{ width: '18%' }}>Combustible (Ltrs)</th>
                     </tr>
@@ -589,6 +594,7 @@ const VehiculoDetallesPage: React.FC = () => {
                       <tr key={idx} className="border-b border-gray-100 hover:bg-gray-50">
                         <td className="px-4 py-3 text-sm text-gray-700">{item.fecha_carga}</td>
                         <td className="px-4 py-3 text-sm text-gray-700">{item.despachante}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{item.tipo_combustible}</td>
                         <td className="px-4 py-3 text-sm text-gray-700">{item.km_actual}</td>
                         <td className="px-4 py-3 text-sm text-gray-700">{item.cant_combustible_despachado}</td>
                       </tr>
