@@ -23,6 +23,8 @@ export const API_ENDPOINTS = {
     GRUPOS: '/almacen/grupos',
     GRUPO_DETAIL: (id: number) => `/almacen/grupos/${id}`,
     SECTORES: '/almacen/sectores',
+    DELETED_ARTICLES: '/almacen/articulos/eliminados',
+    RESTORE_ARTICLE: (id: number | string) => `/almacen/articulos/${id}/restaurar`,
   },
   USUARIOS: {
     LIST: '/usuario',

@@ -18,6 +18,7 @@ import UsuariosPage from "../features/usuarios/pages/UsuariosPage";
 import LoginPage from "../features/auth/pages/LoginPage";
 import GrupoDetallesPage from "@/features/almacen/pages/GrupoDetallesPage";
 import SuperUserProtectedRoute from "./components/SuperUserProtectedRoute";
+import ArticulosEliminadosPage from "@/features/almacen/pages/ArticulosEliminadosPage";
 
 // Placeholder pages for routes without implementation yet
 const AuditoriaPage = () => <h1 className="text-3xl font-bold">Auditoría</h1>;
@@ -68,6 +69,14 @@ export const router = createBrowserRouter([
           <ProtectedRoute>
             <ArticuloDetallesPage />
           </ProtectedRoute>
+        ),
+      },
+      {
+        path: ROUTES.articulosEliminados,
+        element: (
+          <AdminProtectedRoute>
+            <ArticulosEliminadosPage />
+          </AdminProtectedRoute>
         ),
       },
       {
