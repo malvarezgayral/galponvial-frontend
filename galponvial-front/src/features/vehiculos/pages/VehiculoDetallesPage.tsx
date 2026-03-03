@@ -548,13 +548,17 @@ const VehiculoDetallesPage: React.FC = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Cargas de Combustible</h2>
-              <Button
-                variant="primary"
-                size="md"
-                onClick={handleRedirectCombustible}
-              >
-                + Añadir Carga
-              </Button>
+              
+              {/* Renderizado condicional: solo muestra el botón si el vehículo NO está fuera de servicio */}
+              {vehiculo.status !== 'fuera_de_servicio' && (
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={handleRedirectCombustible}
+                >
+                  + Añadir Carga
+                </Button>
+              )}
             </div>
             {combustibleError && (
               <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800">
