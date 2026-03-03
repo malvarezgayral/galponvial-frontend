@@ -24,20 +24,26 @@ const CombustiblePage = () => {
       try {
         setLoading(true);
         const data = await vehiculosService.getAll();
-        setVehiculos(data);
         
-        if (data.length > 0) {
+        // 1. Filtramos los vehículos que están fuera de servicio
+        const vehiculosDisponibles = data.filter(v => v.status !== 'fuera_de_servicio');
+        
+        // 2. Guardamos solo los disponibles en el estado
+        setVehiculos(vehiculosDisponibles);
+        
+        if (vehiculosDisponibles.length > 0) {
           // Buscamos si viene un vehiculoId por state o query param
           const queryParams = new URLSearchParams(location.search);
           const initialVehiculoId = location.state?.vehiculoId || queryParams.get('vehiculoId');
           
           if (initialVehiculoId) {
             const targetId = parseInt(initialVehiculoId as string, 10);
-            const exists = data.some(v => v.id_vehiculo === targetId);
-            setSelectedVehiculo(exists ? targetId : data[0].id_vehiculo);
+            // 3. Verificamos que el vehículo exista DENTRO de los disponibles
+            const exists = vehiculosDisponibles.some(v => v.id_vehiculo === targetId);
+            setSelectedVehiculo(exists ? targetId : vehiculosDisponibles[0].id_vehiculo);
           } else {
-            // Si no viene ninguno, seleccionamos el primero por defecto
-            setSelectedVehiculo(data[0].id_vehiculo);
+            // Si no viene ninguno, seleccionamos el primero por defecto de los disponibles
+            setSelectedVehiculo(vehiculosDisponibles[0].id_vehiculo);
           }
         }
       } catch (err) {
@@ -50,7 +56,7 @@ const CombustiblePage = () => {
 
     loadVehiculos();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [location]);
 
   if (loading) {
     return (
