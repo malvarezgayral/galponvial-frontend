@@ -118,6 +118,7 @@ export interface IncidentesResponse {
 
 // Cargas de Combustible
 export interface CargaCombustible {
+  tipo_combustible: string;
   id_carga: number;
   fecha_carga: string;
   despachante: string;

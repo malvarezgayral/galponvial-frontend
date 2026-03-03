@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import { combustibleService } from '../services/combustibleService';
 import { CombustibleSuccessModal } from './CombustibleSuccessModal';
@@ -19,8 +20,9 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
   const todayString = new Date().toISOString().split('T')[0];
 
   const [formData, setFormData] = useState<CombustibleCargaRequest>({
-    fecha_carga: todayString, // Ajustado para que el input type="date" lo lea perfecto de entrada
+    fecha_carga: todayString,
     despachante: '',
+    tipo_combustible: '', 
     km_actual: 0,
     cant_combustible_despachado: 0,
   });
@@ -47,6 +49,11 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       }
     }
 
+    // Validación del nuevo campo
+    if (!formData.tipo_combustible || formData.tipo_combustible.trim() === '') {
+      newErrors.tipo_combustible = 'El tipo de combustible es obligatorio';
+    }
+
     if (!formData.km_actual || formData.km_actual <= 0) {
       newErrors.km_actual = 'Los km actuales son obligatorios y deben ser mayor a 0';
     }
@@ -60,9 +67,10 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
   };
 
   /**
-   * Maneja los cambios en los inputs
+   * Maneja los cambios en los inputs y selects
    */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // ATENCIÓN: Se agregó HTMLSelectElement al tipo del evento
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
     const numericValue = type === 'number' ? parseFloat(value) : value;
 
@@ -71,7 +79,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       [name]: numericValue,
     }));
 
-    // Limpiar error cuando el usuario empieza a escribir
+    // Limpiar error cuando el usuario empieza a escribir/seleccionar
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -125,6 +133,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
     setFormData({
       fecha_carga: todayString,
       despachante: '',
+      tipo_combustible: '',
       km_actual: 0,
       cant_combustible_despachado: 0,
     });
@@ -165,7 +174,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
               type="date"
               name="fecha_carga"
               value={formData.fecha_carga}
-              max={todayString} // ATENCIÓN: Esta propiedad bloquea fechas futuras en el calendario
+              max={todayString}
               onChange={handleChange}
               className={`
                 w-full px-4 py-2 border rounded-lg
@@ -196,6 +205,34 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
             />
           </div>
 
+          {/* Tipo de Combustible (NUEVO CAMPO) */}
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+              Tipo de combustible *
+            </label>
+            <select
+              name="tipo_combustible"
+              value={formData.tipo_combustible}
+              onChange={handleChange}
+              className={`
+                w-full px-4 py-2 border rounded-lg bg-white
+                focus:outline-none focus:ring-2 focus:ring-[#378AFE]
+                ${errors.tipo_combustible ? 'border-red-500' : 'border-[var(--color-border-light)]'}
+              `}
+            >
+              <option value="">Seleccione un tipo...</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Nafta Súper">Nafta Súper</option>
+              <option value="Nafta Premium">Nafta Premium</option>
+              <option value="GNC">GNC</option>
+              <option value="GNC">GLP</option>
+              <option value="GNC">Otro</option>
+            </select>
+            {errors.tipo_combustible && (
+              <p className="text-red-500 text-sm mt-1">{errors.tipo_combustible}</p>
+            )}
+          </div>
+
           {/* KM actuales */}
           <div>
             <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
@@ -204,7 +241,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
             <input
               type="number"
               name="km_actual"
-              value={formData.km_actual}
+              value={formData.km_actual || ''}
               onChange={handleChange}
               placeholder="0"
               min="0"
@@ -228,7 +265,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
             <input
               type="number"
               name="cant_combustible_despachado"
-              value={formData.cant_combustible_despachado}
+              value={formData.cant_combustible_despachado || ''}
               onChange={handleChange}
               placeholder="0.00"
               min="0"
@@ -275,7 +312,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
             </button>
           </div>
 
-          <p className="text-sm text-(--color-text-secondary) mt-4">
+          <p className="text-sm text-[var(--color-text-secondary)] mt-4">
             * Campos obligatorios
           </p>
         </form>

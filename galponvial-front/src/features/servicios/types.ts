@@ -21,6 +21,7 @@ export const TipoServicio = {
 export interface CombustibleCargaRequest {
   fecha_carga: string;
   despachante?: string;
+  tipo_combustible: string;
   km_actual: number;
   cant_combustible_despachado: number;
 }
