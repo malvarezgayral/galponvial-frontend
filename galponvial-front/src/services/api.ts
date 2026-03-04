@@ -68,15 +68,27 @@ apiClient.interceptors.response.use(
           // Retry original request with new token
           originalRequest.headers.Authorization = `Bearer ${accessToken}`;
           return apiClient(originalRequest);
-        } catch {
-          // Refresh failed - clear all and redirect to login
+        } catch (refreshError) {
+          // REFRESH FALLÓ - El refresh token venció o es inválido
+          console.error("Refresh token expired or invalid", refreshError);
+          
+          localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
           localStorage.removeItem("user");
+
+          // Mostramos feedback antes de redirigir al login
+          alert("Tu sesión ha expirado por seguridad. Por favor, vuelve a ingresar.");
+          
           window.location.href = "/login";
+          return Promise.reject(refreshError);
         }
       } else {
-        // No refresh token - redirect to login
+        // NO HAY REFRESH TOKEN
         localStorage.removeItem("user");
+        
+        // Feedback
+        alert("No se encontró una sesión activa. Redirigiendo al login...");
+        
         window.location.href = "/login";
       }
     }
