@@ -260,6 +260,10 @@ const VehiculoDetallesPage: React.FC = () => {
                   <span className="text-gray-600 font-medium">Año:</span>
                   <span className="text-gray-900 font-semibold">{vehiculo.anio}</span>
                 </div>
+                <div className="flex justify-between items-start">
+                  <span className="text-gray-600 font-medium">Delegación:</span>
+                  <span className="text-gray-900 font-semibold">{vehiculo.delegacion || "Sin asignar"}</span>
+                </div>
               </div>
             </div>
 

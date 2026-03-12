@@ -41,6 +41,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
         anio: vehiculo.anio,
         tipo_vehiculo: vehiculo.tipo_vehiculo,
         status: vehiculo.status,
+        delegacion: vehiculo.delegacion,
         infoAdicional: {
           numero_serie: vehiculo.infoAdicional.numero_serie,
           licencia_conductor: vehiculo.infoAdicional.licencia_conductor,
@@ -240,6 +241,22 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                   </option>
                 ))}
               </select>
+            </div>
+          </div>
+
+          {/* Row 4: Delegación */}
+          <div className="grid grid-cols-1 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Delegación
+              </label>
+              <input
+                type="text"
+                value={formData.delegacion || ''}
+                onChange={(e) => handleInputChange('delegacion', e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                disabled={loading}
+              />
             </div>
           </div>
 
