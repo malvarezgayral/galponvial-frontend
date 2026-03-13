@@ -21,6 +21,7 @@ export interface Vehiculo {
   tipo_vehiculo: string;
   status: 'disponible' | 'en_taller' | 'en_uso' | 'fuera_de_servicio';
   uso_combustible: number;
+  delegacion: string;
   infoAdicional: InfoAdicional;
   fechaCreacion?: string;
   ultimaModificacion?: string;
@@ -36,6 +37,7 @@ export interface CreateVehiculoPayload {
   status: 'disponible' | 'mantenimiento' | 'en_uso' | 'retirado';
   uso_combustible: number;
   uso_km: number;
+  delegacion: string;
   infoAdicional: InfoAdicional;
 }
 

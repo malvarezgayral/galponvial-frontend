@@ -13,6 +13,7 @@ const INITIAL_FORM_STATE: CreateVehiculoPayload = {
   status: 'disponible',
   uso_combustible: 0,
   uso_km: 0,
+  delegacion: '',
   infoAdicional: {
     numero_serie: 0,
     licencia_conductor: '',
@@ -101,6 +102,7 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
       'status',
       'uso_combustible',
       'uso_km',
+      'delegacion',
     ];
 
     const requiredAdditionalFields = [
@@ -366,6 +368,21 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({ dropdown
                 placeholder="Ej: 2020"
                 value={formData.anio}
                 onChange={(e) => handleInputChange(e, 'anio')}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+
+            {/* Delegación */}
+            <div>
+              <label htmlFor="delegacion" className="block text-sm font-medium text-gray-700 mb-1">
+                Delegación
+              </label>
+              <input
+                id="delegacion"
+                type="text"
+                placeholder="Ej: Delegación Centro"
+                value={formData.delegacion}
+                onChange={(e) => handleInputChange(e, 'delegacion')}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

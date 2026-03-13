@@ -32,6 +32,7 @@ const transformVehiculoPayload = (
     status: vehiculo.status,
     uso_combustible: vehiculo.uso_combustible,
     uso_km: vehiculo.uso_km,
+    delegacion: vehiculo.delegacion,
     infoAdicional: {
       numero_serie: vehiculo.infoAdicional.numero_serie,
       licencia_conductor: vehiculo.infoAdicional.licencia_conductor,
@@ -54,6 +55,7 @@ const transformUpdatePayload = (vehiculo: Partial<Vehiculo>): Record<string, unk
 
   return {
     ...vehiculo,
+    delegacion: vehiculo.delegacion,
     infoAdicional: {
       ...vehiculo.infoAdicional,
       numero_serie: Number(vehiculo.infoAdicional.numero_serie),

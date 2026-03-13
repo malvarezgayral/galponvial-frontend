@@ -6,6 +6,7 @@ interface VehiculosFilters {
   estado: string | null;
   tipo: string | null;
   sector: string | null;
+  delegacion: string | null;
   searchTerm: string;
 }
 
@@ -81,6 +82,11 @@ const applyFilters = (vehiculos: Vehiculo[], filters: VehiculosFilters): Vehicul
       }
     }
 
+    // Filter by delegacion
+    if (filters.delegacion && vehiculo.delegacion !== filters.delegacion) {
+      return false;
+    }
+
     // Filter by search term (nombre or codigo)
     if (filters.searchTerm) {
       const searchLower = filters.searchTerm.toLowerCase();
@@ -119,6 +125,7 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
     estado: null,
     tipo: null,
     sector: null,
+    delegacion: null,
     searchTerm: '',
   },
 
@@ -217,6 +224,7 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
       estado: null,
       tipo: null,
       sector: null,
+      delegacion: null,
       searchTerm: '',
     };
     const filtered = applyFilters(get().vehiculos, resetFilters);
