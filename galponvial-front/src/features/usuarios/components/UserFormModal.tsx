@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useUsuariosStore } from '../store';
 import { useAppStore } from '@/app/stores/appStore';
 import { Button } from '@/shared/ui/Button';
-import type { CreateUserDto, UpdateUserDto, ValidPermissions, RolePermissionItem } from '../types';
+import type { CreateUserDto, UpdateUserDto, ValidPermissionsType, RolePermissionItem } from '../types';
 import type { UserRole } from '../types';
 
 const UserFormModal: React.FC = () => {
@@ -238,8 +238,8 @@ const UserFormModal: React.FC = () => {
     }
   };
 
-  const getPermissionLabel = (permission: ValidPermissions): string => {
-    const labels: Record<ValidPermissions, string> = {
+  const getPermissionLabel = (permission: ValidPermissionsType): string => {
+    const labels: Record<ValidPermissionsType, string> = {
       'almacen-taller:read': 'Almacén Taller - Lectura',
       'almacen-taller:write': 'Almacén Taller - Escritura',
       'almacen-comun:read': 'Almacén Común - Lectura',

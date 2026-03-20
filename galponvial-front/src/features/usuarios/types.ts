@@ -5,14 +5,19 @@
 /**
  * Valid permission values in the system
  */
-export enum ValidPermissions {
-  ALMACEN_TALLER_READ = 'almacen-taller:read',
-  ALMACEN_TALLER_WRITE = 'almacen-taller:write',
-  ALMACEN_COMUN_READ = 'almacen-comun:read',
-  ALMACEN_COMUN_WRITE = 'almacen-comun:write',
-  ALL_READ = 'all:read',
-  ALL_WRITE = 'all:write',
-}
+export const ValidPermissions = {
+  ALMACEN_TALLER_READ: 'almacen-taller:read',
+  ALMACEN_TALLER_WRITE: 'almacen-taller:write',
+  ALMACEN_COMUN_READ: 'almacen-comun:read',
+  ALMACEN_COMUN_WRITE: 'almacen-comun:write',
+  ALL_READ: 'all:read',
+  ALL_WRITE: 'all:write',
+} as const;
+
+/**
+ * Type for ValidPermissions values
+ */
+export type ValidPermissionsType = typeof ValidPermissions[keyof typeof ValidPermissions];
 
 /**
  * Valid role names - Must match backend values
@@ -74,7 +79,7 @@ export interface UpdateUserDto {
  */
 export interface RolePermissionItem {
   id: number;
-  permisos: ValidPermissions[];
+  permisos: ValidPermissionsType[];
   rol: UserRole;
 }
 

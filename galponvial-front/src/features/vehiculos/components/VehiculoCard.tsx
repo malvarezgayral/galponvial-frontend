@@ -49,9 +49,9 @@ export const VehiculoCard: React.FC<VehiculoCardProps> = ({
           }`}
         >
           {vehiculo.status === "disponible" && "✓"}
-          {vehiculo.status === "mantenimiento" && "⚙"}
+          {vehiculo.status === "en_taller" && "⚙"}
           {vehiculo.status === "en_uso" && "→"}
-          {vehiculo.status === "retirado" && "✕"}
+          {vehiculo.status === "fuera_de_servicio" && "✕"}
         </div>
       </div>
 

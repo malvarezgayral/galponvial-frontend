@@ -52,12 +52,12 @@ export const useBulkUserActions = () => {
 
     const headers = ['ID', 'Nombre', 'Apellido', 'Email', 'Rol', 'Estado'];
     const rows = usuarios.map((u) => [
-      u.id,
+      u.dni.toString(),
       u.nombre,
       u.apellido,
       u.email,
       u.rol,
-      u.activo ? 'Activo' : 'Inactivo',
+      u.isActive ? 'Activo' : 'Inactivo',
     ]);
 
     const csvContent = [

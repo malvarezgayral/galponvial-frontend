@@ -281,7 +281,7 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
             </option>
             {grupos.map((grupo) => (
               <option key={grupo.id} value={grupo.id}>
-                {grupo.nombre} ({grupo.sector.tipo})
+                {grupo.nombre} ({grupo.sector?.tipo})
               </option>
             ))}
           </select>

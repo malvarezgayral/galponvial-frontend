@@ -1,5 +1,5 @@
 import { useAppStore } from '@/app/stores/appStore';
-import type { Permission } from '../types';
+import type { Permission, User } from '../types';
 
 /**
  * Hook to check admin permissions
@@ -56,7 +56,8 @@ export const useAdminPermissions = () => {
      */
     hasPermission: (permission: string) => {
       if (!user) return false;
-      const perms = (user.permisos || []) as Permission[];
+      const userWithPermisos = user as User;
+      const perms = (userWithPermisos.permisos || []) as Permission[];
       return perms.some((p) => p.nombre === permission) || false;
     },
 
