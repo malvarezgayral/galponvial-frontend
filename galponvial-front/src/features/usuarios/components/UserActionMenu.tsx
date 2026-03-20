@@ -24,13 +24,13 @@ const UserActionMenu: React.FC<UserActionMenuProps> = ({ usuario }) => {
   };
 
   const handleToggleActivo = async () => {
-    await toggleUsuarioActivo(usuario.id);
+    await toggleUsuarioActivo(usuario.dni.toString());
     setMenuAbierto(false);
   };
 
   const handleEliminar = async () => {
     if (confirm(`¿Estás seguro de que deseas eliminar a ${usuario.nombre}?`)) {
-      await eliminarUsuario(usuario.id);
+      await eliminarUsuario(usuario.dni.toString());
       setMenuAbierto(false);
     }
   };
