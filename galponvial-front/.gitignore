@@ -28,3 +28,4 @@ dist-ssr
 generate_frontend_report.py
 
 package-lock.json
+.env
