@@ -26,3 +26,6 @@ dist-ssr
 
 # others
 generate_frontend_report.py
+
+package-lock.json
+.env
