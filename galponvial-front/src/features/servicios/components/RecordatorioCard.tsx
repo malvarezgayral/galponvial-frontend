@@ -128,7 +128,7 @@ export const RecordatorioCard: React.FC<RecordatorioCardProps> = ({
             {onEdit && (
               <button
                 onClick={() => onEdit(recordatorio)}
-                className="p-1 hover:bg-white hover:bg-opacity-20 rounded transition-colors duration-200"
+                className="p-1 hover:bg-white hover:bg-opacity-20 rounded transition-colors duration-200 cursor-pointer"
                 title="Editar recordatorio"
                 type="button"
               >
@@ -152,7 +152,7 @@ export const RecordatorioCard: React.FC<RecordatorioCardProps> = ({
             {onDelete && (
               <button
                 onClick={() => onDelete(recordatorio)}
-                className="p-1 hover:bg-white hover:bg-opacity-20 rounded transition-colors duration-200"
+                className="p-1 hover:bg-white hover:bg-opacity-20 rounded transition-colors duration-200 cursor-pointer"
                 title="Eliminar recordatorio"
                 type="button"
               >

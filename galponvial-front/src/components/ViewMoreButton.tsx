@@ -21,6 +21,8 @@ const ViewButton = ({ text, to }: ActionButtonProps) => {
 
         transition-all duration-300 ease-out
 
+        cursor-pointer
+
         hover:bg-orange-400
         hover:-translate-y-0.5
         hover:shadow-[0_8px_0_#000]

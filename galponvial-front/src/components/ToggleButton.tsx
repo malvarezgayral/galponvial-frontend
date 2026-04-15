@@ -52,6 +52,7 @@ const ToggleView = ({
           w-1/2 h-full
           text-lg font-medium
           transition-colors
+          cursor-pointer
           ${
             active === "admin"
               ? "text-green-900"
@@ -69,6 +70,7 @@ const ToggleView = ({
           w-1/2 h-full
           text-lg font-medium
           transition-colors
+          cursor-pointer
           ${
             active === "view"
               ? "text-green-900"

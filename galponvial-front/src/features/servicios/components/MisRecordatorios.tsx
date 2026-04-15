@@ -146,7 +146,7 @@ export const MisRecordatorios: React.FC = () => {
             className="
               px-3 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg
               text-sm font-medium transition-colors duration-200
-              flex items-center gap-2
+              flex items-center gap-2 cursor-pointer
             "
             type="button"
             title="Eliminar todos los recordatorios"

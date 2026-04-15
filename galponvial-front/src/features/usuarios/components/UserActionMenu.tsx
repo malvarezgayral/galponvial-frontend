@@ -39,7 +39,7 @@ const UserActionMenu: React.FC<UserActionMenuProps> = ({ usuario }) => {
     <div className="relative inline-block text-left">
       <button
         onClick={() => setMenuAbierto(!menuAbierto)}
-        className="px-3 py-2 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
+        className="px-3 py-2 text-sm text-gray-700 bg-gray-200 rounded hover:bg-gray-300 transition-colors cursor-pointer"
       >
         ⋮
       </button>
@@ -48,19 +48,19 @@ const UserActionMenu: React.FC<UserActionMenuProps> = ({ usuario }) => {
         <div className="absolute right-0 z-10 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200">
           <button
             onClick={handleEditar}
-            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
           >
             ✏️ Editar
           </button>
           <button
             onClick={handleToggleActivo}
-            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-t"
+            className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 border-t cursor-pointer"
           >
             {usuario.isActive ? '🔒 Desactivar' : '🔓 Activar'}
           </button>
           <button
             onClick={handleEliminar}
-            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 border-t"
+            className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 border-t cursor-pointer"
           >
             🗑️ Eliminar
           </button>

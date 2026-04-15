@@ -121,7 +121,7 @@ export const CombustibleSuccessModal: React.FC<CombustibleSuccessModalProps> = (
             onClick={onClose}
             className="
               w-full px-4 py-2 bg-[#378AFE] text-white font-medium rounded
-              hover:bg-[#0962DE] transition-colors duration-200
+              hover:bg-[#0962DE] transition-colors duration-200 cursor-pointer
             "
           >
             Cerrar

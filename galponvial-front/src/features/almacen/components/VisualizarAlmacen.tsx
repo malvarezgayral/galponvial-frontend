@@ -326,7 +326,7 @@ export const VisualizarAlmacen: React.FC = () => {
         </div>
         
         <div className="flex justify-end mb-6">
-            <button onClick={resetFilters} className="text-sm text-blue-600 hover:underline">Limpiar filtros</button>
+            <button onClick={resetFilters} className="text-sm text-blue-600 hover:underline cursor-pointer">Limpiar filtros</button>
         </div>
 
         {/* Content Artículos */}

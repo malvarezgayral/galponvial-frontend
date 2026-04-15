@@ -325,7 +325,7 @@ export const IncidenteForm: React.FC<IncidenteFormProps> = ({
               className="
                 flex-1 px-6 py-3 bg-[#378AFE] text-white font-medium rounded-lg
                 hover:bg-[#0962DE] disabled:opacity-50 disabled:cursor-not-allowed
-                transition-colors duration-200
+                transition-colors duration-200 cursor-pointer
               "
             >
               {loading ? 'Registrando...' : 'Registrar Incidente'}
@@ -337,7 +337,7 @@ export const IncidenteForm: React.FC<IncidenteFormProps> = ({
               className="
                 flex-1 px-6 py-3 bg-gray-300 text-[var(--color-text-primary)] font-medium rounded-lg
                 hover:bg-gray-400 disabled:opacity-50 disabled:cursor-not-allowed
-                transition-colors duration-200
+                transition-colors duration-200 cursor-pointer
               "
             >
               Limpiar

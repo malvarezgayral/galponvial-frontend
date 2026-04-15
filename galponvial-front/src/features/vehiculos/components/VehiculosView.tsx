@@ -234,7 +234,7 @@ export const VehiculosView: React.FC = () => {
         {/* Reset filters button */}
         <button
           onClick={resetFilters}
-          className="mt-4 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          className="mt-4 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
         >
           Limpiar filtros
         </button>

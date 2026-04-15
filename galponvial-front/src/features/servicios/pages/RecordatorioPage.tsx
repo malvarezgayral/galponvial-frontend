@@ -15,7 +15,7 @@ const RecordatorioPage = () => {
           onClick={() => navigate('/servicios')}
           className="
             flex items-center gap-2 text-[#378AFE] hover:text-[#0962DE]
-            transition-colors duration-200 mb-6
+            transition-colors duration-200 mb-6 cursor-pointer
           "
         >
           <svg

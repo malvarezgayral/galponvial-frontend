@@ -33,7 +33,7 @@ const UsuariosPage: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`px-6 py-3 font-semibold text-lg transition-all duration-300 border-b-4 ${
+              className={`px-6 py-3 font-semibold text-lg transition-all duration-300 border-b-4 cursor-pointer ${
                 activeTab === tab.id
                   ? "border-[var(--color-navbar-nav)] text-[var(--color-navbar-nav)]"
                   : "border-transparent text-gray-600 hover:text-gray-900"

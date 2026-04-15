@@ -24,6 +24,7 @@ export const ServicioCard: React.FC<ServicioCardProps> = ({
         bg-white rounded-3xl
         border-2 border-[var(--color-border-light)]
         transition-all duration-300 ease-in-out
+        cursor-pointer
         hover:border-[#378AFE]
         hover:shadow-lg
         hover:scale-105

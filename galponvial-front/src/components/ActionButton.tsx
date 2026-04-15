@@ -8,7 +8,7 @@ interface ButtonProps {
 
 const Button = ({ children, variant = "save", onClick }: ButtonProps) => {
   const base =
-    "inline-flex items-center justify-center font-semibold rounded-md border-3 transition-colors duration-200 px-4 py-2";
+    "inline-flex items-center justify-center font-semibold rounded-md border-3 transition-colors duration-200 px-4 py-2 cursor-pointer";
 
   const variants = {
     save:

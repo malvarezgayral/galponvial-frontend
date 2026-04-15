@@ -64,7 +64,7 @@ export const EditIncidenteStatusModal: React.FC<EditIncidenteStatusModalProps> =
           <button
             onClick={onClose}
             disabled={isLoading}
-            className="text-gray-400 hover:text-gray-600 disabled:opacity-50"
+            className="text-gray-400 hover:text-gray-600 disabled:opacity-50 cursor-pointer"
           >
             <svg
               className="w-6 h-6"

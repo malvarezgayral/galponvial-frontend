@@ -15,7 +15,7 @@ export const Button: React.FC<ButtonProps> = ({
   disabled,
   ...props
 }) => {
-  const baseClasses = 'font-medium rounded transition-colors';
+  const baseClasses = 'font-medium rounded transition-colors cursor-pointer';
   
   const variantClasses = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700',
@@ -32,7 +32,7 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <button
       className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className} ${
-        isLoading || disabled ? 'opacity-50 cursor-not-allowed' : ''
+        isLoading || disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
       }`}
       disabled={isLoading || disabled}
       {...props}
