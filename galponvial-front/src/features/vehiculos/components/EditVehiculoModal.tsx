@@ -26,6 +26,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   // Find the vehicle to edit
   const vehiculo = vehiculoId ? vehiculos.find((v) => v.id_vehiculo === vehiculoId) : null;
@@ -53,10 +54,46 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
       });
       setError(null);
       setSuccess(false);
+      setFieldErrors({});
     }
   }, [isOpen, vehiculo]);
 
   if (!isOpen) return null;
+
+  /**
+   * Validate form before submission
+   */
+  const validateForm = (): { isValid: boolean; errors: Record<string, string> } => {
+    const errors: Record<string, string> = {};
+    const requiredFields = ['codigo', 'nombre', 'marca', 'modelo', 'tipo_vehiculo', 'status', 'delegacion'];
+    const requiredAdditionalFields = ['numero_serie', 'licencia_conductor', 'color', 'seguro_empresa', 'poliza', 'sector'];
+
+    for (const field of requiredFields) {
+      const value = formData[field as keyof Vehiculo];
+      if (!value) {
+        errors[field] = 'Este campo es requerido';
+      }
+    }
+
+    for (const field of requiredAdditionalFields) {
+      if (field === 'sector') {
+        const sector = formData.infoAdicional?.sector as { id_sector: number; nombre: string } | undefined;
+        if (!sector || sector.id_sector === 0) {
+          errors[`infoAdicional.${field}`] = 'Este campo es requerido';
+        }
+      } else {
+        const value = formData.infoAdicional?.[field as keyof Omit<typeof formData.infoAdicional, 'sector'>];
+        if (value === '' || value === 0) {
+          errors[`infoAdicional.${field}`] = 'Este campo es requerido';
+        }
+      }
+    }
+
+    return {
+      isValid: Object.keys(errors).length === 0,
+      errors,
+    };
+  };
 
   /**
    * Handle form submission
@@ -65,6 +102,13 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
     e.preventDefault();
     if (!vehiculo) return;
 
+    const validation = validateForm();
+    if (!validation.isValid) {
+      setFieldErrors(validation.errors);
+      return;
+    }
+
+    setFieldErrors({});
     setLoading(true);
     setError(null);
     setSuccess(false);
@@ -146,9 +190,12 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                 type="text"
                 value={formData.codigo || ''}
                 onChange={(e) => handleInputChange('codigo', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors.codigo ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 disabled={loading}
               />
+              {fieldErrors.codigo && <p className="text-red-500 text-sm mt-1">{fieldErrors.codigo}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -158,9 +205,12 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                 type="text"
                 value={formData.nombre || ''}
                 onChange={(e) => handleInputChange('nombre', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors.nombre ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 disabled={loading}
               />
+              {fieldErrors.nombre && <p className="text-red-500 text-sm mt-1">{fieldErrors.nombre}</p>}
             </div>
           </div>
 
@@ -174,9 +224,12 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                 type="text"
                 value={formData.marca || ''}
                 onChange={(e) => handleInputChange('marca', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors.marca ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 disabled={loading}
               />
+              {fieldErrors.marca && <p className="text-red-500 text-sm mt-1">{fieldErrors.marca}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -186,9 +239,12 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                 type="text"
                 value={formData.modelo || ''}
                 onChange={(e) => handleInputChange('modelo', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors.modelo ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 disabled={loading}
               />
+              {fieldErrors.modelo && <p className="text-red-500 text-sm mt-1">{fieldErrors.modelo}</p>}
             </div>
           </div>
 
@@ -202,9 +258,12 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                 type="number"
                 value={formData.anio || ''}
                 onChange={(e) => handleInputChange('anio', parseInt(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors.anio ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 disabled={loading}
               />
+              {fieldErrors.anio && <p className="text-red-500 text-sm mt-1">{fieldErrors.anio}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -213,7 +272,9 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
               <select
                 value={formData.tipo_vehiculo || ''}
                 onChange={(e) => handleInputChange('tipo_vehiculo', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors.tipo_vehiculo ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 disabled={loading}
               >
                 <option value="">Seleccionar tipo</option>
@@ -223,6 +284,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                   </option>
                 ))}
               </select>
+              {fieldErrors.tipo_vehiculo && <p className="text-red-500 text-sm mt-1">{fieldErrors.tipo_vehiculo}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -231,7 +293,9 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
               <select
                 value={formData.status || ''}
                 onChange={(e) => handleInputChange('status', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors.status ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 disabled={loading}
               >
                 <option value="">Seleccionar estado</option>
@@ -241,6 +305,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                   </option>
                 ))}
               </select>
+              {fieldErrors.status && <p className="text-red-500 text-sm mt-1">{fieldErrors.status}</p>}
             </div>
           </div>
 
@@ -254,9 +319,12 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                 type="text"
                 value={formData.delegacion || ''}
                 onChange={(e) => handleInputChange('delegacion', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors.delegacion ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
                 disabled={loading}
               />
+              {fieldErrors.delegacion && <p className="text-red-500 text-sm mt-1">{fieldErrors.delegacion}</p>}
             </div>
           </div>
 
@@ -275,9 +343,12 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                   onChange={(e) =>
                     handleInputChange('numero_serie', parseInt(e.target.value), true, 'numero_serie')
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    fieldErrors['infoAdicional.numero_serie'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                  }`}
                   disabled={loading}
                 />
+                {fieldErrors['infoAdicional.numero_serie'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.numero_serie']}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -289,9 +360,12 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                   onChange={(e) =>
                     handleInputChange('color', e.target.value, true, 'color')
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    fieldErrors['infoAdicional.color'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                  }`}
                   disabled={loading}
                 />
+                {fieldErrors['infoAdicional.color'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.color']}</p>}
               </div>
             </div>
 
@@ -306,9 +380,12 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                   onChange={(e) =>
                     handleInputChange('licencia_conductor', e.target.value, true, 'licencia_conductor')
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    fieldErrors['infoAdicional.licencia_conductor'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                  }`}
                   disabled={loading}
                 />
+                {fieldErrors['infoAdicional.licencia_conductor'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.licencia_conductor']}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -320,9 +397,12 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                   onChange={(e) =>
                     handleInputChange('seguro_empresa', e.target.value, true, 'seguro_empresa')
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    fieldErrors['infoAdicional.seguro_empresa'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                  }`}
                   disabled={loading}
                 />
+                {fieldErrors['infoAdicional.seguro_empresa'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.seguro_empresa']}</p>}
               </div>
             </div>
 
@@ -337,9 +417,12 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                   onChange={(e) =>
                     handleInputChange('poliza', e.target.value, true, 'poliza')
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    fieldErrors['infoAdicional.poliza'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                  }`}
                   disabled={loading}
                 />
+                {fieldErrors['infoAdicional.poliza'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.poliza']}</p>}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -355,7 +438,9 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                       'sector'
                     )
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                    fieldErrors['infoAdicional.sector'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                  }`}
                   disabled={loading}
                 >
                   <option value="">Seleccionar sector</option>
@@ -365,6 +450,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                     </option>
                   ))}
                 </select>
+                {fieldErrors['infoAdicional.sector'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.sector']}</p>}
               </div>
             </div>
           </div>
