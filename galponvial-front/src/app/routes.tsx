@@ -6,6 +6,9 @@ export const ROUTES = {
   servicios: "/servicios",
   usuarios: "/usuarios",
   auditoria: "/auditoria",
+  
+   depoCombustible: "/depo-combustible",
+   tanqueCombustible: "/tanque-combustible",
   login: "/login",
   articuloDetallesRoute: "/almacen/:id", 
   articuloDetalles: (id: number) => `/almacen/${id}`,

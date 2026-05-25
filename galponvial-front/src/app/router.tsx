@@ -22,6 +22,8 @@ import ArticulosEliminadosPage from "@/features/almacen/pages/ArticulosEliminado
 
 // Placeholder pages for routes without implementation yet
 const AuditoriaPage = () => <h1 className="text-3xl font-bold">Auditoría</h1>;
+const DepoCombustiblePage = () => <h1 className="text-3xl font-bold">Depo combustible y lubricantes</h1>;
+const TanqueCombustiblePage = () => <h1 className="text-3xl font-bold">Tanque de combustible</h1>;
 
 export const router = createBrowserRouter([
   {
@@ -136,6 +138,9 @@ export const router = createBrowserRouter([
         ),
       },
       { path: ROUTES.auditoria, element: <AuditoriaPage /> },
+      
+{ path: ROUTES.depoCombustible, element: <ProtectedRoute><DepoCombustiblePage /></ProtectedRoute> },
+{ path: ROUTES.tanqueCombustible, element: <ProtectedRoute><TanqueCombustiblePage /></ProtectedRoute> },
     ],
   },
 ]);

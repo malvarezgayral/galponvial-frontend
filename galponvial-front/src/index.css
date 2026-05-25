@@ -42,6 +42,6 @@
   }
 
   .navbar-link {
-    @apply text-[var(--color-navbar-text)] text-[22px] font-bold transition-all duration-300 ease-in-out hover:text-[var(--color-navbar-hover)] hover:scale-105 block w-full;
+    @apply text-[var(--color-navbar-text)] text-[20px] font-bold transition-all duration-300 ease-in-out hover:text-[var(--color-navbar-hover)] hover:scale-105 block w-full text-center px-2;
   }
 }
