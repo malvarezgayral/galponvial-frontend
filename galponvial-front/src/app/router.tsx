@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import ProveedoresPage from "../features/proveedores/pages/ProveedoresPage";
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./routes";
 import { MainLayout } from "./layouts/MainLayout";
@@ -138,6 +139,14 @@ export const router = createBrowserRouter([
         ),
       },
       { path: ROUTES.auditoria, element: <AuditoriaPage /> },
+      {
+  path: ROUTES.proveedores,
+  element: (
+    <ProtectedRoute>
+      <ProveedoresPage />
+    </ProtectedRoute>
+  ),
+},
       
 { path: ROUTES.depoCombustible, element: <ProtectedRoute><DepoCombustiblePage /></ProtectedRoute> },
 { path: ROUTES.tanqueCombustible, element: <ProtectedRoute><TanqueCombustiblePage /></ProtectedRoute> },
