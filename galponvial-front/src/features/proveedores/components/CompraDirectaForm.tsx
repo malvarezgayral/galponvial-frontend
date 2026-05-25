@@ -38,7 +38,7 @@ export const CompraDirectaForm: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-2xl bg-white rounded-lg shadow-md p-8">
+    <div className="w-full max-w-lg bg-white rounded-lg shadow-md p-8">
       <h2 className="text-2xl font-bold text-[var(--color-text-primary)] mb-6">Compra Directa</h2>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>

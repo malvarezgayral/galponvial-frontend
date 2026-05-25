@@ -1,4 +1,5 @@
 import { CompraDirectaForm } from '../components/CompraDirectaForm';
+import { PresupuestoForm } from '../components/PresupuestoForm';
 
 export default function ProveedoresPage() {
   return (
@@ -9,7 +10,11 @@ export default function ProveedoresPage() {
           Gestión de compras y proveedores del Galpón Vial
         </p>
       </div>
-      <CompraDirectaForm />
+      <div className="flex flex-row gap-6 items-start flex-wrap">
+        <CompraDirectaForm />
+        <PresupuestoForm numero={1} />
+        <PresupuestoForm numero={2} />
+      </div>
     </div>
   );
 }
