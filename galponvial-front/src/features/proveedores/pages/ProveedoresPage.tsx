@@ -14,6 +14,7 @@ export default function ProveedoresPage() {
         <CompraDirectaForm />
         <PresupuestoForm numero={1} />
         <PresupuestoForm numero={2} />
+        <PresupuestoForm numero={3} />
       </div>
     </div>
   );
