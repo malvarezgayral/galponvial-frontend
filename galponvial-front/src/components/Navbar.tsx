@@ -14,16 +14,15 @@ const Navbar = () => {
   const { selfLogout, isLoading } = useAppStore();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const navLinks: NavItem[] = [
-    { name: "Almacén", href: ROUTES.almacen },
-    { name: "Vehículos", href: ROUTES.vehiculos },
-    { name: "Servicios", href: ROUTES.servicios },
-    { name: "Proveedores", href: ROUTES.proveedores },
-    
-{ name: "Depo Combustible y Lubricantes", href: ROUTES.depoCombustible },
-{ name: "Tanque de Combustible", href: ROUTES.tanqueCombustible },
-    { name: "Usuarios", href: ROUTES.usuarios },
-  ];
+ const navLinks: NavItem[] = [
+  { name: "Almacén", href: ROUTES.almacen },
+  { name: "Vehículos", href: ROUTES.vehiculos },
+  { name: "Servicios", href: ROUTES.servicios },
+  { name: "Proveedores", href: ROUTES.proveedores },
+  { name: "Depo Combustible y Lubricantes", href: ROUTES.depoCombustible },
+  { name: "Tanque de Combustible", href: ROUTES.tanqueCombustible },
+  { name: "Usuarios", href: ROUTES.usuarios },
+];
 
   const handleSelfLogout = async () => {
     try {
