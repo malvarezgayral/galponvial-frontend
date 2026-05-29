@@ -1,4 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
+import TanqueCombustiblePage from "../features/tanquecombustible/pages/TanqueCombustiblePage";
 import DepoCombustiblePage from "../features/depocombustible/pages/DepoCombustiblePage";
 import ProveedoresPage from "../features/proveedores/pages/ProveedoresPage";
 import { createBrowserRouter } from "react-router-dom";
@@ -25,7 +26,7 @@ import ArticulosEliminadosPage from "@/features/almacen/pages/ArticulosEliminado
 // Placeholder pages for routes without implementation yet
 const AuditoriaPage = () => <h1 className="text-3xl font-bold">Auditoría</h1>;
 
-const TanqueCombustiblePage = () => <h1 className="text-3xl font-bold">Tanque de combustible</h1>;
+
 
 export const router = createBrowserRouter([
   {
