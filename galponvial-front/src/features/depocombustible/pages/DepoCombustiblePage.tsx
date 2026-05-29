@@ -126,7 +126,7 @@ export default function DepoCombustiblePage() {
                 Observaciones
               </th>
               <th className="px-3 py-3 text-center font-semibold text-gray-600 whitespace-nowrap">
-                Acción
+                Eliminar Registro
               </th>
             </tr>
           </thead>
@@ -303,7 +303,7 @@ export default function DepoCombustiblePage() {
         onClick={agregarFila}
         className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition-colors"
       >
-        <span className="text-lg leading-none">+</span> Agregar fila
+        <span className="text-lg leading-none">+</span> Agregar Registro
       </button>
     </div>
   );
