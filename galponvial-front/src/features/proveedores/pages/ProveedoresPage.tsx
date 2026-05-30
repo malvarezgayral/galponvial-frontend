@@ -10,12 +10,16 @@ export default function ProveedoresPage() {
           Gestión de compras y proveedores del Galpón Vial
         </p>
       </div>
-      <div className="flex flex-row gap-6 items-start flex-wrap">
-        <CompraDirectaForm />
-        <PresupuestoForm numero={1} />
-        <PresupuestoForm numero={2} />
-        <PresupuestoForm numero={3} />
-      </div>
+      <div className="flex flex-col gap-6">
+  <div className="flex flex-row gap-6 items-start">
+    <CompraDirectaForm />
+    <PresupuestoForm numero={1} />
+  </div>
+  <div className="flex flex-row gap-6 items-start">
+    <PresupuestoForm numero={2} />
+    <PresupuestoForm numero={3} />
+  </div>
+</div>
     </div>
   );
 }
