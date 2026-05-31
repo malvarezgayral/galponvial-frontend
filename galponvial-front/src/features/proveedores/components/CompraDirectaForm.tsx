@@ -62,7 +62,14 @@ export const CompraDirectaForm: React.FC = () => {
         </div>
         <div>
           <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">Unidad *</label>
-          <input type="text" name="unidad" value={formData.unidad} onChange={handleChange} placeholder="Ej: litros, kg, unidades..." required className="w-full px-4 py-2 border border-[var(--color-border-light)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#378AFE]" />
+          <select name="unidad" value={formData.unidad} onChange={handleChange} required className="w-full px-4 py-2 border border-[var(--color-border-light)] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#378AFE] bg-white">
+  <option value="">-- Seleccionar unidad --</option>
+  <option value="Oficina">Oficina</option>
+  <option value="Taller 1">Taller 1</option>
+  <option value="Taller 2">Taller 2</option>
+  <option value="Taller 3">Taller 3</option>
+  <option value="Depo Combustible y Lubricantes">Depo Combustible y Lubricantes</option>
+</select>
         </div>
         <div>
           <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">Agente *</label>
