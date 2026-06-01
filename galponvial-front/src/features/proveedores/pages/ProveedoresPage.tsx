@@ -1,25 +1,66 @@
+import { useState } from 'react';
 import { CompraDirectaForm } from '../components/CompraDirectaForm';
 import { PresupuestoForm } from '../components/PresupuestoForm';
 
 export default function ProveedoresPage() {
+  const [vistaActiva, setVistaActiva] = useState<'compras' | 'visualizar' | 'historial'>('compras');
+
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Proveedores</h1>
-        <p className="text-[var(--color-text-secondary)]">
-          Gestión de compras y proveedores del Galpón Vial
-        </p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Proveedores</h1>
+
+        {/* Botones de navegación */}
+        <div className="flex flex-row gap-3">
+          <button
+            onClick={() => setVistaActiva('compras')}
+            style={{ backgroundColor: '#0062e3' }}
+            className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
+          >
+            Compra directa y Presupuestos
+          </button>
+          <button
+            onClick={() => setVistaActiva('visualizar')}
+            style={{ backgroundColor: '#0062e3' }}
+            className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
+          >
+            Visualizar Proveedores
+          </button>
+          <button
+            onClick={() => setVistaActiva('historial')}
+            style={{ backgroundColor: '#0062e3' }}
+            className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
+          >
+            Historial
+          </button>
+        </div>
       </div>
-      <div className="flex flex-col gap-6">
-  <div className="flex flex-row gap-6 items-start">
-    <CompraDirectaForm />
-    <PresupuestoForm numero={1} />
-  </div>
-  <div className="flex flex-row gap-6 items-start">
-    <PresupuestoForm numero={2} />
-    <PresupuestoForm numero={3} />
-  </div>
-</div>
+
+      {/* Contenido según vista activa */}
+      {vistaActiva === 'compras' && (
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-row gap-6 items-start">
+            <CompraDirectaForm />
+            <PresupuestoForm numero={1} />
+          </div>
+          <div className="flex flex-row gap-6 items-start">
+            <PresupuestoForm numero={2} />
+            <PresupuestoForm numero={3} />
+          </div>
+        </div>
+      )}
+
+      {vistaActiva === 'visualizar' && (
+        <div className="text-gray-500 italic">
+          Visualizar Proveedores — próximamente.
+        </div>
+      )}
+
+      {vistaActiva === 'historial' && (
+        <div className="text-gray-500 italic">
+          Historial — próximamente.
+        </div>
+      )}
     </div>
   );
 }
