@@ -27,11 +27,13 @@ const filaVacia = (): Omit<FilaCombustible, "id" | "stock"> => ({
 // Opciones placeholder — reemplazar con datos reales cuando estén disponibles
 const AGENTES: string[] = [];
 const DIRECCIONES: string[] = [];
+type Vista = "combustible" | "lubricantes";
 
 export default function DepoCombustiblePage() {
   const [filas, setFilas] = useState<FilaCombustible[]>([
     { id: 1, ...filaVacia(), stock: 0 },
   ]);
+  const [vista, setVista] = useState<Vista>("combustible");
 
   const actualizarFila = (
     id: number,
@@ -84,14 +86,39 @@ export default function DepoCombustiblePage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Depósito de Combustible y Lubricantes
-        </h1>
-        <p className="text-gray-500 mt-1">
-          Registro de movimientos de combustible y lubricantes
-        </p>
-      </div>
+      {/* Header */}
+{/* Header */}
+<div className="mb-6">
+  <h1 className="text-3xl font-bold text-gray-900">
+    Depósito
+  </h1>
+
+  <div className="flex gap-3 mt-4">
+    <button
+      onClick={() => setVista("combustible")}
+      className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+        vista === "combustible"
+          ? "bg-[#0062e3]"
+          : "bg-gray-400 hover:bg-gray-500"
+      }`}
+    >
+      Combustible
+    </button>
+
+    <button
+      onClick={() => setVista("lubricantes")}
+      className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+        vista === "lubricantes"
+          ? "bg-[#0062e3]"
+          : "bg-gray-400 hover:bg-gray-500"
+      }`}
+    >
+      Lubricantes
+    </button>
+  </div>
+</div>
+{vista === "combustible" && (
+  <>
 
       {/* Tabla */}
       <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
@@ -305,6 +332,19 @@ export default function DepoCombustiblePage() {
       >
         <span className="text-lg leading-none">+</span> Agregar Registro
       </button>
+        </>
+)}
+{vista === "lubricantes" && (
+  <div className="bg-white rounded-xl shadow border border-gray-200 p-8">
+    <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+      Gestión de Lubricantes
+    </h2>
+
+    <p className="text-gray-500">
+      Próximamente...
+    </p>
+  </div>
+)}
     </div>
   );
 }
