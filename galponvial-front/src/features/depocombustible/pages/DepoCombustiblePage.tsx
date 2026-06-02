@@ -12,6 +12,15 @@ interface FilaCombustible {
   direccion: string;
   observaciones: string;
 }
+interface FilaLubricante {
+  id: number;
+  fecha: string;
+  ordenRetiro: string;
+  unidad: string;
+  cantidad: number;
+  tipo: string;
+  observaciones: string;
+}
 
 const filaVacia = (): Omit<FilaCombustible, "id" | "stock"> => ({
   fecha: "",
@@ -24,6 +33,15 @@ const filaVacia = (): Omit<FilaCombustible, "id" | "stock"> => ({
   observaciones: "",
 });
 
+const filaLubricanteVacia = (): Omit<FilaLubricante, "id"> => ({
+  fecha: "",
+  ordenRetiro: "",
+  unidad: "",
+  cantidad: 0,
+  tipo: "",
+  observaciones: "",
+});
+
 // Opciones placeholder — reemplazar con datos reales cuando estén disponibles
 const AGENTES: string[] = [];
 const DIRECCIONES: string[] = [];
@@ -33,6 +51,10 @@ export default function DepoCombustiblePage() {
   const [filas, setFilas] = useState<FilaCombustible[]>([
     { id: 1, ...filaVacia(), stock: 0 },
   ]);
+
+  const [filasLubricantes, setFilasLubricantes] = useState<FilaLubricante[]>([
+  { id: 1, ...filaLubricanteVacia() },
+]);
   const [vista, setVista] = useState<Vista>("combustible");
 
   const actualizarFila = (
@@ -49,6 +71,20 @@ export default function DepoCombustiblePage() {
       }),
     );
   };
+
+  const actualizarFilaLubricante = (
+  id: number,
+  campo: keyof Omit<FilaLubricante, "id">,
+  valor: string | number,
+) => {
+  setFilasLubricantes((prev) =>
+    prev.map((fila) =>
+      fila.id === id
+        ? { ...fila, [campo]: valor }
+        : fila
+    ),
+  );
+};
 
   const incrementar = (id: number, campo: "ingreso" | "egreso") => {
     setFilas((prev) =>
@@ -78,10 +114,32 @@ export default function DepoCombustiblePage() {
     setFilas((prev) => [...prev, { id: nuevoId, ...filaVacia(), stock: 0 }]);
   };
 
+  const agregarFilaLubricante = () => {
+  const nuevoId =
+    filasLubricantes.length > 0
+      ? Math.max(...filasLubricantes.map((f) => f.id)) + 1
+      : 1;
+
+  setFilasLubricantes((prev) => [
+    ...prev,
+    {
+      id: nuevoId,
+      ...filaLubricanteVacia(),
+    },
+  ]);
+};
+
   const eliminarFila = (id: number) => {
     if (filas.length === 1) return;
     setFilas((prev) => prev.filter((f) => f.id !== id));
   };
+  const eliminarFilaLubricante = (id: number) => {
+  if (filasLubricantes.length === 1) return;
+
+  setFilasLubricantes((prev) =>
+    prev.filter((fila) => fila.id !== id),
+  );
+};
 
   return (
     <div className="space-y-6">
@@ -335,15 +393,173 @@ export default function DepoCombustiblePage() {
         </>
 )}
 {vista === "lubricantes" && (
-  <div className="bg-white rounded-xl shadow border border-gray-200 p-8">
-    <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-      Gestión de Lubricantes
-    </h2>
+  <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
+    <table className="min-w-full text-sm">
+      <thead>
+        <tr className="bg-gray-50 border-b border-gray-200">
+          <th className="px-3 py-3 text-left font-semibold text-gray-600">
+            Fecha
+          </th>
 
-    <p className="text-gray-500">
-      Próximamente...
-    </p>
-  </div>
+          <th className="px-3 py-3 text-left font-semibold text-gray-600">
+            N° Orden de Retiro
+          </th>
+
+          <th className="px-3 py-3 text-left font-semibold text-gray-600">
+            Unidad
+          </th>
+
+          <th className="px-3 py-3 text-left font-semibold text-gray-600">
+            Cantidad
+          </th>
+
+          <th className="px-3 py-3 text-left font-semibold text-gray-600">
+            Tipo
+          </th>
+
+          <th className="px-3 py-3 text-left font-semibold text-gray-600">
+            Observaciones
+          </th>
+
+          <th className="px-3 py-3 text-center font-semibold text-gray-600">
+            Eliminar
+          </th>
+        </tr>
+      </thead>
+
+     <tbody className="divide-y divide-gray-100">
+  {filasLubricantes.map((fila) => (
+    <tr key={fila.id} className="hover:bg-gray-50 transition-colors">
+
+      {/* Fecha */}
+      <td className="px-3 py-2">
+        <input
+          type="date"
+          value={fila.fecha}
+          onChange={(e) =>
+            actualizarFilaLubricante(
+              fila.id,
+              "fecha",
+              e.target.value
+            )
+          }
+          className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
+        />
+      </td>
+
+      {/* N° Orden de Retiro */}
+<td className="px-3 py-2">
+  <input
+    type="text"
+    placeholder="N° Orden"
+    value={fila.ordenRetiro}
+    onChange={(e) =>
+      actualizarFilaLubricante(
+        fila.id,
+        "ordenRetiro",
+        e.target.value
+      )
+    }
+    className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
+  />
+</td>
+
+{/* Unidad */}
+<td className="px-3 py-2">
+  <input
+    type="text"
+    placeholder="Unidad"
+    value={fila.unidad}
+    onChange={(e) =>
+      actualizarFilaLubricante(
+        fila.id,
+        "unidad",
+        e.target.value
+      )
+    }
+    className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
+  />
+</td>
+
+{/* Cantidad */}
+<td className="px-3 py-2">
+  <input
+    type="number"
+    min={0}
+    value={fila.cantidad}
+    onChange={(e) =>
+      actualizarFilaLubricante(
+        fila.id,
+        "cantidad",
+        Math.max(0, Number(e.target.value))
+      )
+    }
+    className="border border-gray-300 rounded-md px-2 py-1.5 text-sm text-center focus:outline-none focus:ring-2 focus:ring-blue-500 w-24"
+  />
+</td>
+
+{/* Tipo */}
+<td className="px-3 py-2">
+  <select
+    value={fila.tipo}
+    onChange={(e) =>
+      actualizarFilaLubricante(
+        fila.id,
+        "tipo",
+        e.target.value
+      )
+    }
+    className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40 text-gray-500"
+  >
+    <option value="">— Seleccionar —</option>
+  </select>
+</td>
+
+{/* Observaciones */}
+<td className="px-3 py-2">
+  <textarea
+    placeholder="Observaciones..."
+    value={fila.observaciones}
+    onChange={(e) =>
+      actualizarFilaLubricante(
+        fila.id,
+        "observaciones",
+        e.target.value
+      )
+    }
+    rows={1}
+    className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 resize-y min-h-[36px]"
+  />
+</td>
+
+{/* Eliminar */}
+<td className="px-3 py-2 text-center">
+  <button
+    onClick={() => eliminarFilaLubricante(fila.id)}
+    disabled={filasLubricantes.length === 1}
+    title="Eliminar fila"
+    className="w-7 h-7 rounded-md bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center mx-auto transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+  >
+    ✕
+  </button>
+</td>
+
+    </tr>
+  ))}
+</tbody>
+</table>
+
+<div className="p-4">
+  <button
+    onClick={agregarFilaLubricante}
+    className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition-colors"
+  >
+    <span className="text-lg leading-none">+</span>
+    Agregar Registro
+  </button>
+</div>
+
+</div>
 )}
     </div>
   );
