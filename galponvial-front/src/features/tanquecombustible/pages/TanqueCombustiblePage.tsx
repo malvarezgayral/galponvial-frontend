@@ -5,6 +5,7 @@ interface FilaCombustible {
   fecha: string;
   maquina: string;
   chofer: string;
+despachante: string;
   estacionServicio: string;
   litrosEntrada: string;
   litrosSalida: string;
@@ -16,6 +17,7 @@ const filaVacia = (): Omit<FilaCombustible, "id"> => ({
   fecha: "",
   maquina: "",
   chofer: "",
+  despachante: "",
   estacionServicio: "",
   litrosEntrada: "",
   litrosSalida: "",
@@ -78,6 +80,9 @@ const TanqueCombustiblePage = () => {
               <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">
                 Chofer
               </th>
+              <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">
+  Despachante
+</th> 
               <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">
                 Estación de Servicio
               </th>
@@ -143,6 +148,21 @@ const TanqueCombustiblePage = () => {
                     ))}
                   </select>
                 </td>
+
+                {/* Despachante */}
+<td className="px-3 py-2">
+  <select
+    value={fila.despachante}
+    onChange={(e) =>
+      actualizarFila(fila.id, "despachante", e.target.value)
+    }
+    className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40 text-gray-500"
+  >
+    <option value="">— Seleccionar —</option>
+    <option value="Pablo Altuna">Pablo Altuna</option>
+    <option value="Juan Torres">Juan Torres</option>
+  </select>
+</td>
 
                 {/* Estación de Servicio */}
                 <td className="px-3 py-2">
