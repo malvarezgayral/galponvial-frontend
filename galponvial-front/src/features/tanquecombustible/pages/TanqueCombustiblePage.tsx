@@ -57,14 +57,12 @@ const TanqueCombustiblePage = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">
-          Tanque de Combustible
-        </h1>
-        <p className="text-gray-500 mt-1">
-          Registro de movimientos del tanque
-        </p>
-      </div>
+      {/* Header */}
+<div className="mb-6 flex items-center gap-4">
+  <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition-colors">
+    Registro de movimientos del tanque
+  </button>
+</div>
 
       {/* Tabla */}
       <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
