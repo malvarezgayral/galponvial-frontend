@@ -45,7 +45,13 @@ const filaLubricanteVacia = (): Omit<FilaLubricante, "id"> => ({
 const AGENTES: string[] = [];
 const DIRECCIONES: string[] = [];
 
-type Vista = "combustible" | "lubricantes" | "visualizar-combustible" | "historial-combustible";
+type Vista =
+  | "combustible"
+  | "visualizar-combustible"
+  | "historial-combustible"
+  | "lubricantes"
+  | "visualizar-lubricantes"
+  | "historial-lubricantes";
 
 export default function DepoCombustiblePage() {
   const [filas, setFilas] = useState<FilaCombustible[]>([
@@ -139,14 +145,12 @@ export default function DepoCombustiblePage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Depósito</h1>
 
-        {/* Botones de navegación — orden: Combustible | Visualizar | Historial | Lubricantes */}
         <div className="flex flex-wrap gap-3 mt-4">
+          {/* Grupo Combustible */}
           <button
             onClick={() => setVista("combustible")}
             className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
-              vista === "combustible"
-                ? "bg-[#0062e3]"
-                : "bg-gray-400 hover:bg-gray-500"
+              vista === "combustible" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
             Combustible
@@ -155,9 +159,7 @@ export default function DepoCombustiblePage() {
           <button
             onClick={() => setVista("visualizar-combustible")}
             className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
-              vista === "visualizar-combustible"
-                ? "bg-[#0062e3]"
-                : "bg-gray-400 hover:bg-gray-500"
+              vista === "visualizar-combustible" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
             Visualizar Combustible
@@ -166,23 +168,38 @@ export default function DepoCombustiblePage() {
           <button
             onClick={() => setVista("historial-combustible")}
             className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
-              vista === "historial-combustible"
-                ? "bg-[#0062e3]"
-                : "bg-gray-400 hover:bg-gray-500"
+              vista === "historial-combustible" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
             Historial de Combustible
           </button>
 
+          {/* Grupo Lubricantes */}
           <button
             onClick={() => setVista("lubricantes")}
             className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
-              vista === "lubricantes"
-                ? "bg-[#0062e3]"
-                : "bg-gray-400 hover:bg-gray-500"
+              vista === "lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
             Lubricantes
+          </button>
+
+          <button
+            onClick={() => setVista("visualizar-lubricantes")}
+            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              vista === "visualizar-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+            }`}
+          >
+            Visualizar Lubricantes
+          </button>
+
+          <button
+            onClick={() => setVista("historial-lubricantes")}
+            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              vista === "historial-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+            }`}
+          >
+            Historial Lubricantes
           </button>
         </div>
       </div>
@@ -449,6 +466,22 @@ export default function DepoCombustiblePage() {
               <span className="text-lg leading-none">+</span> Agregar Registro
             </button>
           </div>
+        </div>
+      )}
+
+      {/* Vista: Visualizar Lubricantes */}
+      {vista === "visualizar-lubricantes" && (
+        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
+          {/* Próximamente: formulario de Visualizar Lubricantes */}
+          Visualizar Lubricantes — en construcción.
+        </div>
+      )}
+
+      {/* Vista: Historial Lubricantes */}
+      {vista === "historial-lubricantes" && (
+        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
+          {/* Próximamente: formulario de Historial Lubricantes */}
+          Historial Lubricantes — en construcción.
         </div>
       )}
     </div>
