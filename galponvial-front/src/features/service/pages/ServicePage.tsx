@@ -29,10 +29,13 @@ const filaVacia = (): Omit<FilaService, "id"> => ({
 
 const SI_NO = ["SI", "NO"];
 
+type Vista = "registro" | "visualizar-service" | "historial";
+
 export default function ServicePage() {
   const [filas, setFilas] = useState<FilaService[]>([
     { id: 1, ...filaVacia() },
   ]);
+  const [vista, setVista] = useState<Vista>("registro");
 
   const agregarFila = () => {
     const nuevoId =
@@ -82,92 +85,126 @@ export default function ServicePage() {
 
   return (
     <div className="space-y-6">
-      {/* Título */}
-      <h1 className="text-3xl font-bold text-gray-800">Service</h1>
-
       {/* Header */}
-      <div className="mb-6 flex items-center gap-4">
-        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition-colors">
-          Registro de Service
-        </button>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Service</h1>
+
+        <div className="flex flex-wrap gap-3 mt-4">
+          <button
+            onClick={() => setVista("registro")}
+            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              vista === "registro" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+            }`}
+          >
+            Registro de Service
+          </button>
+
+          <button
+            onClick={() => setVista("visualizar-service")}
+            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              vista === "visualizar-service" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+            }`}
+          >
+            Visualizar Service
+          </button>
+
+          <button
+            onClick={() => setVista("historial")}
+            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              vista === "historial" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+            }`}
+          >
+            Historial
+          </button>
+        </div>
       </div>
 
-      {/* Tabla */}
-      <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
-        <table className="min-w-full text-sm">
-          <thead>
-            <tr className="bg-gray-50 border-b border-gray-200">
-              <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Vehículo</th>
-              <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Fecha</th>
-              <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Motor</th>
-              <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Caja</th>
-              <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Diferencial</th>
-              <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Transmisión</th>
-              <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Motor Aceite</th>
-              <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro de Aire</th>
-              <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Gasoil</th>
-              <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Transmisión</th>
-              <th className="px-3 py-3 text-center font-semibold text-gray-600 whitespace-nowrap">Eliminar</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-100">
-            {filas.map((fila) => (
-              <tr key={fila.id} className="hover:bg-gray-50 transition-colors">
-                {/* Vehículo */}
-                <td className="px-3 py-2">
-                  <input
-                    type="text"
-                    placeholder="Ingrese vehículo"
-                    value={fila.vehiculo}
-                    onChange={(e) => actualizarFila(fila.id, "vehiculo", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
-                  />
-                </td>
+      {/* Vista: Registro */}
+      {vista === "registro" && (
+        <>
+          <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Vehículo</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Fecha</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Motor</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Caja</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Diferencial</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Transmisión</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Motor Aceite</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro de Aire</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Gasoil</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Transmisión</th>
+                  <th className="px-3 py-3 text-center font-semibold text-gray-600 whitespace-nowrap">Eliminar</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filas.map((fila) => (
+                  <tr key={fila.id} className="hover:bg-gray-50 transition-colors">
+                    <td className="px-3 py-2">
+                      <input
+                        type="text"
+                        placeholder="Ingrese vehículo"
+                        value={fila.vehiculo}
+                        onChange={(e) => actualizarFila(fila.id, "vehiculo", e.target.value)}
+                        className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="date"
+                        value={fila.fecha}
+                        onChange={(e) => actualizarFila(fila.id, "fecha", e.target.value)}
+                        className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
+                      />
+                    </td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "aceiteMotor", fila.aceiteMotor)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "aceiteCaja", fila.aceiteCaja)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "aceiteDiferencial", fila.aceiteDiferencial)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "aceiteTransmision", fila.aceiteTransmision)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "filtroMotorAceite", fila.filtroMotorAceite)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "filtroAire", fila.filtroAire)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "filtroGasoil", fila.filtroGasoil)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "filtroTransmision", fila.filtroTransmision)}</td>
+                    <td className="px-3 py-2 text-center">
+                      <button
+                        onClick={() => eliminarFila(fila.id)}
+                        disabled={filas.length === 1}
+                        title="Eliminar fila"
+                        className="w-7 h-7 rounded-md bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center mx-auto transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      >
+                        ✕
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-                {/* Fecha */}
-                <td className="px-3 py-2">
-                  <input
-                    type="date"
-                    value={fila.fecha}
-                    onChange={(e) => actualizarFila(fila.id, "fecha", e.target.value)}
-                    className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
-                  />
-                </td>
+          <button
+            onClick={agregarFila}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition-colors"
+          >
+            <span className="text-lg leading-none">+</span> Agregar Registro
+          </button>
+        </>
+      )}
 
-                {/* SI/NO columns */}
-                <td className="px-3 py-2">{selectSiNo(fila.id, "aceiteMotor", fila.aceiteMotor)}</td>
-                <td className="px-3 py-2">{selectSiNo(fila.id, "aceiteCaja", fila.aceiteCaja)}</td>
-                <td className="px-3 py-2">{selectSiNo(fila.id, "aceiteDiferencial", fila.aceiteDiferencial)}</td>
-                <td className="px-3 py-2">{selectSiNo(fila.id, "aceiteTransmision", fila.aceiteTransmision)}</td>
-                <td className="px-3 py-2">{selectSiNo(fila.id, "filtroMotorAceite", fila.filtroMotorAceite)}</td>
-                <td className="px-3 py-2">{selectSiNo(fila.id, "filtroAire", fila.filtroAire)}</td>
-                <td className="px-3 py-2">{selectSiNo(fila.id, "filtroGasoil", fila.filtroGasoil)}</td>
-                <td className="px-3 py-2">{selectSiNo(fila.id, "filtroTransmision", fila.filtroTransmision)}</td>
+      {/* Vista: Visualizar Service */}
+      {vista === "visualizar-service" && (
+        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
+          Visualizar Service — en construcción.
+        </div>
+      )}
 
-                {/* Eliminar */}
-                <td className="px-3 py-2 text-center">
-                  <button
-                    onClick={() => eliminarFila(fila.id)}
-                    disabled={filas.length === 1}
-                    title="Eliminar fila"
-                    className="w-7 h-7 rounded-md bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center mx-auto transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                  >
-                    ✕
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Botón agregar fila */}
-      <button
-        onClick={agregarFila}
-        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition-colors"
-      >
-        <span className="text-lg leading-none">+</span> Agregar Registro
-      </button>
+      {/* Vista: Historial */}
+      {vista === "historial" && (
+        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
+          Historial — en construcción.
+        </div>
+      )}
     </div>
   );
 }
