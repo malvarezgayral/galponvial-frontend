@@ -44,6 +44,12 @@ const ReparacionIcon = () => (
   </svg>
 );
 
+const DepositoIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
+  </svg>
+);
+
 const ServiciosPage = () => {
   const navigate = useNavigate();
   const { user } = useAppStore();
@@ -58,6 +64,7 @@ const ServiciosPage = () => {
   const handleProveedores = () => navigate('/proveedores');
   const handleService = () => navigate('/service');
   const handleReparacion = () => navigate('/reparacion');
+  const handleDeposito = () => navigate('/deposito-combustible');
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
@@ -107,6 +114,12 @@ const ServiciosPage = () => {
             description="Registrá reparaciones y su estado en taller"
             icon={<ReparacionIcon />}
             onClick={handleReparacion}
+          />
+          <ServicioCard
+            title="Depósito"
+            description="Gestioná el depósito de combustible y lubricantes"
+            icon={<DepositoIcon />}
+            onClick={handleDeposito}
           />
           {isAdmin && (
             <ServicioCard
