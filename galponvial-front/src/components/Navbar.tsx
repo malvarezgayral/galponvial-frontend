@@ -18,7 +18,7 @@ const Navbar = () => {
   { name: "Almacén", href: ROUTES.almacen },
   { name: "Vehículos", href: ROUTES.vehiculos },
   { name: "Servicios", href: ROUTES.servicios },
-  { name: "Proveedores", href: ROUTES.proveedores },
+  
   { name: "Depósito", href: ROUTES.depoCombustible },
   { name: "Tanque", href: ROUTES.tanqueCombustible },
   { name: "Service", href: ROUTES.service },
