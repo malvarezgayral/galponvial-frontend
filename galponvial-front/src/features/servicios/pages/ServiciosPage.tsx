@@ -64,7 +64,7 @@ const ServiciosPage = () => {
   const handleProveedores = () => navigate('/proveedores');
   const handleService = () => navigate('/service');
   const handleReparacion = () => navigate('/reparacion');
-  const handleDeposito = () => navigate('/deposito-combustible');
+  const handleDeposito = () => navigate('/depo-combustible');
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
