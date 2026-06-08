@@ -7,9 +7,6 @@ interface ServicioCardProps {
   onClick: () => void;
 }
 
-/**
- * Componente de tarjeta de servicio con efecto hover
- */
 export const ServicioCard: React.FC<ServicioCardProps> = ({
   title,
   description,
@@ -21,6 +18,7 @@ export const ServicioCard: React.FC<ServicioCardProps> = ({
       onClick={onClick}
       className="
         w-full max-w-sm p-8
+        h-full
         bg-white rounded-3xl
         border-2 border-[var(--color-border-light)]
         transition-all duration-300 ease-in-out
