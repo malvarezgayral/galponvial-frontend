@@ -9,22 +9,23 @@ interface CombustibleFormProps {
   onSuccess?: (response: CombustibleCargaResponse) => void;
 }
 
-/**
- * Formulario para registrar una carga de combustible
- */
 export const CombustibleForm: React.FC<CombustibleFormProps> = ({
   vehiculoId,
   onSuccess,
 }) => {
-  // Obtenemos la fecha de hoy en formato YYYY-MM-DD para usarla en las validaciones
   const todayString = new Date().toISOString().split('T')[0];
 
   const [formData, setFormData] = useState<CombustibleCargaRequest>({
     fecha_carga: todayString,
     despachante: '',
-    tipo_combustible: '', 
+    tipo_combustible: '',
     km_actual: 0,
     cant_combustible_despachado: 0,
+    chofer: '',
+    estacion_servicio: '',
+    litros_entrada: 0,
+    litros_salida: 0,
+    estado_parcial: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -33,23 +34,18 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
   const [successData, setSuccessData] = useState<CombustibleCargaResponse | null>(null);
   const [generalError, setGeneralError] = useState<string | null>(null);
 
-  /**
-   * Valida los datos del formulario
-   */
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
 
     if (!formData.fecha_carga) {
       newErrors.fecha_carga = 'La fecha de carga es obligatoria';
     } else {
-      // Validamos que la fecha ingresada no sea mayor a hoy
-      const selectedDate = formData.fecha_carga.split(' ')[0]; 
+      const selectedDate = formData.fecha_carga.split(' ')[0];
       if (selectedDate > todayString) {
         newErrors.fecha_carga = 'La fecha no puede ser mayor al día actual';
       }
     }
 
-    // Validación del nuevo campo
     if (!formData.tipo_combustible || formData.tipo_combustible.trim() === '') {
       newErrors.tipo_combustible = 'El tipo de combustible es obligatorio';
     }
@@ -62,15 +58,31 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       newErrors.cant_combustible_despachado = 'La cantidad de combustible es obligatoria y debe ser mayor a 0';
     }
 
+    if (!formData.chofer || formData.chofer.trim() === '') {
+      newErrors.chofer = 'El chofer es obligatorio';
+    }
+
+    if (!formData.estacion_servicio || formData.estacion_servicio.trim() === '') {
+      newErrors.estacion_servicio = 'La estación de servicio es obligatoria';
+    }
+
+    if (!formData.litros_entrada || formData.litros_entrada <= 0) {
+      newErrors.litros_entrada = 'Los litros de entrada son obligatorios y deben ser mayor a 0';
+    }
+
+    if (!formData.litros_salida || formData.litros_salida <= 0) {
+      newErrors.litros_salida = 'Los litros de salida son obligatorios y deben ser mayor a 0';
+    }
+
+    if (!formData.estado_parcial || formData.estado_parcial.trim() === '') {
+      newErrors.estado_parcial = 'El estado parcial es obligatorio';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  /**
-   * Maneja los cambios en los inputs y selects
-   */
-  // ATENCIÓN: Se agregó HTMLSelectElement al tipo del evento
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
     const numericValue = type === 'number' ? parseFloat(value) : value;
 
@@ -79,7 +91,6 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       [name]: numericValue,
     }));
 
-    // Limpiar error cuando el usuario empieza a escribir/seleccionar
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -88,9 +99,6 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
     }
   };
 
-  /**
-   * Maneja el envío del formulario
-   */
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setGeneralError(null);
@@ -111,7 +119,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       }
     } catch (error: any) {
       let errorMessage = 'Error al registrar la carga de combustible';
-      
+
       if (error.response?.data?.message) {
         errorMessage = error.response.data.message;
       } else if (error.response?.data?.error) {
@@ -119,16 +127,13 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       } else if (error.message) {
         errorMessage = error.message;
       }
-      
+
       setGeneralError(errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
-  /**
-   * Limpia el formulario
-   */
   const handleReset = () => {
     setFormData({
       fecha_carga: todayString,
@@ -136,19 +141,27 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       tipo_combustible: '',
       km_actual: 0,
       cant_combustible_despachado: 0,
+      chofer: '',
+      estacion_servicio: '',
+      litros_entrada: 0,
+      litros_salida: 0,
+      estado_parcial: '',
     });
     setErrors({});
     setGeneralError(null);
   };
 
-  /**
-   * Maneja el cierre del modal de éxito
-   */
   const handleModalClose = () => {
     setShowSuccessModal(false);
     setSuccessData(null);
     handleReset();
   };
+
+  const inputClass = (field: string) => `
+    w-full px-4 py-2 border rounded-lg
+    focus:outline-none focus:ring-2 focus:ring-[#378AFE]
+    ${errors[field] ? 'border-red-500' : 'border-[var(--color-border-light)]'}
+  `;
 
   return (
     <>
@@ -157,7 +170,6 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
           Registrar Carga de Combustible
         </h2>
 
-        {/* Error general */}
         {generalError && (
           <div className="mb-6 p-4 bg-red-100 border border-red-400 rounded-lg">
             <p className="text-red-700 font-medium">{generalError}</p>
@@ -165,6 +177,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
+
           {/* Fecha de carga */}
           <div>
             <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
@@ -176,14 +189,46 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
               value={formData.fecha_carga}
               max={todayString}
               onChange={handleChange}
-              className={`
-                w-full px-4 py-2 border rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-[#378AFE]
-                ${errors.fecha_carga ? 'border-red-500' : 'border-[var(--color-border-light)]'}
-              `}
+              className={inputClass('fecha_carga')}
             />
             {errors.fecha_carga && (
               <p className="text-red-500 text-sm mt-1">{errors.fecha_carga}</p>
+            )}
+          </div>
+
+          {/* Chofer */}
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+              Chofer *
+            </label>
+            <input
+              type="text"
+              name="chofer"
+              value={formData.chofer || ''}
+              onChange={handleChange}
+              placeholder="Nombre del chofer"
+              className={inputClass('chofer')}
+            />
+            {errors.chofer && (
+              <p className="text-red-500 text-sm mt-1">{errors.chofer}</p>
+            )}
+          </div>
+
+          {/* Estación de servicio */}
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+              Estación de servicio *
+            </label>
+            <input
+              type="text"
+              name="estacion_servicio"
+              value={formData.estacion_servicio || ''}
+              onChange={handleChange}
+              placeholder="Nombre de la estación de servicio"
+              className={inputClass('estacion_servicio')}
+            />
+            {errors.estacion_servicio && (
+              <p className="text-red-500 text-sm mt-1">{errors.estacion_servicio}</p>
             )}
           </div>
 
@@ -205,7 +250,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
             />
           </div>
 
-          {/* Tipo de Combustible (NUEVO CAMPO) */}
+          {/* Tipo de combustible */}
           <div>
             <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Tipo de combustible *
@@ -214,19 +259,15 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
               name="tipo_combustible"
               value={formData.tipo_combustible}
               onChange={handleChange}
-              className={`
-                w-full px-4 py-2 border rounded-lg bg-white
-                focus:outline-none focus:ring-2 focus:ring-[#378AFE]
-                ${errors.tipo_combustible ? 'border-red-500' : 'border-[var(--color-border-light)]'}
-              `}
+              className={`${inputClass('tipo_combustible')} bg-white`}
             >
               <option value="">Seleccione un tipo...</option>
               <option value="Diesel">Diesel</option>
               <option value="Nafta Súper">Nafta Súper</option>
               <option value="Nafta Premium">Nafta Premium</option>
               <option value="GNC">GNC</option>
-              <option value="GNC">GLP</option>
-              <option value="GNC">Otro</option>
+              <option value="GLP">GLP</option>
+              <option value="Otro">Otro</option>
             </select>
             {errors.tipo_combustible && (
               <p className="text-red-500 text-sm mt-1">{errors.tipo_combustible}</p>
@@ -246,18 +287,14 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
               placeholder="0"
               min="0"
               step="1"
-              className={`
-                w-full px-4 py-2 border rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-[#378AFE]
-                ${errors.km_actual ? 'border-red-500' : 'border-[var(--color-border-light)]'}
-              `}
+              className={inputClass('km_actual')}
             />
             {errors.km_actual && (
               <p className="text-red-500 text-sm mt-1">{errors.km_actual}</p>
             )}
           </div>
 
-          {/* Cantidad de combustible */}
+          {/* Cantidad de combustible despachado */}
           <div>
             <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Cantidad de combustible despachado (litros) *
@@ -270,18 +307,68 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
               placeholder="0.00"
               min="0"
               step="0.01"
-              className={`
-                w-full px-4 py-2 border rounded-lg
-                focus:outline-none focus:ring-2 focus:ring-[#378AFE]
-                ${
-                  errors.cant_combustible_despachado
-                    ? 'border-red-500'
-                    : 'border-[var(--color-border-light)]'
-                }
-              `}
+              className={inputClass('cant_combustible_despachado')}
             />
             {errors.cant_combustible_despachado && (
               <p className="text-red-500 text-sm mt-1">{errors.cant_combustible_despachado}</p>
+            )}
+          </div>
+
+          {/* Litros de entrada */}
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+              Litros de entrada *
+            </label>
+            <input
+              type="number"
+              name="litros_entrada"
+              value={formData.litros_entrada || ''}
+              onChange={handleChange}
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+              className={inputClass('litros_entrada')}
+            />
+            {errors.litros_entrada && (
+              <p className="text-red-500 text-sm mt-1">{errors.litros_entrada}</p>
+            )}
+          </div>
+
+          {/* Litros de salida */}
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+              Litros de salida *
+            </label>
+            <input
+              type="number"
+              name="litros_salida"
+              value={formData.litros_salida || ''}
+              onChange={handleChange}
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+              className={inputClass('litros_salida')}
+            />
+            {errors.litros_salida && (
+              <p className="text-red-500 text-sm mt-1">{errors.litros_salida}</p>
+            )}
+          </div>
+
+          {/* Estado parcial */}
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+              Estado parcial *
+            </label>
+            <input
+              type="text"
+              name="estado_parcial"
+              value={formData.estado_parcial || ''}
+              onChange={handleChange}
+              placeholder="Descripción del estado parcial"
+              className={inputClass('estado_parcial')}
+            />
+            {errors.estado_parcial && (
+              <p className="text-red-500 text-sm mt-1">{errors.estado_parcial}</p>
             )}
           </div>
 
@@ -318,7 +405,6 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
         </form>
       </div>
 
-      {/* Modal de éxito */}
       {showSuccessModal && successData && (
         <CombustibleSuccessModal data={successData} onClose={handleModalClose} />
       )}
