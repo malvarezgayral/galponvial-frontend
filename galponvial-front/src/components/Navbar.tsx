@@ -61,7 +61,7 @@ const Navbar = () => {
       </div>
 
       <nav className="navbar-nav">
-        <ul className="w-full flex flex-row items-center justify-around m-0 p-0 h-full">
+        <ul className="w-full flex flex-row items-center justify-center gap-2 m-0 p-0 h-full">
           {navLinks.map((link) => (
             <li
               key={link.name}
