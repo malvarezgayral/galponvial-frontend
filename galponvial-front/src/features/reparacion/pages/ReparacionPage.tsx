@@ -15,7 +15,11 @@ const filaVacia = (): Omit<FilaReparacion, "id"> => ({
   fechaSalida: "",
 });
 
-const TALLERES = ["Taller 1", "Taller 2"];
+const TALLERES = [
+  "Taller 1 (General)",
+  "Taller 2 (Vial)",
+  "Taller 3 (Pintura)",
+];
 
 type Vista = "registro" | "visualizar-reparaciones" | "historial";
 
