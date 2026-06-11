@@ -24,6 +24,11 @@ export interface CombustibleCargaRequest {
   tipo_combustible: string;
   km_actual: number;
   cant_combustible_despachado: number;
+  chofer: string;
+  estacion_servicio: string;
+  litros_entrada: number;
+  litros_salida: number;
+  estado_parcial: string;
 }
 
 export interface VehiculoInfo {
@@ -46,6 +51,11 @@ export interface CombustibleCargaResponse {
   despachante?: string;
   km_actual: number;
   cant_combustible_despachado: number;
+  chofer: string;
+  estacion_servicio: string;
+  litros_entrada: number;
+  litros_salida: number;
+  estado_parcial: string;
   vehiculo: VehiculoInfo;
   id_carga: number;
 }

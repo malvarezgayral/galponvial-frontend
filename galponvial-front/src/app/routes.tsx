@@ -7,13 +7,15 @@ export const ROUTES = {
   usuarios: "/usuarios",
   auditoria: "/auditoria",
   
-   depoCombustible: "/depo-combustible",
-   tanqueCombustible: "/tanque-combustible",
+  depoCombustible: "/depo-combustible",
+  tanqueCombustible: "/tanque-combustible",
   login: "/login",
   articuloDetallesRoute: "/almacen/:id", 
   articuloDetalles: (id: number) => `/almacen/${id}`,
   grupoDetalles: (id: string | number) => `/almacen/grupos/${id}`,
   articulosEliminados: "/almacen/eliminados",
   proveedores: "/proveedores",
+  service: "/service",
+  reparacion: "/reparacion",
   
 } as const;
