@@ -22,6 +22,7 @@ export interface CombustibleCargaRequest {
   fecha_carga: string;
   despachante?: string;
   tipo_combustible: string;
+  Galpón_Vial: string;       // ← agregar esta línea
   km_actual: number;
   cant_combustible_despachado: number;
   chofer: string;

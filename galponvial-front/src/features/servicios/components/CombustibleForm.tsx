@@ -19,6 +19,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
     fecha_carga: todayString,
     despachante: '',
     tipo_combustible: '',
+    Galpón_Vial: '',
     km_actual: 0,
     cant_combustible_despachado: 0,
     chofer: '',
@@ -48,6 +49,10 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
 
     if (!formData.tipo_combustible || formData.tipo_combustible.trim() === '') {
       newErrors.tipo_combustible = 'El tipo de combustible es obligatorio';
+    }
+
+    if (!formData.Galpón_Vial || formData.Galpón_Vial.trim() === '') {
+      newErrors.Galpón_Vial = 'El campo Galpón Vial es obligatorio';
     }
 
     if (!formData.km_actual || formData.km_actual <= 0) {
@@ -139,6 +144,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       fecha_carga: todayString,
       despachante: '',
       tipo_combustible: '',
+      Galpón_Vial: '',
       km_actual: 0,
       cant_combustible_despachado: 0,
       chofer: '',
@@ -263,6 +269,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
             >
               <option value="">Seleccione un tipo...</option>
               <option value="Diesel">Diesel</option>
+              <option value="Diesel Premium">Diesel Premium</option>
               <option value="Nafta Súper">Nafta Súper</option>
               <option value="Nafta Premium">Nafta Premium</option>
               <option value="GNC">GNC</option>
@@ -271,6 +278,26 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
             </select>
             {errors.tipo_combustible && (
               <p className="text-red-500 text-sm mt-1">{errors.tipo_combustible}</p>
+            )}
+          </div>
+
+          {/* Galpón Vial */}
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+              Galpón Vial *
+            </label>
+            <select
+              name="Galpón_Vial"
+              value={formData.Galpón_Vial}
+              onChange={handleChange}
+              className={`${inputClass('Galpón_Vial')} bg-white`}
+            >
+              <option value="">Seleccione una opción...</option>
+              <option value="Depósito">Depósito</option>
+              <option value="Tanque">Tanque</option>
+            </select>
+            {errors.Galpón_Vial && (
+              <p className="text-red-500 text-sm mt-1">{errors.Galpón_Vial}</p>
             )}
           </div>
 
