@@ -17,5 +17,6 @@ export const ROUTES = {
   proveedores: "/proveedores",
   service: "/service",
   reparacion: "/reparacion",
+   compras: "/compras",
   
 } as const;
