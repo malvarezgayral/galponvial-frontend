@@ -43,8 +43,8 @@ export const CompraDirectaForm: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <button type="button" onClick={() => setMostrarComercios((prev) => !prev)} className="w-full px-4 py-3 bg-gray-100 text-[var(--color-text-primary)] font-medium rounded-lg border border-[var(--color-border-light)] hover:bg-gray-200 transition-colors duration-200 flex items-center justify-between">
-            <span>Comercios</span>
-            <span className="text-gray-500 text-sm">{mostrarComercios ? '▲ Cerrar' : '▼ Ver comercios'}</span>
+            <span>Proveedor</span>
+            <span className="text-gray-500 text-sm">{mostrarComercios ? '▲ Cerrar' : '▼ Ver proveedores'}</span>
           </button>
           {mostrarComercios && (
             <div className="mt-2 p-4 border border-[var(--color-border-light)] rounded-lg bg-gray-50">
