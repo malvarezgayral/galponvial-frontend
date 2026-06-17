@@ -116,7 +116,7 @@ const ServiciosPage = () => {
             onClick={handleReparacion}
           />
           <ServicioCard
-            title="Depósito"
+            title="Depósito y Lubricantes"
             description="Gestioná el depósito de combustible y lubricantes"
             icon={<DepositoIcon />}
             onClick={handleDeposito}
