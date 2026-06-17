@@ -1,17 +1,5 @@
 import { useState } from "react";
 
-interface FilaCombustible {
-  id: number;
-  fecha: string;
-  vehiculo: string;
-  agente: string;
-  comprobante: string;
-  ingreso: number;
-  egreso: number;
-  stock: number;
-  direccion: string;
-  observaciones: string;
-}
 interface FilaLubricante {
   id: number;
   fecha: string;
@@ -22,17 +10,6 @@ interface FilaLubricante {
   observaciones: string;
 }
 
-const filaVacia = (): Omit<FilaCombustible, "id" | "stock"> => ({
-  fecha: "",
-  vehiculo: "",
-  agente: "",
-  comprobante: "",
-  ingreso: 0,
-  egreso: 0,
-  direccion: "",
-  observaciones: "",
-});
-
 const filaLubricanteVacia = (): Omit<FilaLubricante, "id"> => ({
   fecha: "",
   ordenRetiro: "",
@@ -42,9 +19,6 @@ const filaLubricanteVacia = (): Omit<FilaLubricante, "id"> => ({
   observaciones: "",
 });
 
-const AGENTES: string[] = [];
-const DIRECCIONES: string[] = [];
-
 type Vista =
   | "visualizar-combustible"
   | "historial-combustible"
@@ -53,29 +27,10 @@ type Vista =
   | "historial-lubricantes";
 
 export default function DepoCombustiblePage() {
-  const [filas, setFilas] = useState<FilaCombustible[]>([
-    { id: 1, ...filaVacia(), stock: 0 },
-  ]);
-
   const [filasLubricantes, setFilasLubricantes] = useState<FilaLubricante[]>([
     { id: 1, ...filaLubricanteVacia() },
   ]);
   const [vista, setVista] = useState<Vista>("visualizar-combustible");
-
-  const actualizarFila = (
-    id: number,
-    campo: keyof Omit<FilaCombustible, "id" | "stock">,
-    valor: string | number,
-  ) => {
-    setFilas((prev) =>
-      prev.map((fila) => {
-        if (fila.id !== id) return fila;
-        const actualizada = { ...fila, [campo]: valor };
-        actualizada.stock = actualizada.ingreso - actualizada.egreso;
-        return actualizada;
-      }),
-    );
-  };
 
   const actualizarFilaLubricante = (
     id: number,
@@ -89,34 +44,6 @@ export default function DepoCombustiblePage() {
     );
   };
 
-  const incrementar = (id: number, campo: "ingreso" | "egreso") => {
-    setFilas((prev) =>
-      prev.map((fila) => {
-        if (fila.id !== id) return fila;
-        const actualizada = { ...fila, [campo]: fila[campo] + 1 };
-        actualizada.stock = actualizada.ingreso - actualizada.egreso;
-        return actualizada;
-      }),
-    );
-  };
-
-  const decrementar = (id: number, campo: "ingreso" | "egreso") => {
-    setFilas((prev) =>
-      prev.map((fila) => {
-        if (fila.id !== id) return fila;
-        const nuevoValor = Math.max(0, fila[campo] - 1);
-        const actualizada = { ...fila, [campo]: nuevoValor };
-        actualizada.stock = actualizada.ingreso - actualizada.egreso;
-        return actualizada;
-      }),
-    );
-  };
-
-  const agregarFila = () => {
-    const nuevoId = filas.length > 0 ? Math.max(...filas.map((f) => f.id)) + 1 : 1;
-    setFilas((prev) => [...prev, { id: nuevoId, ...filaVacia(), stock: 0 }]);
-  };
-
   const agregarFilaLubricante = () => {
     const nuevoId =
       filasLubricantes.length > 0
@@ -128,11 +55,6 @@ export default function DepoCombustiblePage() {
     ]);
   };
 
-  const eliminarFila = (id: number) => {
-    if (filas.length === 1) return;
-    setFilas((prev) => prev.filter((f) => f.id !== id));
-  };
-
   const eliminarFilaLubricante = (id: number) => {
     if (filasLubricantes.length === 1) return;
     setFilasLubricantes((prev) => prev.filter((fila) => fila.id !== id));
@@ -140,7 +62,6 @@ export default function DepoCombustiblePage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Depósito</h1>
 
@@ -192,21 +113,18 @@ export default function DepoCombustiblePage() {
         </div>
       </div>
 
-      {/* Vista: Visualizar Combustible */}
       {vista === "visualizar-combustible" && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
           Visualizar Combustible — en construcción.
         </div>
       )}
 
-      {/* Vista: Historial de Combustible */}
       {vista === "historial-combustible" && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
           Historial de Combustible — en construcción.
         </div>
       )}
 
-      {/* Vista: Lubricantes */}
       {vista === "lubricantes" && (
         <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
           <table className="min-w-full text-sm">
@@ -300,14 +218,12 @@ export default function DepoCombustiblePage() {
         </div>
       )}
 
-      {/* Vista: Visualizar Lubricantes */}
       {vista === "visualizar-lubricantes" && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
           Visualizar Lubricantes — en construcción.
         </div>
       )}
 
-      {/* Vista: Historial Lubricantes */}
       {vista === "historial-lubricantes" && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
           Historial Lubricantes — en construcción.
