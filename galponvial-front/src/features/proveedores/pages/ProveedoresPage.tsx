@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { CompraDirectaForm } from '../components/CompraDirectaForm';
 import { PresupuestoForm } from '../components/PresupuestoForm';
 
 export default function ProveedoresPage() {
@@ -10,14 +9,13 @@ export default function ProveedoresPage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Proveedores</h1>
 
-        {/* Botones de navegación */}
         <div className="flex flex-row gap-3">
           <button
             onClick={() => setVistaActiva('compras')}
             style={{ backgroundColor: '#0062e3' }}
             className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
           >
-            Compra directa y Presupuestos
+            Presupuestos
           </button>
           <button
             onClick={() => setVistaActiva('visualizar')}
@@ -36,15 +34,13 @@ export default function ProveedoresPage() {
         </div>
       </div>
 
-      {/* Contenido según vista activa */}
       {vistaActiva === 'compras' && (
         <div className="flex flex-col gap-6">
           <div className="flex flex-row gap-6 items-start">
-            <CompraDirectaForm />
             <PresupuestoForm numero={1} />
+            <PresupuestoForm numero={2} />
           </div>
           <div className="flex flex-row gap-6 items-start">
-            <PresupuestoForm numero={2} />
             <PresupuestoForm numero={3} />
           </div>
         </div>
