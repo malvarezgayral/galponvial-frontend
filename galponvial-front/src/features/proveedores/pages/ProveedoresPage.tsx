@@ -29,7 +29,7 @@ export default function ProveedoresPage() {
             style={{ backgroundColor: '#0062e3' }}
             className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
           >
-            Historial
+            Historial de Presupuestos
           </button>
           <button
             onClick={() => setVistaActiva('info')}
@@ -85,8 +85,27 @@ export default function ProveedoresPage() {
       )}
 
       {vistaActiva === 'historial' && (
-        <div className="text-gray-500 italic">
-          Historial — próximamente.
+        <div className="space-y-6">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Historial de Presupuestos</h2>
+            <div className="space-y-4">
+              {[2026, 2025, 2024].map((anio) => (
+                <div key={anio}>
+                  <h3 className="text-lg font-bold text-gray-700 mb-2">{anio}</h3>
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
+                    {['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'].map((mes) => (
+                      <button
+                        key={mes}
+                        className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:border-blue-400 transition-colors"
+                      >
+                        {mes}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       )}
 
