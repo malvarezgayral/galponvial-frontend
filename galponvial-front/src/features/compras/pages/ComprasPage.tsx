@@ -1,21 +1,13 @@
 import { useState } from 'react';
-import { CompraDirectaForm } from '../../proveedores/components/CompraDirectaForm';
 
 const MESES = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
 const ComprasPage = () => {
-  const [vistaActiva, setVistaActiva] = useState<'compra' | 'suministro' | 'historial'>('compra');
+  const [vistaActiva, setVistaActiva] = useState<'suministro' | 'historial'>('suministro');
 
   return (
     <div className="p-6">
       <div className="flex flex-row gap-3 mb-6">
-        <button
-          onClick={() => setVistaActiva('compra')}
-          style={{ backgroundColor: '#0062e3' }}
-          className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
-        >
-          Compra Directa
-        </button>
         <button
           onClick={() => setVistaActiva('suministro')}
           style={{ backgroundColor: '#0062e3' }}
@@ -31,17 +23,11 @@ const ComprasPage = () => {
           Historial de Suministros
         </button>
       </div>
-
-      {vistaActiva === 'compra' && (
-        <CompraDirectaForm />
-      )}
-
       {vistaActiva === 'suministro' && (
         <div className="text-gray-500 italic">
           Suministro — próximamente.
         </div>
       )}
-
       {vistaActiva === 'historial' && (
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Historial de Suministros</h2>
@@ -61,4 +47,5 @@ const ComprasPage = () => {
     </div>
   );
 };
+
 export default ComprasPage;
