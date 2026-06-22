@@ -38,6 +38,12 @@ const ServiceIcon = () => (
   </svg>
 );
 
+const ComprasIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.114 60.114 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+  </svg>
+);
+
 const ReparacionIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
     <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75a4.5 4.5 0 01-4.884 4.484c-1.076-.091-2.264.071-2.95.904l-7.152 8.684a2.548 2.548 0 11-3.586-3.586l8.684-7.152c.833-.686.995-1.874.904-2.95a4.5 4.5 0 016.336-4.486l-3.276 3.276a3.004 3.004 0 002.25 2.25l3.276-3.276c.256.565.398 1.192.398 1.852z" />
@@ -65,6 +71,7 @@ const ServiciosPage = () => {
   const handleService = () => navigate('/service');
   const handleReparacion = () => navigate('/reparacion');
   const handleDeposito = () => navigate('/depo-combustible');
+  const handleCompras = () => navigate('/compras');
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
@@ -120,6 +127,12 @@ const ServiciosPage = () => {
             description="Gestioná el depósito de combustible y lubricantes"
             icon={<DepositoIcon />}
             onClick={handleDeposito}
+          />
+          <ServicioCard
+            title="Compras"
+            description="Gestioná compras directas, suministros e historial"
+            icon={<ComprasIcon />}
+            onClick={handleCompras}
           />
           {isAdmin && (
             <ServicioCard

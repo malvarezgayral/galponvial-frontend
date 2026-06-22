@@ -18,7 +18,6 @@ const Navbar = () => {
   { name: "Almacén", href: ROUTES.almacen },
   { name: "Vehículos", href: ROUTES.vehiculos },
   { name: "Servicios", href: ROUTES.servicios },
-  { name: "Compras", href: ROUTES.compras },
   
   
   
