@@ -22,6 +22,7 @@ const Navbar = () => {
   
   
  
+  { name: "Notificaciones", href: ROUTES.notificaciones },
   { name: "Usuarios", href: ROUTES.usuarios },
 ];
 

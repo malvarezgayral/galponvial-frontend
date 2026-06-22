@@ -27,6 +27,7 @@ import SuperUserProtectedRoute from "./components/SuperUserProtectedRoute";
 import ArticulosEliminadosPage from "@/features/almacen/pages/ArticulosEliminadosPage";
 
 const AuditoriaPage = () => <h1 className="text-3xl font-bold">Auditoría</h1>;
+const NotificacionesPage = () => <h1 className="text-3xl font-bold">Notificaciones</h1>;
 
 export const router = createBrowserRouter([
   {
@@ -56,6 +57,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.service, element: <ProtectedRoute><ServicePage /></ProtectedRoute> },
       { path: ROUTES.reparacion, element: <ProtectedRoute><ReparacionPage /></ProtectedRoute> },
       { path: ROUTES.compras, element: <ProtectedRoute><ComprasPage /></ProtectedRoute> },
+      { path: ROUTES.notificaciones, element: <ProtectedRoute><NotificacionesPage /></ProtectedRoute> },
     ],
   },
 ]);

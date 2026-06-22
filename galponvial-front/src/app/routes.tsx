@@ -18,5 +18,6 @@ export const ROUTES = {
   service: "/service",
   reparacion: "/reparacion",
    compras: "/compras",
+  notificaciones: "/notificaciones",
   
 } as const;
