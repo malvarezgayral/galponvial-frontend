@@ -16,20 +16,21 @@ const ComprasPage = () => {
       </div>
       {vistaActiva === "presupuestos" && (
         <div className="flex flex-col gap-6">
-          <div className="flex flex-row gap-6 items-start">
+          <div className="flex flex-row gap-6 items-stretch">
             <PresupuestoForm numero={1} />
             <PresupuestoForm numero={2} />
           </div>
-          <div className="flex flex-row gap-6 items-start">
+          <div className="flex flex-row gap-6 items-stretch">
             <PresupuestoForm numero={3} />
           </div>
         </div>
       )}
       {vistaActiva === "suministro" && (
-        <div className="flex flex-row gap-6 items-start">
-          <div className="bg-white rounded-lg shadow p-6 w-full max-w-xl">
+        <div className="flex flex-row gap-6 items-stretch">
+          <div className="bg-white rounded-lg shadow p-6 w-full max-w-xl flex flex-col">
             <h2 className="text-2xl font-bold text-gray-800 mb-6">Suministro</h2>
-            <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); alert('Suministro enviado'); }}>
+            <form className="flex flex-col flex-1" onSubmit={(e) => { e.preventDefault(); alert('Suministro enviado'); }}>
+              <div className="space-y-5 flex-1">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Fecha *</label>
                 <input type="date" required className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -60,37 +61,38 @@ const ComprasPage = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Observaciones</label>
-                <textarea placeholder="Ingrese observaciones adicionales..." rows={4} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" />
+                <textarea placeholder="Ingrese observaciones adicionales..." rows={4} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none flex-1" />
               </div>
-              <div className="flex gap-4 pt-2">
+              </div>
+              <p className="text-sm text-gray-500 mt-auto">* Campos obligatorios</p>
+              <div className="flex gap-4 mt-2">
                 <button type="submit" className="flex-1 px-6 py-3 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors">Registrar Suministro</button>
                 <button type="button" className="flex-1 px-6 py-3 bg-gray-300 text-gray-800 font-medium rounded-lg hover:bg-gray-400 transition-colors">Limpiar</button>
               </div>
-              <p className="text-sm text-gray-500">* Campos obligatorios</p>
             </form>
           </div>
-          <div className="bg-white rounded-lg shadow p-6 flex-1">
-            
-            <table className="w-full border-collapse">
-              <thead>
-                <tr className="bg-gray-100">
-                  <th className="border border-gray-300 px-3 py-2 text-center text-sm font-semibold text-gray-700">Cantidad</th>
-                  <th className="border border-gray-300 px-3 py-2 text-center text-sm font-semibold text-gray-700">Descripción</th>
-                  <th className="border border-gray-300 px-3 py-2 text-center text-sm font-semibold text-gray-700">C. Unitario</th>
-                  <th className="border border-gray-300 px-3 py-2 text-center text-sm font-semibold text-gray-700">C. Estimado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[1,2,3,4,5].map((i) => (
-                  <tr key={i}>
-                    <td className="border border-gray-300 px-2 py-1"><input type="text" className="w-full focus:outline-none text-sm" /></td>
-                    <td className="border border-gray-300 px-2 py-1"><input type="text" className="w-full focus:outline-none text-sm" /></td>
-                    <td className="border border-gray-300 px-2 py-1"><input type="text" className="w-full focus:outline-none text-sm" /></td>
-                    <td className="border border-gray-300 px-2 py-1"><input type="text" className="w-full focus:outline-none text-sm" /></td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="bg-white rounded-lg shadow p-6 flex-1 flex flex-col">
+            <div className="flex flex-col flex-1 border border-gray-300 rounded">
+              <div className="grid grid-cols-4 bg-gray-100">
+                <div className="border-b border-r border-gray-300 px-3 py-2 text-center text-xl font-semibold text-gray-700">Cantidad</div>
+                <div className="border-b border-r border-gray-300 px-3 py-2 text-center text-xl font-semibold text-gray-700">Descripción</div>
+                <div className="border-b border-r border-gray-300 px-3 py-2 text-center text-xl font-semibold text-gray-700">C. Unitario</div>
+                <div className="border-b border-gray-300 px-3 py-2 text-center text-xl font-semibold text-gray-700">C. Estimado</div>
+              </div>
+              {Array.from({length: 30}, (_, i) => (
+                <div key={i} className="grid grid-cols-4">
+                  <div className="border-b border-r border-gray-300 px-2 py-1"><input type="text" className="w-full focus:outline-none text-sm" /></div>
+                  <div className="border-b border-r border-gray-300 px-2 py-1"><input type="text" className="w-full focus:outline-none text-sm" /></div>
+                  <div className="border-b border-r border-gray-300 px-2 py-1"><input type="text" className="w-full focus:outline-none text-sm" /></div>
+                  <div className="border-b border-gray-300 px-2 py-1"><input type="text" className="w-full focus:outline-none text-sm" /></div>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-gray-500 mt-auto">* Campos obligatorios</p>
+            <div className="flex gap-4 mt-2">
+              <button type="button" className="flex-1 px-6 py-3 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors">Registrar Suministro</button>
+              <button type="button" className="flex-1 px-6 py-3 bg-gray-300 text-gray-800 font-medium rounded-lg hover:bg-gray-400 transition-colors">Limpiar</button>
+            </div>
           </div>
         </div>
       )}
