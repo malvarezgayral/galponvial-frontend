@@ -29,7 +29,7 @@ const filaVacia = (): Omit<FilaService, "id"> => ({
 
 const SI_NO = ["SI", "NO"];
 
-type Vista = "registro" | "visualizar-service" | "historial";
+type Vista = "registro" | "historial";
 
 export default function ServicePage() {
   const [filas, setFilas] = useState<FilaService[]>([
@@ -99,14 +99,7 @@ export default function ServicePage() {
             Registro de Service
           </button>
 
-          <button
-            onClick={() => setVista("visualizar-service")}
-            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
-              vista === "visualizar-service" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
-            }`}
-          >
-            Visualizar Service
-          </button>
+
 
           <button
             onClick={() => setVista("historial")}
@@ -114,7 +107,7 @@ export default function ServicePage() {
               vista === "historial" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
-            Historial
+            Historial de Service
           </button>
         </div>
       </div>
@@ -190,13 +183,6 @@ export default function ServicePage() {
             <span className="text-lg leading-none">+</span> Agregar Registro
           </button>
         </>
-      )}
-
-      {/* Vista: Visualizar Service */}
-      {vista === "visualizar-service" && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
-          Visualizar Service — en construcción.
-        </div>
       )}
 
       {/* Vista: Historial */}

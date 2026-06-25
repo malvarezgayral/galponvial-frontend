@@ -21,7 +21,7 @@ const TALLERES = [
   "Taller 3 (Pintura)",
 ];
 
-type Vista = "registro" | "visualizar-reparaciones" | "historial";
+type Vista = "registro" | "historial";
 
 export default function ReparacionPage() {
   const [filas, setFilas] = useState<FilaReparacion[]>([
@@ -66,14 +66,7 @@ export default function ReparacionPage() {
             Registro de Reparaciones
           </button>
 
-          <button
-            onClick={() => setVista("visualizar-reparaciones")}
-            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
-              vista === "visualizar-reparaciones" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
-            }`}
-          >
-            Visualizar Reparaciones
-          </button>
+
 
           <button
             onClick={() => setVista("historial")}
@@ -81,7 +74,7 @@ export default function ReparacionPage() {
               vista === "historial" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
-            Historial
+            Historial de Reparación
           </button>
         </div>
       </div>
@@ -184,13 +177,6 @@ export default function ReparacionPage() {
             <span className="text-lg leading-none">+</span> Agregar Registro
           </button>
         </>
-      )}
-
-      {/* Vista: Visualizar Reparaciones */}
-      {vista === "visualizar-reparaciones" && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
-          Visualizar Reparaciones — en construcción.
-        </div>
       )}
 
       {/* Vista: Historial */}
