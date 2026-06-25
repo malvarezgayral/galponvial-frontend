@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { PresupuestoForm } from "../../proveedores/components/PresupuestoForm";
 
-const MESES = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
-
 const ComprasPage = () => {
   const [vistaActiva, setVistaActiva] = useState<"presupuestos" | "suministro" | "historial" | "historial-presupuestos">("presupuestos");
 
@@ -99,28 +97,94 @@ const ComprasPage = () => {
       {vistaActiva === "historial-presupuestos" && (
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Historial de Presupuestos</h2>
-          <div className="space-y-4">
-            {[2026, 2025, 2024].map((anio) => (
-              <div key={anio}>
-                <h3 className="text-lg font-bold text-gray-700 mb-2">{anio}</h3>
-                <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
-                  {MESES.map((mes) => (
-                    <button key={mes} className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:border-blue-400 transition-colors">{mes}</button>
-                  ))}
-                </div>
-              </div>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Proveedor</label>
+              <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">— A desarrollar —</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha</label>
+              <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Período — Desde</label>
+              <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Período — Hasta</label>
+              <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Unidad</label>
+              <input type="text" placeholder="Ingrese la unidad" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+          </div>
+          <div className="flex gap-4 mt-6">
+            <button type="button" className="px-6 py-2 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors">Buscar</button>
+            <button type="button" className="px-6 py-2 bg-gray-300 text-gray-800 font-medium rounded-lg hover:bg-gray-400 transition-colors">Limpiar filtros</button>
           </div>
         </div>
       )}
       {vistaActiva === "historial" && (
         <div className="bg-white rounded-lg shadow p-6">
           <h2 className="text-xl font-semibold text-gray-800 mb-4">Historial de Suministros</h2>
-          <h3 className="text-lg font-bold text-gray-700 mb-2">2026</h3>
-          <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6">
-            {MESES.map((mes) => (
-              <button key={mes} className="border border-gray-300 rounded px-3 py-2 text-sm text-gray-600 hover:bg-blue-50 hover:border-blue-400 transition-colors">{mes}</button>
-            ))}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">N° de Orden</label>
+              <input type="text" placeholder="Ingrese número de orden" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Proveedor</label>
+              <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">— A desarrollar —</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Tipo de Factura</label>
+              <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Todas</option>
+                <option value="B">B</option>
+                <option value="C">C</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">N° de Factura</label>
+              <input type="text" placeholder="Ingrese número de factura" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Monto</label>
+              <input type="number" placeholder="$ 0.00" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Fecha de entrega</label>
+              <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Período — Desde</label>
+              <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Período — Hasta</label>
+              <input type="date" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+              <select className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Todos</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="entregado">Entregado</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Unidad</label>
+              <input type="text" placeholder="Ingrese la unidad" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+          </div>
+          <div className="flex gap-4 mt-6">
+            <button type="button" className="px-6 py-2 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors">Buscar</button>
+            <button type="button" className="px-6 py-2 bg-gray-300 text-gray-800 font-medium rounded-lg hover:bg-gray-400 transition-colors">Limpiar filtros</button>
           </div>
         </div>
       )}
