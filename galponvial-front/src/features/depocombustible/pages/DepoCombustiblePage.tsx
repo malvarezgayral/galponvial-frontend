@@ -20,17 +20,15 @@ const filaLubricanteVacia = (): Omit<FilaLubricante, "id"> => ({
 });
 
 type Vista =
-  | "visualizar-combustible"
   | "historial-combustible"
   | "lubricantes"
-  | "visualizar-lubricantes"
   | "historial-lubricantes";
 
 export default function DepoCombustiblePage() {
   const [filasLubricantes, setFilasLubricantes] = useState<FilaLubricante[]>([
     { id: 1, ...filaLubricanteVacia() },
   ]);
-  const [vista, setVista] = useState<Vista>("visualizar-combustible");
+  const [vista, setVista] = useState<Vista>("historial-combustible");
 
   const actualizarFilaLubricante = (
     id: number,
@@ -67,15 +65,6 @@ export default function DepoCombustiblePage() {
 
         <div className="flex flex-wrap gap-3 mt-4">
           <button
-            onClick={() => setVista("visualizar-combustible")}
-            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
-              vista === "visualizar-combustible" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
-            }`}
-          >
-            Visualizar Combustible
-          </button>
-
-          <button
             onClick={() => setVista("historial-combustible")}
             className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
               vista === "historial-combustible" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
@@ -94,15 +83,6 @@ export default function DepoCombustiblePage() {
           </button>
 
           <button
-            onClick={() => setVista("visualizar-lubricantes")}
-            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
-              vista === "visualizar-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
-            }`}
-          >
-            Visualizar Lubricantes
-          </button>
-
-          <button
             onClick={() => setVista("historial-lubricantes")}
             className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
               vista === "historial-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
@@ -112,12 +92,6 @@ export default function DepoCombustiblePage() {
           </button>
         </div>
       </div>
-
-      {vista === "visualizar-combustible" && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
-          Visualizar Combustible — en construcción.
-        </div>
-      )}
 
       {vista === "historial-combustible" && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
@@ -215,12 +189,6 @@ export default function DepoCombustiblePage() {
               <span className="text-lg leading-none">+</span> Agregar Registro
             </button>
           </div>
-        </div>
-      )}
-
-      {vista === "visualizar-lubricantes" && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
-          Visualizar Lubricantes — en construcción.
         </div>
       )}
 
