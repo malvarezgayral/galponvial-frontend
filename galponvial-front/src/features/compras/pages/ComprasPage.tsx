@@ -10,7 +10,7 @@ const ComprasPage = () => {
         <button onClick={() => setVistaActiva("presupuestos")} style={{ backgroundColor: "#0062e3" }} className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90">Presupuestos</button>
         <button onClick={() => setVistaActiva("suministro")} style={{ backgroundColor: "#0062e3" }} className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90">Suministro</button>
         <button onClick={() => setVistaActiva("historial-presupuestos")} style={{ backgroundColor: "#0062e3" }} className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90">Historial de Presupuestos</button>
-        <button onClick={() => setVistaActiva("historial")} style={{ backgroundColor: "#0062e3" }} className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90">Historial de Suministros</button>
+        <button onClick={() => setVistaActiva("historial")} style={{ backgroundColor: "#0062e3" }} className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90">Historial de Compras</button>
       </div>
       {vistaActiva === "presupuestos" && (
         <div className="flex flex-col gap-6">
@@ -135,11 +135,15 @@ const ComprasPage = () => {
       )}
       {vistaActiva === "historial" && (
         <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Historial de Suministros</h2>
+          <h2 className="text-xl font-semibold text-gray-800 mb-4">Historial de Compras</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">N° de Orden</label>
-              <input type="text" placeholder="Ingrese número de orden" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <label className="block text-sm font-medium text-gray-700 mb-1">N° de Orden de Compra</label>
+              <input type="text" placeholder="Ingrese número de orden de compra" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">N° de Suministro</label>
+              <input type="text" placeholder="Ingrese número de suministro" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Proveedor</label>
