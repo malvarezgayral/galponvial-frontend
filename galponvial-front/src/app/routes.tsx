@@ -18,6 +18,7 @@ export const ROUTES = {
   service: "/service",
   reparacion: "/reparacion",
    compras: "/compras",
+  documentacionPersonal: "/documentacion-personal",
   notificaciones: "/notificaciones",
   
 } as const;

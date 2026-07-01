@@ -5,6 +5,7 @@ import ProveedoresPage from "../features/proveedores/pages/ProveedoresPage";
 import ServicePage from "../features/service/pages/ServicePage";
 import ReparacionPage from "../features/reparacion/pages/ReparacionPage";
 import ComprasPage from "../features/compras/pages/ComprasPage";
+import DocumentacionPersonalPage from "../features/documentacionpersonal/pages/DocumentacionPersonalPage";
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./routes";
 import { MainLayout } from "./layouts/MainLayout";
@@ -57,6 +58,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.service, element: <ProtectedRoute><ServicePage /></ProtectedRoute> },
       { path: ROUTES.reparacion, element: <ProtectedRoute><ReparacionPage /></ProtectedRoute> },
       { path: ROUTES.compras, element: <ProtectedRoute><ComprasPage /></ProtectedRoute> },
+      { path: ROUTES.documentacionPersonal, element: <ProtectedRoute><DocumentacionPersonalPage /></ProtectedRoute> },
       { path: ROUTES.notificaciones, element: <ProtectedRoute><NotificacionesPage /></ProtectedRoute> },
     ],
   },
