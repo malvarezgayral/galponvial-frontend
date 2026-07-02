@@ -6,6 +6,7 @@ import ServicePage from "../features/service/pages/ServicePage";
 import ReparacionPage from "../features/reparacion/pages/ReparacionPage";
 import ComprasPage from "../features/compras/pages/ComprasPage";
 import DocumentacionPersonalPage from "../features/documentacionpersonal/pages/DocumentacionPersonalPage";
+import NotificacionesPage from "../features/notificaciones/pages/NotificacionesPage";
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./routes";
 import { MainLayout } from "./layouts/MainLayout";
@@ -28,7 +29,6 @@ import SuperUserProtectedRoute from "./components/SuperUserProtectedRoute";
 import ArticulosEliminadosPage from "@/features/almacen/pages/ArticulosEliminadosPage";
 
 const AuditoriaPage = () => <h1 className="text-3xl font-bold">Auditoría</h1>;
-const NotificacionesPage = () => <h1 className="text-3xl font-bold">Notificaciones</h1>;
 
 export const router = createBrowserRouter([
   {
