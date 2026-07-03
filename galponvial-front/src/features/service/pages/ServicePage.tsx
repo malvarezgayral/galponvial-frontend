@@ -274,9 +274,32 @@ export default function ServicePage() {
 
       {/* Vista: Historial */}
       {vista === "historial" && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
-          Historial — en construcción.
-        </div>
+        <>
+          <div className="bg-white rounded-xl shadow border border-gray-200 p-4 mb-4">
+            <div className="flex flex-wrap gap-4 items-end">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-gray-500">Unidad</label>
+                <input
+                  type="text"
+                  placeholder="Buscar por unidad"
+                  className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-gray-500">Marca</label>
+                <select className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40">
+                  <option value="">Todas</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-gray-500">Modelo</label>
+                <select className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40">
+                  <option value="">Todos</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
