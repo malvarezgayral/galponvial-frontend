@@ -12,6 +12,16 @@ interface FilaService {
   filtroMotorAceite: string;
   filtroAire: string;
   filtroGasoil: string;
+  aceiteHidraulico: string;
+  filtroHidraulico: string;
+  correasAuxiliares: string;
+  aceiteTande: string;
+  regulacionValvulas: string;
+  cambioDamper: string;
+  proximoService: string;
+  cuentaHora: string;
+  stock: string;
+  observaciones: string;
 }
 
 const filaVacia = (): Omit<FilaService, "id"> => ({
@@ -25,9 +35,20 @@ const filaVacia = (): Omit<FilaService, "id"> => ({
   filtroMotorAceite: "",
   filtroAire: "",
   filtroGasoil: "",
+  aceiteHidraulico: "",
+  filtroHidraulico: "",
+  correasAuxiliares: "",
+  aceiteTande: "",
+  regulacionValvulas: "",
+  cambioDamper: "",
+  proximoService: "",
+  cuentaHora: "",
+  stock: "",
+  observaciones: "",
 });
 
 const SI_NO = ["SI", "NO"];
+const STOCK_OPCIONES = ["Stock", "Sin stock"];
 
 type Vista = "registro" | "historial";
 
@@ -83,6 +104,31 @@ export default function ServicePage() {
     </select>
   );
 
+  const selectStock = (
+    id: number,
+    campo: keyof Omit<FilaService, "id">,
+    valor: string
+  ) => (
+    <select
+      value={valor}
+      onChange={(e) => actualizarFila(id, campo, e.target.value)}
+      className={`border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-28 ${
+        valor === "Stock"
+          ? "text-green-600 font-semibold"
+          : valor === "Sin stock"
+          ? "text-red-500 font-semibold"
+          : "text-gray-400"
+      }`}
+    >
+      <option value="">—</option>
+      {STOCK_OPCIONES.map((op) => (
+        <option key={op} value={op}>
+          {op}
+        </option>
+      ))}
+    </select>
+  );
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -98,8 +144,6 @@ export default function ServicePage() {
           >
             Registro de Service
           </button>
-
-
 
           <button
             onClick={() => setVista("historial")}
@@ -129,6 +173,16 @@ export default function ServicePage() {
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro de Aire</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Gasoil</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Transmisión</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Hidráulico</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Hidráulico</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Correas Auxiliares</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Tande</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Regulación de Válvulas</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cambio de Damper</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Próximo Service</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cuenta Hora</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Stock</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Observaciones</th>
                   <th className="px-3 py-3 text-center font-semibold text-gray-600 whitespace-nowrap">Eliminar</th>
                 </tr>
               </thead>
@@ -160,6 +214,39 @@ export default function ServicePage() {
                     <td className="px-3 py-2">{selectSiNo(fila.id, "filtroAire", fila.filtroAire)}</td>
                     <td className="px-3 py-2">{selectSiNo(fila.id, "filtroGasoil", fila.filtroGasoil)}</td>
                     <td className="px-3 py-2">{selectSiNo(fila.id, "filtroTransmision", fila.filtroTransmision)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "aceiteHidraulico", fila.aceiteHidraulico)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "filtroHidraulico", fila.filtroHidraulico)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "correasAuxiliares", fila.correasAuxiliares)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "aceiteTande", fila.aceiteTande)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "regulacionValvulas", fila.regulacionValvulas)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "cambioDamper", fila.cambioDamper)}</td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="date"
+                        value={fila.proximoService}
+                        onChange={(e) => actualizarFila(fila.id, "proximoService", e.target.value)}
+                        className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="text"
+                        placeholder="Cuenta hora"
+                        value={fila.cuentaHora}
+                        onChange={(e) => actualizarFila(fila.id, "cuentaHora", e.target.value)}
+                        className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-28"
+                      />
+                    </td>
+                    <td className="px-3 py-2">{selectStock(fila.id, "stock", fila.stock)}</td>
+                    <td className="px-3 py-2">
+                      <textarea
+                        placeholder="Observaciones"
+                        value={fila.observaciones}
+                        onChange={(e) => actualizarFila(fila.id, "observaciones", e.target.value)}
+                        rows={1}
+                        className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-44 resize-y"
+                      />
+                    </td>
                     <td className="px-3 py-2 text-center">
                       <button
                         onClick={() => eliminarFila(fila.id)}
