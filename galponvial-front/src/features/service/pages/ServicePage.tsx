@@ -48,9 +48,12 @@ const filaVacia = (): Omit<FilaService, "id"> => ({
 });
 
 const SI_NO = ["SI", "NO"];
+const LISTA_FILTROS: string[] = [
+  // Completar con las opciones de filtros disponibles
+];
 const STOCK_OPCIONES = ["Stock", "Sin stock"];
 
-type Vista = "registro" | "historial";
+type Vista = "registro" | "historial" | "filtros";
 
 export default function ServicePage() {
   const [filas, setFilas] = useState<FilaService[]>([
@@ -60,6 +63,8 @@ export default function ServicePage() {
   const [filtroUnidad, setFiltroUnidad] = useState("");
   const [filtroMarca, setFiltroMarca] = useState("");
   const [filtroModelo, setFiltroModelo] = useState("");
+  const [unidadFiltros, setUnidadFiltros] = useState("");
+  const [listaFiltros, setListaFiltros] = useState("");
 
   const agregarFila = () => {
     const nuevoId =
@@ -167,6 +172,15 @@ export default function ServicePage() {
           >
             Historial de Service
           </button>
+
+            <button
+              onClick={() => setVista("filtros")}
+              className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+                vista === "filtros" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+              }`}
+            >
+              Filtros
+            </button>
         </div>
       </div>
 
@@ -338,6 +352,38 @@ export default function ServicePage() {
             </div>
           </div>
         </>
+      )}
+
+      {vista === "filtros" && (
+        <div className="bg-white rounded-xl shadow border border-gray-200 p-6">
+          <div className="flex flex-wrap gap-4 items-end">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Unidad</label>
+              <input
+                type="text"
+                placeholder="Ingrese unidad"
+                value={unidadFiltros}
+                onChange={(e) => setUnidadFiltros(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-medium text-gray-500">Lista de filtros</label>
+              <select
+                value={listaFiltros}
+                onChange={(e) => setListaFiltros(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 text-gray-500"
+              >
+                <option value="">— Seleccionar —</option>
+                {LISTA_FILTROS.map((f) => (
+                  <option key={f} value={f}>
+                    {f}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
