@@ -57,6 +57,9 @@ export default function ServicePage() {
     { id: 1, ...filaVacia() },
   ]);
   const [vista, setVista] = useState<Vista>("registro");
+  const [filtroUnidad, setFiltroUnidad] = useState("");
+  const [filtroMarca, setFiltroMarca] = useState("");
+  const [filtroModelo, setFiltroModelo] = useState("");
 
   const agregarFila = () => {
     const nuevoId =
@@ -77,6 +80,17 @@ export default function ServicePage() {
   const eliminarFila = (id: number) => {
     if (filas.length === 1) return;
     setFilas((prev) => prev.filter((fila) => fila.id !== id));
+  };
+
+  const buscarHistorial = () => {
+    // TODO: conectar con backend para filtrar historial
+    console.log("Buscando con filtros:", { filtroUnidad, filtroMarca, filtroModelo });
+  };
+
+  const limpiarFiltros = () => {
+    setFiltroUnidad("");
+    setFiltroMarca("");
+    setFiltroModelo("");
   };
 
   const selectSiNo = (
@@ -279,24 +293,48 @@ export default function ServicePage() {
             <div className="flex flex-wrap gap-4 items-end">
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-gray-500">Unidad</label>
-                <input
-                  type="text"
-                  placeholder="Buscar por unidad"
-                  className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
-                />
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-gray-500">Marca</label>
-                <select className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40">
-                  <option value="">Todas</option>
-                </select>
-              </div>
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-gray-500">Modelo</label>
-                <select className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40">
-                  <option value="">Todos</option>
-                </select>
-              </div>
+                  <input
+                    type="text"
+                    placeholder="Buscar por unidad"
+                    value={filtroUnidad}
+                    onChange={(e) => setFiltroUnidad(e.target.value)}
+                    className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-gray-500">Marca</label>
+                  <select
+                    value={filtroMarca}
+                    onChange={(e) => setFiltroMarca(e.target.value)}
+                    className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
+                  >
+                    <option value="">Todas</option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-gray-500">Modelo</label>
+                  <select
+                    value={filtroModelo}
+                    onChange={(e) => setFiltroModelo(e.target.value)}
+                    className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
+                  >
+                    <option value="">Todos</option>
+                  </select>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={buscarHistorial}
+                    className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition-colors"
+                  >
+                    Buscar
+                  </button>
+                  <button
+                    onClick={limpiarFiltros}
+                    className="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium rounded-lg shadow transition-colors"
+                  >
+                    Limpiar filtros
+                  </button>
+                </div>
             </div>
           </div>
         </>

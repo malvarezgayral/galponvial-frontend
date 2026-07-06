@@ -5,15 +5,27 @@ interface FilaReparacion {
   unidad: string;
   descripcion: string;
   taller: string;
+  fechaEntrada: string;
   fechaSalida: string;
+  observaciones: string;
 }
 
 const filaVacia = (): Omit<FilaReparacion, "id"> => ({
   unidad: "",
   descripcion: "",
   taller: "",
+  fechaEntrada: "",
   fechaSalida: "",
+  observaciones: "",
 });
+
+const MARCAS: string[] = [
+  // Completar con las marcas disponibles, ej: "Ford", "Chevrolet", "Iveco"
+];
+
+const MODELOS: string[] = [
+  // Completar con los modelos disponibles
+];
 
 const TALLERES = [
   "Taller 1 (General)",
@@ -28,6 +40,9 @@ export default function ReparacionPage() {
     { id: 1, ...filaVacia() },
   ]);
   const [vista, setVista] = useState<Vista>("registro");
+  const [filtroUnidad, setFiltroUnidad] = useState("");
+  const [filtroModelo, setFiltroModelo] = useState("");
+  const [filtroMarca, setFiltroMarca] = useState("");
 
   const agregarFila = () => {
     const nuevoId =
@@ -48,6 +63,21 @@ export default function ReparacionPage() {
   const eliminarFila = (id: number) => {
     if (filas.length === 1) return;
     setFilas((prev) => prev.filter((fila) => fila.id !== id));
+  };
+
+  const limpiarFiltros = () => {
+    setFiltroUnidad("");
+    setFiltroModelo("");
+    setFiltroMarca("");
+  };
+
+  const buscarHistorial = () => {
+    // TODO: conectar con el backend cuando esté disponible el endpoint de historial
+    console.log("Buscando con filtros:", {
+      filtroUnidad,
+      filtroModelo,
+      filtroMarca,
+    });
   };
 
   return (
@@ -96,7 +126,13 @@ export default function ReparacionPage() {
                     Taller
                   </th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">
+                    Fecha de entrada
+                  </th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">
                     Fecha de salida
+                  </th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">
+                    Observaciones
                   </th>
                   <th className="px-3 py-3 text-center font-semibold text-gray-600 whitespace-nowrap">
                     Eliminar
@@ -147,11 +183,32 @@ export default function ReparacionPage() {
                     <td className="px-3 py-2">
                       <input
                         type="date"
+                        value={fila.fechaEntrada}
+                        onChange={(e) =>
+                          actualizarFila(fila.id, "fechaEntrada", e.target.value)
+                        }
+                        className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="date"
                         value={fila.fechaSalida}
                         onChange={(e) =>
                           actualizarFila(fila.id, "fechaSalida", e.target.value)
                         }
                         className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="text"
+                        placeholder="Observaciones..."
+                        value={fila.observaciones}
+                        onChange={(e) =>
+                          actualizarFila(fila.id, "observaciones", e.target.value)
+                        }
+                        className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
                       />
                     </td>
                     <td className="px-3 py-2 text-center">
@@ -181,8 +238,61 @@ export default function ReparacionPage() {
 
       {/* Vista: Historial */}
       {vista === "historial" && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
-          Historial — en construcción.
+        <div className="bg-white rounded-xl shadow border border-gray-200 p-6">
+          <div className="flex flex-wrap gap-4 items-end">
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-600">Unidad</label>
+              <input
+                type="text"
+                placeholder="Buscar por unidad"
+                value={filtroUnidad}
+                onChange={(e) => setFiltroUnidad(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-600">Modelo</label>
+                <select
+                  value={filtroModelo}
+                  onChange={(e) => setFiltroModelo(e.target.value)}
+                  className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 text-gray-500"
+                >
+                  <option value="">— Seleccionar —</option>
+                  {MODELOS.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-600">Marca</label>
+                <select
+                  value={filtroMarca}
+                  onChange={(e) => setFiltroMarca(e.target.value)}
+                  className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 text-gray-500"
+                >
+                  <option value="">— Seleccionar —</option>
+                  {MARCAS.map((m) => (
+                    <option key={m} value={m}>
+                      {m}
+                    </option>
+                  ))}
+                </select>
+            </div>
+            <button
+              onClick={buscarHistorial}
+              className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition-colors"
+            >
+              Buscar
+            </button>
+              <button
+                onClick={limpiarFiltros}
+                className="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium rounded-lg shadow transition-colors"
+              >
+                Limpiar filtros
+              </button>
+          </div>
         </div>
       )}
     </div>
