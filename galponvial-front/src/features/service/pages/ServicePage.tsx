@@ -63,6 +63,8 @@ export default function ServicePage() {
   const [filtroUnidad, setFiltroUnidad] = useState("");
   const [filtroMarca, setFiltroMarca] = useState("");
   const [filtroModelo, setFiltroModelo] = useState("");
+  const [filtroPeriodoDesde, setFiltroPeriodoDesde] = useState("");
+  const [filtroPeriodoHasta, setFiltroPeriodoHasta] = useState("");
   const [unidadFiltros, setUnidadFiltros] = useState("");
   const [listaFiltros, setListaFiltros] = useState("");
 
@@ -89,13 +91,21 @@ export default function ServicePage() {
 
   const buscarHistorial = () => {
     // TODO: conectar con backend para filtrar historial
-    console.log("Buscando con filtros:", { filtroUnidad, filtroMarca, filtroModelo });
+    console.log("Buscando con filtros:", {
+      filtroUnidad,
+      filtroMarca,
+      filtroModelo,
+      filtroPeriodoDesde,
+      filtroPeriodoHasta,
+    });
   };
 
   const limpiarFiltros = () => {
     setFiltroUnidad("");
     setFiltroMarca("");
     setFiltroModelo("");
+    setFiltroPeriodoDesde("");
+    setFiltroPeriodoHasta("");
   };
 
   const selectSiNo = (
@@ -334,6 +344,26 @@ export default function ServicePage() {
                   >
                     <option value="">Todos</option>
                   </select>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-gray-500">Período desde</label>
+                  <input
+                    type="date"
+                    value={filtroPeriodoDesde}
+                    max={filtroPeriodoHasta || undefined}
+                    onChange={(e) => setFiltroPeriodoDesde(e.target.value)}
+                    className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-gray-500">Período hasta</label>
+                  <input
+                    type="date"
+                    value={filtroPeriodoHasta}
+                    min={filtroPeriodoDesde || undefined}
+                    onChange={(e) => setFiltroPeriodoHasta(e.target.value)}
+                    className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
+                  />
                 </div>
                 <div className="flex gap-2">
                   <button
