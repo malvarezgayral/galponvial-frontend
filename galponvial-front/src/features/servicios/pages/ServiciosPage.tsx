@@ -130,7 +130,7 @@ const ServiciosPage = () => {
             onClick={handleReparacion}
           />
           <ServicioCard
-            title="Depósito y Lubricantes"
+            title="Lubricentro"
             description="Gestioná el depósito de combustible y lubricantes"
             icon={<DepositoIcon />}
             onClick={handleDeposito}
@@ -142,7 +142,7 @@ const ServiciosPage = () => {
             onClick={handleCompras}
           />
           <ServicioCard
-            title="Documentación del Personal"
+            title="Personal"
             description="Gestioná la documentación asociada al personal"
             icon={<DocumentacionIcon />}
             onClick={handleDocumentacionPersonal}

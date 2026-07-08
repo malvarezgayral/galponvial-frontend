@@ -43,6 +43,8 @@ export default function ReparacionPage() {
   const [filtroUnidad, setFiltroUnidad] = useState("");
   const [filtroModelo, setFiltroModelo] = useState("");
   const [filtroMarca, setFiltroMarca] = useState("");
+  const [filtroFechaDesde, setFiltroFechaDesde] = useState("");
+  const [filtroFechaHasta, setFiltroFechaHasta] = useState("");
 
   const agregarFila = () => {
     const nuevoId =
@@ -69,6 +71,8 @@ export default function ReparacionPage() {
     setFiltroUnidad("");
     setFiltroModelo("");
     setFiltroMarca("");
+    setFiltroFechaDesde("");
+    setFiltroFechaHasta("");
   };
 
   const buscarHistorial = () => {
@@ -77,6 +81,8 @@ export default function ReparacionPage() {
       filtroUnidad,
       filtroModelo,
       filtroMarca,
+      filtroFechaDesde,
+      filtroFechaHasta,
     });
   };
 
@@ -279,6 +285,24 @@ export default function ReparacionPage() {
                     </option>
                   ))}
                 </select>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-600">Desde</label>
+              <input
+                type="date"
+                value={filtroFechaDesde}
+                onChange={(e) => setFiltroFechaDesde(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-600">Hasta</label>
+              <input
+                type="date"
+                value={filtroFechaHasta}
+                onChange={(e) => setFiltroFechaHasta(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
+              />
             </div>
             <button
               onClick={buscarHistorial}
