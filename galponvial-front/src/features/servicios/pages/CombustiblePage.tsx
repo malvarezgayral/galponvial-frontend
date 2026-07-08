@@ -81,15 +81,20 @@ const CombustiblePage = () => {
     return (
       <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
         <div className="max-w-2xl mx-auto">
-          <button
-            onClick={() => navigate('/servicios')}
-            className="flex items-center gap-2 text-[#378AFE] hover:text-[#0962DE] transition-colors duration-200 mb-6 cursor-pointer"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-            </svg>
-            Volver a Servicios
-          </button>
+          <div className="flex flex-wrap gap-3 mb-6">
+            <button
+              onClick={() => navigate('/servicios/combustible')}
+              className="px-7 py-3 rounded-lg bg-[#0062e3] text-white text-base font-semibold hover:bg-[#0054c2] transition-colors duration-200 cursor-pointer"
+            >
+              Carga de Combustible
+            </button>
+            <button
+              onClick={() => navigate('/servicios/combustible/historial')}
+              className="px-7 py-3 rounded-lg bg-gray-200 text-gray-700 text-base font-semibold hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
+            >
+              Historial de Carga de Combustible
+            </button>
+          </div>
           <div className="bg-white rounded-lg shadow-md p-8">
             <div className="text-center">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-12 h-12 text-red-500 mx-auto mb-4">
@@ -107,16 +112,21 @@ const CombustiblePage = () => {
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Botón de volver */}
-        <button
-          onClick={() => navigate('/servicios')}
-          className="flex items-center gap-2 text-[#378AFE] hover:text-[#0962DE] transition-colors duration-200 mb-6 cursor-pointer"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-          </svg>
-          Volver a Servicios
-        </button>
+        {/* Botones de navegación */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          <button
+            onClick={() => navigate('/servicios/combustible')}
+            className="px-7 py-3 rounded-lg bg-[#0062e3] text-white text-base font-semibold hover:bg-[#0054c2] transition-colors duration-200 cursor-pointer"
+          >
+            Carga de Combustible
+          </button>
+          <button
+            onClick={() => navigate('/servicios/combustible/historial')}
+            className="px-7 py-3 rounded-lg bg-gray-200 text-gray-700 text-base font-semibold hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
+          >
+            Historial de Carga de Combustible
+          </button>
+        </div>
 
         {/* Selector de vehículo */}
         <div className="bg-white rounded-lg shadow-md p-8 mb-6">

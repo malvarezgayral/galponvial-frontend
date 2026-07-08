@@ -28,7 +28,7 @@ export default function DepoCombustiblePage() {
   const [filasLubricantes, setFilasLubricantes] = useState<FilaLubricante[]>([
     { id: 1, ...filaLubricanteVacia() },
   ]);
-  const [vista, setVista] = useState<Vista>("historial-combustible");
+  const [vista, setVista] = useState<Vista>("lubricantes");
 
   const actualizarFilaLubricante = (
     id: number,
@@ -64,14 +64,6 @@ export default function DepoCombustiblePage() {
         <h1 className="text-3xl font-bold text-gray-900">Depósito</h1>
 
         <div className="flex flex-wrap gap-3 mt-4">
-          <button
-            onClick={() => setVista("historial-combustible")}
-            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
-              vista === "historial-combustible" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
-            }`}
-          >
-            Historial de Combustible
-          </button>
 
           <button
             onClick={() => setVista("lubricantes")}
@@ -93,11 +85,6 @@ export default function DepoCombustiblePage() {
         </div>
       </div>
 
-      {vista === "historial-combustible" && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
-          Historial de Combustible — en construcción.
-        </div>
-      )}
 
       {vista === "lubricantes" && (
         <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
