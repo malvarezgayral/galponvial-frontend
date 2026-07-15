@@ -18,6 +18,9 @@
 }
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
   :root {
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     background-color: #f3f4f6;
