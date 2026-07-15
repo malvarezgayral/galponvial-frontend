@@ -2,18 +2,21 @@ import { useState } from "react";
 
 interface Notificacion {
   id: number;
-  tipo: "service" | "reparacion" | "compras";
+  tipo: "service" | "reparacion" | "compras" | "incidentes" | "personal" | "recordatorio";
   titulo: string;
   mensaje: string;
   fecha: string;
 }
 
-type Tab = "service" | "reparacion" | "compras";
+type Tab = "service" | "reparacion" | "compras" | "incidentes" | "personal" | "recordatorio";
 
 const TABS: { key: Tab; label: string }[] = [
   { key: "service", label: "Service" },
   { key: "reparacion", label: "Reparación" },
   { key: "compras", label: "Compras" },
+  { key: "incidentes", label: "Incidentes" },
+  { key: "personal", label: "Personal" },
+  { key: "recordatorio", label: "Recordatorio" },
 ];
 
 const NOTIFICACIONES: Notificacion[] = [];
