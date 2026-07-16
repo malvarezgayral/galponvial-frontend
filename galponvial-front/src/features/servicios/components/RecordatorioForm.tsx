@@ -189,10 +189,6 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
   return (
     <>
       <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-3xl font-bold text-[var(--color-text-primary)] mb-6">
-          Agregar Recordatorio
-        </h2>
-
         {/* Error general */}
         {generalError && (
           <div className="mb-6 p-4 bg-red-100 border border-red-400 rounded-lg">

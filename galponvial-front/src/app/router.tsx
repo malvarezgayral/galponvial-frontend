@@ -22,6 +22,7 @@ import HistorialCombustiblePage from "../features/servicios/pages/HistorialCombu
 import IncidentePage from "../features/servicios/pages/IncidentePage";
 import HistorialIncidentesPage from "../features/servicios/pages/HistorialIncidentesPage";
 import RecordatorioPage from "../features/servicios/pages/RecordatorioPage";
+import HistorialRecordatoriosPage from "../features/servicios/pages/HistorialRecordatoriosPage";
 import UsuarioVehiculoPage from "../features/servicios/pages/UsuarioVehiculoPage";
 import HomePage from "../features/home/pages/HomePage";
 import UsuariosPage from "../features/usuarios/pages/UsuariosPage";
@@ -52,6 +53,7 @@ export const router = createBrowserRouter([
       { path: "/servicios/incidente", element: <ProtectedRoute><IncidentePage /></ProtectedRoute> },
       { path: "/servicios/incidente/historial", element: <ProtectedRoute><HistorialIncidentesPage /></ProtectedRoute> },
       { path: "/servicios/recordatorio", element: <ProtectedRoute><RecordatorioPage /></ProtectedRoute> },
+      { path: "/servicios/recordatorio/historial", element: <ProtectedRoute><HistorialRecordatoriosPage /></ProtectedRoute> },
       { path: "/servicios/usuario-vehiculo", element: <SuperUserProtectedRoute><UsuarioVehiculoPage /></SuperUserProtectedRoute> },
       { path: ROUTES.usuarios, element: <AdminProtectedRoute><UsuariosPage /></AdminProtectedRoute> },
       { path: '/almacen/grupos/:id', element: <ProtectedRoute><GrupoDetallesPage /></ProtectedRoute> },
