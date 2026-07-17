@@ -231,14 +231,14 @@ const IncidentePage = () => {
         <div className="flex gap-3 mb-6">
           <button
             type="button"
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-lg bg-[#378AFE] text-white font-medium text-lg hover:bg-[#0962DE] transition-colors duration-200 cursor-pointer"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors duration-200 cursor-pointer"
           >
             Incidentes
           </button>
           <button
             type="button"
             onClick={() => navigate('/servicios/incidente/historial')}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-4 rounded-lg border border-[var(--color-border-light)] text-[var(--color-text-primary)] font-medium text-lg hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
+            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-300 text-[var(--color-text-primary)] font-medium rounded-lg hover:bg-gray-400 transition-colors duration-200 cursor-pointer"
           >
             Historial de Incidentes
           </button>
