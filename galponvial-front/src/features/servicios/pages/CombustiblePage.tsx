@@ -92,7 +92,7 @@ const CombustiblePage = () => {
               onClick={() => navigate('/servicios/combustible/historial')}
               className="px-7 py-3 rounded-lg bg-gray-200 text-gray-700 text-base font-semibold hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
             >
-              Historial de Carga de Combustible
+              Historial de carga de combustible
             </button>
           </div>
           <div className="bg-white rounded-lg shadow-md p-8">
@@ -112,22 +112,6 @@ const CombustiblePage = () => {
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
       <div className="max-w-2xl mx-auto">
-        {/* Botones de navegación */}
-        <div className="flex flex-wrap gap-3 mb-6">
-          <button
-            onClick={() => navigate('/servicios/combustible')}
-            className="px-7 py-3 rounded-lg bg-[#0062e3] text-white text-base font-semibold hover:bg-[#0054c2] transition-colors duration-200 cursor-pointer"
-          >
-            Carga de Combustible
-          </button>
-          <button
-            onClick={() => navigate('/servicios/combustible/historial')}
-            className="px-7 py-3 rounded-lg bg-gray-200 text-gray-700 text-base font-semibold hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
-          >
-            Historial de Carga de Combustible
-          </button>
-        </div>
-
         {/* Selector de vehículo */}
         <div className="bg-white rounded-lg shadow-md p-8 mb-6">
           <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-3">
@@ -145,6 +129,22 @@ const CombustiblePage = () => {
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Botones de navegación */}
+        <div className="flex flex-wrap gap-3 mb-6">
+          <button
+            onClick={() => navigate('/servicios/combustible')}
+            className="px-7 py-3 rounded-lg bg-[#0062e3] text-white text-base font-semibold hover:bg-[#0054c2] transition-colors duration-200 cursor-pointer"
+          >
+            Carga de Combustible
+          </button>
+          <button
+            onClick={() => navigate('/servicios/combustible/historial')}
+            className="px-7 py-3 rounded-lg bg-gray-200 text-gray-700 text-base font-semibold hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
+          >
+            Historial de carga de combustible
+          </button>
         </div>
 
         {/* Formulario de carga */}
