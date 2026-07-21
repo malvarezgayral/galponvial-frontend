@@ -209,6 +209,8 @@ export interface IncidenteHistorialFiltros {
   periodo_hasta?: string;
   tipo?: string;
   severidad?: string;
+  vehiculo?: string;
+  unidad?: string;
 }
 
 

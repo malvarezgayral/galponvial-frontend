@@ -10,6 +10,8 @@ const filtrosVacios: IncidenteHistorialFiltros = {
   periodo_hasta: '',
   tipo: '',
   severidad: '',
+  vehiculo: '',
+  unidad: '',
 };
 
 const TIPOS_INCIDENTE = ['Mecánico', 'Eléctrico', 'Accidente', 'Desgaste', 'Otro'];
@@ -37,7 +39,7 @@ const FiltrosHistorialIncidentes = ({ onBuscar }: FiltrosHistorialIncidentesProp
         Filtros de búsqueda
       </p>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <div>
           <label className="block text-sm text-[var(--color-text-secondary)] mb-1 min-h-[40px]">
             Fecha del incidente (desde)
@@ -96,6 +98,32 @@ const FiltrosHistorialIncidentes = ({ onBuscar }: FiltrosHistorialIncidentesProp
               </option>
             ))}
           </select>
+        </div>
+
+        <div>
+          <label className="block text-sm text-[var(--color-text-secondary)] mb-1 min-h-[40px]">
+            Vehículo
+          </label>
+          <select
+            value={filtros.vehiculo}
+            onChange={(e) => handleChange('vehiculo', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+          >
+            <option value="">Seleccione un vehículo...</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm text-[var(--color-text-secondary)] mb-1 min-h-[40px]">
+            Unidad
+          </label>
+          <input
+            type="text"
+            placeholder="Número de unidad"
+            value={filtros.unidad}
+            onChange={(e) => handleChange('unidad', e.target.value)}
+            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+          />
         </div>
       </div>
 
