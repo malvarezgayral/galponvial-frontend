@@ -199,3 +199,14 @@ export interface CombustibleHistorialFiltros {
   litros_salida?: RangoNumerico;
   estado_parcial?: string;
 }
+
+
+/**
+ * Tipos para Historial de Incidentes (filtros de búsqueda)
+ */
+export interface IncidenteHistorialFiltros {
+  periodo_desde?: string;
+  periodo_hasta?: string;
+  tipo?: string;
+  severidad?: string;
+}

@@ -1,15 +1,21 @@
 import { useNavigate } from 'react-router-dom';
+import FiltrosHistorialIncidentes from '../components/FiltrosHistorialIncidentes';
+import type { IncidenteHistorialFiltros } from '../types';
 
 /**
  * Página de historial de incidentes
- * TODO: implementar el listado de incidentes
  */
 const HistorialIncidentesPage = () => {
   const navigate = useNavigate();
 
+  const handleBuscar = (filtros: IncidenteHistorialFiltros) => {
+    // TODO: conectar con el backend cuando el endpoint de historial con filtros esté disponible
+    console.log('Filtros de búsqueda:', filtros);
+  };
+
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <button
           onClick={() => navigate('/servicios/incidente')}
           className="
@@ -33,7 +39,6 @@ const HistorialIncidentesPage = () => {
           </svg>
           Volver a Servicios
         </button>
-
         <div className="flex gap-3 mb-6">
           <button
             type="button"
@@ -50,14 +55,7 @@ const HistorialIncidentesPage = () => {
           </button>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2">
-            Historial de Incidentes
-          </h1>
-          <p className="text-[var(--color-text-secondary)]">
-            Próximamente vas a poder ver acá el listado de incidentes reportados.
-          </p>
-        </div>
+        <FiltrosHistorialIncidentes onBuscar={handleBuscar} />
       </div>
     </div>
   );
