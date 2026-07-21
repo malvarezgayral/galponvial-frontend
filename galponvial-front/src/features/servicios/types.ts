@@ -176,3 +176,26 @@ export interface UsuarioVehiculoResponse {
   };
   message: string;
 }
+
+/**
+ * Tipos para Historial de Carga de Combustible (filtros de búsqueda)
+ */
+export interface RangoNumerico {
+  min?: number;
+  max?: number;
+}
+
+export interface CombustibleHistorialFiltros {
+  periodo_desde?: string;
+  periodo_hasta?: string;
+  chofer?: string;
+  estacion_servicio?: string;
+  despachante?: string;
+  tipo_combustible?: string;
+  Galpón_Vial?: string;
+  km_actual?: RangoNumerico;
+  cant_combustible_despachado?: RangoNumerico;
+  litros_entrada?: RangoNumerico;
+  litros_salida?: RangoNumerico;
+  estado_parcial?: string;
+}

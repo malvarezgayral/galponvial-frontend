@@ -1,11 +1,18 @@
 import { useNavigate } from 'react-router-dom';
+import FiltrosHistorialCombustible from '../components/FiltrosHistorialCombustible';
+import type { CombustibleHistorialFiltros } from '../types';
 
 const HistorialCombustiblePage = () => {
   const navigate = useNavigate();
 
+  const handleBuscar = (filtros: CombustibleHistorialFiltros) => {
+    // TODO: conectar con el backend cuando el endpoint de historial con filtros esté disponible
+    console.log('Filtros de búsqueda:', filtros);
+  };
+
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <div className="flex flex-wrap gap-3 mb-6">
           <button
             onClick={() => navigate('/servicios/combustible')}
@@ -21,14 +28,7 @@ const HistorialCombustiblePage = () => {
           </button>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          <p className="text-[var(--color-text-primary)] font-medium mb-2">
-            Historial de Carga de Combustible
-          </p>
-          <p className="text-[var(--color-text-secondary)] text-sm">
-            Próximamente.
-          </p>
-        </div>
+        <FiltrosHistorialCombustible onBuscar={handleBuscar} />
       </div>
     </div>
   );
