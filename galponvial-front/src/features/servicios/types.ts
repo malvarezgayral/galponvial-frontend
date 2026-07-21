@@ -210,3 +210,15 @@ export interface IncidenteHistorialFiltros {
   tipo?: string;
   severidad?: string;
 }
+
+
+/**
+ * Tipos para Historial de Recordatorios (filtros de búsqueda)
+ */
+export interface RecordatorioHistorialFiltros {
+  fecha_hora?: string;
+  periodo_desde?: string;
+  periodo_hasta?: string;
+  destinatario?: string;
+  vialidad?: string;
+}

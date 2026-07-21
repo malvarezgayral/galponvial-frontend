@@ -1,18 +1,24 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShareRecordatorioModal } from '../components/ShareRecordatorioModal';
+import FiltrosHistorialRecordatorios from '../components/FiltrosHistorialRecordatorios';
+import type { RecordatorioHistorialFiltros } from '../types';
 
 /**
  * Página de historial de recordatorios
- * TODO: implementar el listado de recordatorios
  */
 const HistorialRecordatoriosPage = () => {
   const navigate = useNavigate();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
 
+  const handleBuscar = (filtros: RecordatorioHistorialFiltros) => {
+    // TODO: conectar con el backend cuando el endpoint de historial con filtros esté disponible
+    console.log('Filtros de búsqueda:', filtros);
+  };
+
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         <button
           onClick={() => navigate('/servicios/recordatorio')}
           className="
@@ -36,7 +42,6 @@ const HistorialRecordatoriosPage = () => {
           </svg>
           Volver a Servicios
         </button>
-
         <div className="flex gap-3 mb-6">
           <div className="flex-1 flex gap-3">
             <button
@@ -76,20 +81,13 @@ const HistorialRecordatoriosPage = () => {
           </button>
         </div>
 
-        <div className="bg-white rounded-lg shadow-md p-8 text-center">
-          <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mb-2">
-            Historial de Recordatorios
-          </h1>
-          <p className="text-[var(--color-text-secondary)]">
-            Próximamente vas a poder ver acá el listado de recordatorios creados.
-          </p>
-        </div>
+        <FiltrosHistorialRecordatorios onBuscar={handleBuscar} />
       </div>
       <ShareRecordatorioModal
         isOpen={isShareModalOpen}
         onClose={() => setIsShareModalOpen(false)}
       />
-      </div>
+    </div>
   );
 };
 
