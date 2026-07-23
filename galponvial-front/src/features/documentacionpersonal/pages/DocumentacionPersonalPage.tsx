@@ -22,7 +22,7 @@ const DocumentacionPersonalPage = () => {
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Documentación del Personal</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Listado Personal de la Dirección Vial</h1>
 
         <div className="flex flex-wrap gap-3 mt-4">
           {botones.map(({ key, label }) => (
