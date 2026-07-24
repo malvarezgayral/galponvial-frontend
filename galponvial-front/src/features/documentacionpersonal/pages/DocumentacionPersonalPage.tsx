@@ -1,5 +1,8 @@
 import { useState } from 'react';
-import PersonalDocumentacionForm from '../components/PersonalDocumentacionForm';
+import PersonalDocumentacionForm, {
+  type PersonalDocumentacionFormData,
+} from '../components/PersonalDocumentacionForm';
+import ListadoDocumentacionPersonal from '../components/ListadoDocumentacionPersonal';
 
 type Vista =
   | 'agregar-doc'
@@ -11,10 +14,11 @@ type Vista =
 
 const DocumentacionPersonalPage = () => {
   const [vista, setVista] = useState<Vista>('agregar-doc');
+  const [registros, setRegistros] = useState<PersonalDocumentacionFormData[]>([]);
 
-  const handleGuardarDocumentacion = async (data: any) => {
-    console.log('Documentación a guardar:', data);
+  const handleGuardarDocumentacion = async (data: PersonalDocumentacionFormData) => {
     // TODO: conectar con el backend (NestJS) cuando esté listo
+    setRegistros((prev) => [...prev, data]);
     setVista('listado-doc');
   };
 
@@ -54,9 +58,7 @@ const DocumentacionPersonalPage = () => {
         />
       )}
       {vista === 'listado-doc' && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
-          Documentación personal — sección en construcción.
-        </div>
+        <ListadoDocumentacionPersonal registros={registros} />
       )}
       {vista === 'historial-doc' && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
