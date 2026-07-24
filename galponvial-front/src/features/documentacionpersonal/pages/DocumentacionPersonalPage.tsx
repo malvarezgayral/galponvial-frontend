@@ -22,6 +22,11 @@ const DocumentacionPersonalPage = () => {
     setVista('listado-doc');
   };
 
+  const handleEliminarRegistro = (index: number) => {
+    // TODO: conectar con el backend (NestJS) cuando esté listo
+    setRegistros((prev) => prev.filter((_, i) => i !== index));
+  };
+
   const botones: { key: Vista; label: string }[] = [
     { key: 'agregar-doc', label: 'Agregar Documentación Personal' },
     { key: 'listado-doc', label: 'Listado Documentación Personal' },
@@ -58,7 +63,10 @@ const DocumentacionPersonalPage = () => {
         />
       )}
       {vista === 'listado-doc' && (
-        <ListadoDocumentacionPersonal registros={registros} />
+        <ListadoDocumentacionPersonal
+          registros={registros}
+          onEliminar={handleEliminarRegistro}
+        />
       )}
       {vista === 'historial-doc' && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">

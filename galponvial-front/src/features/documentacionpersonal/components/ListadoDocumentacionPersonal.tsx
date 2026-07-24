@@ -2,6 +2,7 @@ import type { PersonalDocumentacionFormData } from './PersonalDocumentacionForm'
 
 interface ListadoDocumentacionPersonalProps {
   registros: PersonalDocumentacionFormData[];
+  onEliminar: (index: number) => void;
 }
 
 function Badge({ value }: { value: boolean }) {
@@ -18,6 +19,7 @@ function Badge({ value }: { value: boolean }) {
 
 export default function ListadoDocumentacionPersonal({
   registros,
+  onEliminar,
 }: ListadoDocumentacionPersonalProps) {
   if (registros.length === 0) {
     return (
@@ -27,9 +29,18 @@ export default function ListadoDocumentacionPersonal({
     );
   }
 
+  const handleEliminar = (index: number, nombre: string, apellido: string) => {
+    const confirmado = window.confirm(
+      `¿Seguro que querés eliminar el registro de ${nombre} ${apellido}?`
+    );
+    if (confirmado) {
+      onEliminar(index);
+    }
+  };
+
   return (
     <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
-      <table className="min-w-[1500px] w-full text-sm">
+      <table className="min-w-[1600px] w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200 bg-gray-50">
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Nombre</th>
@@ -46,6 +57,7 @@ export default function ListadoDocumentacionPersonal({
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Aptitud física</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Exámenes médicos</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Exámenes ART</th>
+            <th className="text-right px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -78,6 +90,15 @@ export default function ListadoDocumentacionPersonal({
               </td>
               <td className="px-3 py-2 whitespace-nowrap">
                 <Badge value={Boolean(r.historialSalud.examenesMedicosArt)} />
+              </td>
+              <td className="px-3 py-2 whitespace-nowrap text-right">
+                <button
+                  type="button"
+                  onClick={() => handleEliminar(index, r.nombre, r.apellido)}
+                  className="text-red-600 hover:text-red-800 text-sm font-medium border border-red-200 rounded px-3 py-1 hover:bg-red-50 transition-colors"
+                >
+                  Eliminar
+                </button>
               </td>
             </tr>
           ))}
