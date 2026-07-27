@@ -3,6 +3,7 @@ import PersonalDocumentacionForm, {
   type PersonalDocumentacionFormData,
 } from '../components/PersonalDocumentacionForm';
 import ListadoDocumentacionPersonal from '../components/ListadoDocumentacionPersonal';
+import HistorialDocumentacionPersonal from '../components/HistorialDocumentacionPersonal';
 
 type Vista =
   | 'agregar-doc'
@@ -69,9 +70,7 @@ const DocumentacionPersonalPage = () => {
         />
       )}
       {vista === 'historial-doc' && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
-          Historial de documentación personal — sección en construcción.
-        </div>
+        <HistorialDocumentacionPersonal registros={registros} />
       )}
       {vista === 'agregar-registro' && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
