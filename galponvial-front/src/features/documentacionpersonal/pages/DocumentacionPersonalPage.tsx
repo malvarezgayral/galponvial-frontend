@@ -4,6 +4,9 @@ import PersonalDocumentacionForm, {
 } from '../components/PersonalDocumentacionForm';
 import ListadoDocumentacionPersonal from '../components/ListadoDocumentacionPersonal';
 import HistorialDocumentacionPersonal from '../components/HistorialDocumentacionPersonal';
+import RegistroAdministrativoForm, {
+  type RegistroAdministrativoFormData,
+} from '../components/RegistroAdministrativoForm';
 
 type Vista =
   | 'agregar-doc'
@@ -16,6 +19,9 @@ type Vista =
 const DocumentacionPersonalPage = () => {
   const [vista, setVista] = useState<Vista>('agregar-doc');
   const [registros, setRegistros] = useState<PersonalDocumentacionFormData[]>([]);
+  const [registrosAdministrativos, setRegistrosAdministrativos] = useState<
+    RegistroAdministrativoFormData[]
+  >([]);
 
   const handleGuardarDocumentacion = async (data: PersonalDocumentacionFormData) => {
     // TODO: conectar con el backend (NestJS) cuando esté listo
@@ -26,6 +32,12 @@ const DocumentacionPersonalPage = () => {
   const handleEliminarRegistro = (index: number) => {
     // TODO: conectar con el backend (NestJS) cuando esté listo
     setRegistros((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleGuardarRegistroAdministrativo = async (data: RegistroAdministrativoFormData) => {
+    // TODO: conectar con el backend (NestJS) cuando esté listo
+    setRegistrosAdministrativos((prev) => [...prev, data]);
+    setVista('listado-registro');
   };
 
   const botones: { key: Vista; label: string }[] = [
@@ -73,9 +85,10 @@ const DocumentacionPersonalPage = () => {
         <HistorialDocumentacionPersonal registros={registros} />
       )}
       {vista === 'agregar-registro' && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
-          Agregar registro administrativo — sección en construcción.
-        </div>
+        <RegistroAdministrativoForm
+          onCancel={() => setVista('listado-registro')}
+          onSubmit={handleGuardarRegistroAdministrativo}
+        />
       )}
       {vista === 'listado-registro' && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
