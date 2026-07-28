@@ -8,6 +8,7 @@ import RegistroAdministrativoForm, {
   type RegistroAdministrativoFormData,
 } from '../components/RegistroAdministrativoForm';
 import ListadoRegistroAdministrativo from '../components/ListadoRegistroAdministrativo';
+import HistorialRegistroAdministrativo from '../components/HistorialRegistroAdministrativo';
 
 type Vista =
   | 'agregar-doc'
@@ -100,9 +101,7 @@ const DocumentacionPersonalPage = () => {
         />
       )}
       {vista === 'historial-registro' && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
-          Historial de registro administrativo — sección en construcción.
-        </div>
+          <HistorialRegistroAdministrativo registros={registrosAdministrativos} />
       )}
     </div>
   );
