@@ -7,6 +7,7 @@ import HistorialDocumentacionPersonal from '../components/HistorialDocumentacion
 import RegistroAdministrativoForm, {
   type RegistroAdministrativoFormData,
 } from '../components/RegistroAdministrativoForm';
+import ListadoRegistroAdministrativo from '../components/ListadoRegistroAdministrativo';
 
 type Vista =
   | 'agregar-doc'
@@ -91,38 +92,12 @@ const DocumentacionPersonalPage = () => {
         />
       )}
       {vista === 'listado-registro' && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
-          {registrosAdministrativos.length === 0 ? (
-            <p className="p-6 text-sm text-gray-400">
-              Todavía no se cargaron registros administrativos.
-            </p>
-          ) : (
-            <table className="min-w-full text-sm">
-              <thead className="bg-gray-50 text-gray-600">
-                <tr>
-                  <th className="text-left px-4 py-3 font-medium">Nombre</th>
-                  <th className="text-left px-4 py-3 font-medium">Apellido</th>
-                  <th className="text-left px-4 py-3 font-medium">Legajo</th>
-                  <th className="text-left px-4 py-3 font-medium">Categoría actual</th>
-                  <th className="text-left px-4 py-3 font-medium">DNI</th>
-                  <th className="text-left px-4 py-3 font-medium">Tipo de cargo</th>
-                </tr>
-              </thead>
-              <tbody>
-                {registrosAdministrativos.map((r, index) => (
-                  <tr key={`${r.legajo}-${index}`} className="border-t border-gray-100">
-                    <td className="px-4 py-3">{r.nombre}</td>
-                    <td className="px-4 py-3">{r.apellido}</td>
-                    <td className="px-4 py-3">{r.legajo}</td>
-                    <td className="px-4 py-3">{r.categoriaActual}</td>
-                    <td className="px-4 py-3">{r.numeroDni}</td>
-                    <td className="px-4 py-3">{r.tipoCargo}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+        <ListadoRegistroAdministrativo
+          registros={registrosAdministrativos}
+          onEliminar={(index) =>
+            setRegistrosAdministrativos((prev) => prev.filter((_, i) => i !== index))
+          }
+        />
       )}
       {vista === 'historial-registro' && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
