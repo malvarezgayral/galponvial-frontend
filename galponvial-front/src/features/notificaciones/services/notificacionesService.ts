@@ -4,10 +4,10 @@ import type { Notificacion, Tab } from "../types";
 // const res = await fetch(`${import.meta.env.VITE_API_URL}/notificaciones?tipo=${tipo}`);
 // if (!res.ok) throw new Error("Error al obtener notificaciones");
 // return res.json();
-export async function getNotificacionesPorTipo(tipo: Tab): Promise<Notificacion[]> {
+export async function getNotificacionesPorTipo(_tipo: Tab): Promise<Notificacion[]> {
   return [];
 }
 
-export async function marcarComoLeida(id: number): Promise<void> {
-  // TODO: PATCH ${import.meta.env.VITE_API_URL}/notificaciones/${id}/leida
+export async function marcarComoLeida(_id: number): Promise<void> {
+  // TODO: PATCH ${import.meta.env.VITE_API_URL}/notificaciones/${_id}/leida
 }
