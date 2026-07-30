@@ -32,31 +32,56 @@ function situacionRevistaLabel(r: RegistroAdministrativoFormData): string {
 export default function HistorialRegistroAdministrativo({
   registros,
 }: HistorialRegistroAdministrativoProps) {
-  const [filtros, setFiltros] = useState<Filtros>(filtrosVacios);
+  const [filtrosDraft, setFiltrosDraft] = useState<Filtros>(filtrosVacios);
+  const [filtrosAplicados, setFiltrosAplicados] = useState<Filtros>(filtrosVacios);
 
   const updateFiltro = <K extends keyof Filtros>(campo: K, valor: Filtros[K]) => {
-    setFiltros((prev) => ({ ...prev, [campo]: valor }));
+    setFiltrosDraft((prev) => ({ ...prev, [campo]: valor }));
   };
 
-  const limpiarFiltros = () => setFiltros(filtrosVacios);
+  const buscar = () => setFiltrosAplicados(filtrosDraft);
+
+  const limpiarFiltros = () => {
+    setFiltrosDraft(filtrosVacios);
+    setFiltrosAplicados(filtrosVacios);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      buscar();
+    }
+  };
 
   const registrosFiltrados = useMemo(() => {
     return registros.filter((r) => {
-      if (filtros.nombre && !normalizar(r.nombre).includes(normalizar(filtros.nombre))) {
+      if (
+        filtrosAplicados.nombre &&
+        !normalizar(r.nombre).includes(normalizar(filtrosAplicados.nombre))
+      ) {
         return false;
       }
-      if (filtros.apellido && !normalizar(r.apellido).includes(normalizar(filtros.apellido))) {
+      if (
+        filtrosAplicados.apellido &&
+        !normalizar(r.apellido).includes(normalizar(filtrosAplicados.apellido))
+      ) {
         return false;
       }
-      if (filtros.legajo && !normalizar(r.legajo || '').includes(normalizar(filtros.legajo))) {
+      if (
+        filtrosAplicados.legajo &&
+        !normalizar(r.legajo || '').includes(normalizar(filtrosAplicados.legajo))
+      ) {
         return false;
       }
-      if (filtros.dni && !normalizar(r.numeroDni || '').includes(normalizar(filtros.dni))) {
+      if (
+        filtrosAplicados.dni &&
+        !normalizar(r.numeroDni || '').includes(normalizar(filtrosAplicados.dni))
+      ) {
         return false;
       }
       return true;
     });
-  }, [registros, filtros]);
+  }, [registros, filtrosAplicados]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -72,13 +97,14 @@ export default function HistorialRegistroAdministrativo({
           </button>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">Nombre</label>
             <input
               type="text"
-              value={filtros.nombre}
+              value={filtrosDraft.nombre}
               onChange={(e) => updateFiltro('nombre', e.target.value)}
+              onKeyDown={handleKeyDown}
               className="border border-gray-300 rounded px-3 py-2 text-base"
             />
           </div>
@@ -86,8 +112,9 @@ export default function HistorialRegistroAdministrativo({
             <label className="text-sm font-medium text-gray-700">Apellido</label>
             <input
               type="text"
-              value={filtros.apellido}
+              value={filtrosDraft.apellido}
               onChange={(e) => updateFiltro('apellido', e.target.value)}
+              onKeyDown={handleKeyDown}
               className="border border-gray-300 rounded px-3 py-2 text-base"
             />
           </div>
@@ -95,8 +122,9 @@ export default function HistorialRegistroAdministrativo({
             <label className="text-sm font-medium text-gray-700">Legajo</label>
             <input
               type="text"
-              value={filtros.legajo}
+              value={filtrosDraft.legajo}
               onChange={(e) => updateFiltro('legajo', e.target.value)}
+              onKeyDown={handleKeyDown}
               className="border border-gray-300 rounded px-3 py-2 text-base"
             />
           </div>
@@ -104,11 +132,22 @@ export default function HistorialRegistroAdministrativo({
             <label className="text-sm font-medium text-gray-700">Número de DNI</label>
             <input
               type="text"
-              value={filtros.dni}
+              value={filtrosDraft.dni}
               onChange={(e) => updateFiltro('dni', e.target.value)}
+              onKeyDown={handleKeyDown}
               className="border border-gray-300 rounded px-3 py-2 text-base"
             />
           </div>
+        </div>
+
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={buscar}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2 rounded"
+          >
+            Buscar
+          </button>
         </div>
       </div>
 

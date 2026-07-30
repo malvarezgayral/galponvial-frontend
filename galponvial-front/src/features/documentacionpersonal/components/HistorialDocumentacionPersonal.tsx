@@ -1,15 +1,11 @@
 import { useMemo, useState } from "react";
 import type { PersonalDocumentacionFormData } from "./PersonalDocumentacionForm";
 
-const ESTUDIOS_OPTIONS = ["Primario", "Secundario", "Terciario", "Universitario"];
-
 interface Filtros {
   nombre: string;
   apellido: string;
   numeroCuil: string;
   numeroDocumento: string;
-  estudiosAlcanzados: string;
-  titulo: string;
 }
 
 const filtrosVacios: Filtros = {
@@ -17,8 +13,6 @@ const filtrosVacios: Filtros = {
   apellido: "",
   numeroCuil: "",
   numeroDocumento: "",
-  estudiosAlcanzados: "",
-  titulo: "",
 };
 
 function normalizar(valor: string) {
@@ -32,46 +26,56 @@ interface HistorialDocumentacionPersonalProps {
 export default function HistorialDocumentacionPersonal({
   registros,
 }: HistorialDocumentacionPersonalProps) {
-  const [filtros, setFiltros] = useState<Filtros>(filtrosVacios);
+  const [filtrosDraft, setFiltrosDraft] = useState<Filtros>(filtrosVacios);
+  const [filtrosAplicados, setFiltrosAplicados] = useState<Filtros>(filtrosVacios);
 
   const updateFiltro = <K extends keyof Filtros>(campo: K, valor: Filtros[K]) => {
-    setFiltros((prev) => ({ ...prev, [campo]: valor }));
+    setFiltrosDraft((prev) => ({ ...prev, [campo]: valor }));
   };
 
-  const limpiarFiltros = () => setFiltros(filtrosVacios);
+  const buscar = () => setFiltrosAplicados(filtrosDraft);
+
+  const limpiarFiltros = () => {
+    setFiltrosDraft(filtrosVacios);
+    setFiltrosAplicados(filtrosVacios);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      buscar();
+    }
+  };
 
   const registrosFiltrados = useMemo(() => {
     return registros.filter((r) => {
-      if (filtros.nombre && !normalizar(r.nombre).includes(normalizar(filtros.nombre))) {
-        return false;
-      }
-      if (filtros.apellido && !normalizar(r.apellido).includes(normalizar(filtros.apellido))) {
-        return false;
-      }
-      if (filtros.numeroCuil && !normalizar(r.numeroCuil).includes(normalizar(filtros.numeroCuil))) {
-        return false;
-      }
       if (
-        filtros.numeroDocumento &&
-        !normalizar(r.numeroDocumento).includes(normalizar(filtros.numeroDocumento))
+        filtrosAplicados.nombre &&
+        !normalizar(r.nombre).includes(normalizar(filtrosAplicados.nombre))
       ) {
         return false;
       }
       if (
-        filtros.estudiosAlcanzados &&
-        r.historialAcademico.estudiosAlcanzados !== filtros.estudiosAlcanzados
+        filtrosAplicados.apellido &&
+        !normalizar(r.apellido).includes(normalizar(filtrosAplicados.apellido))
       ) {
         return false;
       }
       if (
-        filtros.titulo &&
-        !normalizar(r.historialAcademico.titulo).includes(normalizar(filtros.titulo))
+        filtrosAplicados.numeroCuil &&
+        !normalizar(r.numeroCuil).includes(normalizar(filtrosAplicados.numeroCuil))
+      ) {
+        return false;
+      }
+      if (
+        filtrosAplicados.numeroDocumento &&
+        !normalizar(r.numeroDocumento).includes(normalizar(filtrosAplicados.numeroDocumento))
       ) {
         return false;
       }
       return true;
     });
-  }, [registros, filtros]);
+  }, [registros, filtrosAplicados]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -92,8 +96,9 @@ export default function HistorialDocumentacionPersonal({
             <label className="text-sm font-medium text-gray-700">Nombre</label>
             <input
               type="text"
-              value={filtros.nombre}
+              value={filtrosDraft.nombre}
               onChange={(e) => updateFiltro("nombre", e.target.value)}
+              onKeyDown={handleKeyDown}
               className="border border-gray-300 rounded px-3 py-2 text-base"
             />
           </div>
@@ -101,8 +106,9 @@ export default function HistorialDocumentacionPersonal({
             <label className="text-sm font-medium text-gray-700">Apellido</label>
             <input
               type="text"
-              value={filtros.apellido}
+              value={filtrosDraft.apellido}
               onChange={(e) => updateFiltro("apellido", e.target.value)}
+              onKeyDown={handleKeyDown}
               className="border border-gray-300 rounded px-3 py-2 text-base"
             />
           </div>
@@ -110,8 +116,9 @@ export default function HistorialDocumentacionPersonal({
             <label className="text-sm font-medium text-gray-700">Número de CUIL</label>
             <input
               type="text"
-              value={filtros.numeroCuil}
+              value={filtrosDraft.numeroCuil}
               onChange={(e) => updateFiltro("numeroCuil", e.target.value)}
+              onKeyDown={handleKeyDown}
               className="border border-gray-300 rounded px-3 py-2 text-base"
             />
           </div>
@@ -119,38 +126,22 @@ export default function HistorialDocumentacionPersonal({
             <label className="text-sm font-medium text-gray-700">Número de DNI</label>
             <input
               type="text"
-              value={filtros.numeroDocumento}
+              value={filtrosDraft.numeroDocumento}
               onChange={(e) => updateFiltro("numeroDocumento", e.target.value)}
+              onKeyDown={handleKeyDown}
               className="border border-gray-300 rounded px-3 py-2 text-base"
             />
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Historial académico</label>
-            <select
-              value={filtros.estudiosAlcanzados}
-              onChange={(e) => updateFiltro("estudiosAlcanzados", e.target.value)}
-              className="border border-gray-300 rounded px-3 py-2 text-base bg-white"
-            >
-              <option value="">Todos</option>
-              {ESTUDIOS_OPTIONS.map((opt) => (
-                <option key={opt} value={opt}>
-                  {opt}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-gray-700">Título</label>
-            <input
-              type="text"
-              value={filtros.titulo}
-              onChange={(e) => updateFiltro("titulo", e.target.value)}
-              className="border border-gray-300 rounded px-3 py-2 text-base"
-            />
-          </div>
+        <div className="flex justify-end">
+          <button
+            type="button"
+            onClick={buscar}
+            className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-5 py-2 rounded"
+          >
+            Buscar
+          </button>
         </div>
       </div>
 
