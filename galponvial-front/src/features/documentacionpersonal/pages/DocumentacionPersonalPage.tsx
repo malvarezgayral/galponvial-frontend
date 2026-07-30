@@ -21,9 +21,7 @@ type Vista =
 const DocumentacionPersonalPage = () => {
   const [vista, setVista] = useState<Vista>('agregar-doc');
   const [registros, setRegistros] = useState<PersonalDocumentacionFormData[]>([]);
-  const [registrosAdministrativos, setRegistrosAdministrativos] = useState<
-    RegistroAdministrativoFormData[]
-  >([]);
+  const [registrosAdministrativos, setRegistrosAdministrativos] = useState<RegistroAdministrativoFormData[]>([]);
 
   const handleGuardarDocumentacion = async (data: PersonalDocumentacionFormData) => {
     // TODO: conectar con el backend (NestJS) cuando esté listo
@@ -34,6 +32,11 @@ const DocumentacionPersonalPage = () => {
   const handleEliminarRegistro = (index: number) => {
     // TODO: conectar con el backend (NestJS) cuando esté listo
     setRegistros((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleEditarRegistro = (index: number, data: PersonalDocumentacionFormData) => {
+    // TODO: conectar con el backend (NestJS) cuando esté listo
+    setRegistros((prev) => prev.map((r, i) => (i === index ? data : r)));
   };
 
   const handleGuardarRegistroAdministrativo = async (data: RegistroAdministrativoFormData) => {
@@ -81,6 +84,7 @@ const DocumentacionPersonalPage = () => {
         <ListadoDocumentacionPersonal
           registros={registros}
           onEliminar={handleEliminarRegistro}
+          onEditar={handleEditarRegistro}
         />
       )}
       {vista === 'historial-doc' && (
