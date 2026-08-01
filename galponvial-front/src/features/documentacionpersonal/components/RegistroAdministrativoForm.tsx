@@ -8,6 +8,11 @@ const MAX_FILE_SIZE_MB = 10;
 const ESTUDIOS_OPTIONS = ["Primario", "Secundario", "Terciario", "Universitario"];
 const TIPO_DNI_OPTIONS = ["DNI", "LC", "LE"];
 
+const SECRETARIA_OPTIONS: string[] = [];
+const DIRECCION_OPTIONS: string[] = [];
+const TIPO_CARGO_OPTIONS: string[] = [];
+const AREA_ESPECIFICA_OPTIONS: string[] = [];
+
 interface HistorialAcademicoSalud {
   estudiosAlcanzados: string;
   titulo: string;
@@ -358,39 +363,63 @@ export default function RegistroAdministrativoForm({
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">Secretaría a cargo</label>
-          <input
-            type="text"
+          <select
             value={form.secretariaACargo}
             onChange={(e) => updateField("secretariaACargo", e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-base"
-          />
+            className="border border-gray-300 rounded px-3 py-2 text-base bg-white"
+          >
+            <option value="">Seleccionar...</option>
+            {SECRETARIA_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">Dirección a cargo</label>
-          <input
-            type="text"
+          <select
             value={form.direccionACargo}
             onChange={(e) => updateField("direccionACargo", e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-base"
-          />
+            className="border border-gray-300 rounded px-3 py-2 text-base bg-white"
+          >
+            <option value="">Seleccionar...</option>
+            {DIRECCION_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">Tipo de cargo</label>
-          <input
-            type="text"
+          <select
             value={form.tipoCargo}
             onChange={(e) => updateField("tipoCargo", e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-base"
-          />
+            className="border border-gray-300 rounded px-3 py-2 text-base bg-white"
+          >
+            <option value="">Seleccionar...</option>
+            {TIPO_CARGO_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">Área específica</label>
-          <input
-            type="text"
+          <select
             value={form.areaEspecifica}
             onChange={(e) => updateField("areaEspecifica", e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-base"
-          />
+            className="border border-gray-300 rounded px-3 py-2 text-base bg-white"
+          >
+            <option value="">Seleccionar...</option>
+            {AREA_ESPECIFICA_OPTIONS.map((opt) => (
+              <option key={opt} value={opt}>
+                {opt}
+              </option>
+            ))}
+          </select>
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-gray-700">Antigüedad</label>
