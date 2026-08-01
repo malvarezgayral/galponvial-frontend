@@ -89,6 +89,15 @@ export default function ListadoDocumentacionPersonal({
     );
   };
 
+  const updateBorradorSalud = <K extends keyof PersonalDocumentacionFormData['historialSalud']>(
+    field: K,
+    value: PersonalDocumentacionFormData['historialSalud'][K]
+  ) => {
+    setBorrador((prev) =>
+      prev ? { ...prev, historialSalud: { ...prev.historialSalud, [field]: value } } : prev
+    );
+  };
+
   const inputClass =
     'border border-blue-300 rounded px-2 py-1 text-sm w-full min-w-[100px] bg-white';
 
@@ -251,19 +260,64 @@ export default function ListadoDocumentacionPersonal({
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
-                  <Badge value={Boolean(r.historialAcademico.titulo)} />
+                  {editando ? (
+                    <input
+                      type="text"
+                      value={fila.historialAcademico.titulo}
+                      onChange={(e) => updateBorradorAcademico('titulo', e.target.value)}
+                      className={inputClass}
+                    />
+                  ) : (
+                    <Badge value={Boolean(r.historialAcademico.titulo)} />
+                  )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
-                  <Badge value={Boolean(r.historialSalud.preocupacional)} />
+                  {editando ? (
+                    <input
+                      type="text"
+                      value={fila.historialSalud.preocupacional}
+                      onChange={(e) => updateBorradorSalud('preocupacional', e.target.value)}
+                      className={inputClass}
+                    />
+                  ) : (
+                    <Badge value={Boolean(r.historialSalud.preocupacional)} />
+                  )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
-                  <Badge value={Boolean(r.historialSalud.constanciaAptitudFisica)} />
+                  {editando ? (
+                    <input
+                      type="text"
+                      value={fila.historialSalud.constanciaAptitudFisica}
+                      onChange={(e) => updateBorradorSalud('constanciaAptitudFisica', e.target.value)}
+                      className={inputClass}
+                    />
+                  ) : (
+                    <Badge value={Boolean(r.historialSalud.constanciaAptitudFisica)} />
+                  )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
-                  <Badge value={Boolean(r.historialSalud.examenesMedicos)} />
+                  {editando ? (
+                    <input
+                      type="text"
+                      value={fila.historialSalud.examenesMedicos}
+                      onChange={(e) => updateBorradorSalud('examenesMedicos', e.target.value)}
+                      className={inputClass}
+                    />
+                  ) : (
+                    <Badge value={Boolean(r.historialSalud.examenesMedicos)} />
+                  )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
-                  <Badge value={Boolean(r.historialSalud.examenesMedicosArt)} />
+                  {editando ? (
+                    <input
+                      type="text"
+                      value={fila.historialSalud.examenesMedicosArt}
+                      onChange={(e) => updateBorradorSalud('examenesMedicosArt', e.target.value)}
+                      className={inputClass}
+                    />
+                  ) : (
+                    <Badge value={Boolean(r.historialSalud.examenesMedicosArt)} />
+                  )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap text-right">
                   <div className="flex justify-end gap-2">

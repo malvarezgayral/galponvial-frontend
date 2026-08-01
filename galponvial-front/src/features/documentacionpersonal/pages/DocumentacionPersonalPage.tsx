@@ -29,6 +29,10 @@ const DocumentacionPersonalPage = () => {
     setVista('listado-doc');
   };
 
+  const handleEditarRegistroAdministrativo = (index: number, data: RegistroAdministrativoFormData) => {
+    setRegistrosAdministrativos((prev) => prev.map((r, i) => (i === index ? data : r)));
+  };
+
   const handleEliminarRegistro = (index: number) => {
     // TODO: conectar con el backend (NestJS) cuando esté listo
     setRegistros((prev) => prev.filter((_, i) => i !== index));
@@ -98,11 +102,10 @@ const DocumentacionPersonalPage = () => {
       )}
       {vista === 'listado-registro' && (
         <ListadoRegistroAdministrativo
-          registros={registrosAdministrativos}
-          onEliminar={(index) =>
-            setRegistrosAdministrativos((prev) => prev.filter((_, i) => i !== index))
-          }
-        />
+  registros={registrosAdministrativos}
+  onEliminar={(index) => setRegistrosAdministrativos((prev) => prev.filter((_, i) => i !== index))}
+  onEditar={handleEditarRegistroAdministrativo}
+/>
       )}
       {vista === 'historial-registro' && (
           <HistorialRegistroAdministrativo registros={registrosAdministrativos} />

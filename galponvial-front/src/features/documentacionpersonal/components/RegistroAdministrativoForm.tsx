@@ -133,7 +133,7 @@ interface FileInputProps {
   onChange: (files: File[]) => void;
 }
 
-function FileInput({ label, files, onChange }: FileInputProps) {
+export function FileInput({ label, files, onChange }: FileInputProps) {
   const [error, setError] = useState<string | null>(null);
   const inputId = `file-${label.replace(/\s+/g, "-").toLowerCase()}`;
 
