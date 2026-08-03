@@ -13,12 +13,18 @@ const HistorialCombustiblePage = () => {
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="flex flex-wrap gap-3 mb-6">
+        <div className="flex flex-nowrap gap-3 mb-6 overflow-x-auto pb-1">
           <button
             onClick={() => navigate('/servicios/combustible')}
             className="px-7 py-3 rounded-lg bg-gray-200 text-gray-700 text-base font-semibold hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
           >
             Carga de Combustible
+          </button>
+          <button
+            onClick={() => navigate('/servicios/combustible/listado')}
+            className="px-7 py-3 rounded-lg bg-gray-200 text-gray-700 text-base font-semibold hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
+          >
+            Listado Cargas
           </button>
           <button
             onClick={() => navigate('/servicios/combustible/historial')}
