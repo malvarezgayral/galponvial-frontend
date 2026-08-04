@@ -53,6 +53,13 @@ const HistorialRecordatoriosPage = () => {
             </button>
             <button
               type="button"
+              onClick={() => navigate('/servicios/recordatorio/listado')}
+              className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-300 text-[var(--color-text-primary)] font-medium rounded-lg hover:bg-gray-400 transition-colors duration-200 cursor-pointer"
+            >
+              Listado de Recordatorios
+            </button>
+            <button
+              type="button"
               className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors duration-200 cursor-pointer"
             >
               Historial de Recordatorios
