@@ -33,4 +33,13 @@ export const incidenteService = {
     );
     return data;
   },
+
+  /**
+   * Obtiene TODOS los incidentes registrados (sin filtrar por vehículo)
+   * @returns Promise con el listado completo de incidentes
+   */
+  obtenerTodos: async (): Promise<IncidenteResponse[]> => {
+    const { data } = await apiClient.get<IncidenteResponse[]>('/incidentes');
+    return data;
+  },
 };

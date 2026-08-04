@@ -28,9 +28,11 @@ export const combustibleService = {
    * @returns Promise con el historial de cargas
    */
   obtenerHistorial: async (vehiculoId: number): Promise<CombustibleCargaResponse[]> => {
-    const { data } = await apiClient.get<CombustibleCargaResponse[]>(
-      `/vehiculos/${vehiculoId}/combustible-cargas`
-    );
-    return data;
+    const { data } = await apiClient.get<{
+      success: boolean;
+      data: { data: CombustibleCargaResponse[]; page: number; pageSize: number; total: number };
+      message: string;
+    }>(`/vehiculos/${vehiculoId}/combustible-cargas`);
+    return data.data.data;
   },
 };
