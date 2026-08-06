@@ -269,7 +269,6 @@ export default function ServicePage() {
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cuenta Hora</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Stock</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Observaciones</th>
-                  <th className="px-3 py-3 text-center font-semibold text-gray-600 whitespace-nowrap">Eliminar</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -332,16 +331,6 @@ export default function ServicePage() {
                         rows={1}
                         className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-44 resize-y"
                       />
-                    </td>
-                    <td className="px-3 py-2 text-center">
-                      <button
-                        onClick={() => eliminarFila(fila.id)}
-                        disabled={filas.length === 1}
-                        title="Eliminar fila"
-                        className="w-7 h-7 rounded-md bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center mx-auto transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                      >
-                        ✕
-                      </button>
                     </td>
                   </tr>
                 ))}
