@@ -40,6 +40,7 @@ const filtrosVacios: FiltrosHistorial = {
 type Vista =
   | "historial-combustible"
   | "lubricantes"
+  | "listado-lubricantes"
   | "historial-lubricantes";
 
 export default function DepoCombustiblePage() {
@@ -47,6 +48,8 @@ export default function DepoCombustiblePage() {
     { id: 1, ...filaLubricanteVacia() },
   ]);
   const [vista, setVista] = useState<Vista>("lubricantes");
+  const [filaEditando, setFilaEditando] = useState<number | null>(null);
+  const [borrador, setBorrador] = useState<FilaLubricante | null>(null);
   const [filtros, setFiltros] = useState<FiltrosHistorial>(filtrosVacios);
   const [filtrosAplicados, setFiltrosAplicados] =
     useState<FiltrosHistorial>(filtrosVacios);
@@ -77,6 +80,36 @@ export default function DepoCombustiblePage() {
   const eliminarFilaLubricante = (id: number) => {
     if (filasLubricantes.length === 1) return;
     setFilasLubricantes((prev) => prev.filter((fila) => fila.id !== id));
+  };
+
+  const iniciarEdicionLubricante = (id: number) => {
+    setFilaEditando(id);
+    const fila = filasLubricantes.find((f) => f.id === id);
+    if (fila) {
+      setBorrador({ ...fila });
+    }
+  };
+
+  const cancelarEdicionLubricante = () => {
+    setFilaEditando(null);
+    setBorrador(null);
+  };
+
+  const guardarEdicionLubricante = () => {
+    if (filaEditando !== null && borrador) {
+      setFilasLubricantes((prev) =>
+        prev.map((f) => (f.id === filaEditando ? borrador : f))
+      );
+      setFilaEditando(null);
+      setBorrador(null);
+    }
+  };
+
+  const updateBorradorLubricante = <K extends keyof FilaLubricante>(
+    campo: K,
+    valor: FilaLubricante[K]
+  ) => {
+    setBorrador((prev) => (prev ? { ...prev, [campo]: valor } : prev));
   };
 
   const actualizarFiltro = (
@@ -168,7 +201,16 @@ export default function DepoCombustiblePage() {
               vista === "lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
-            Lubricantes
+            Registro de Lubricantes
+          </button>
+
+          <button
+            onClick={() => setVista("listado-lubricantes")}
+            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              vista === "listado-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+            }`}
+          >
+            Listado de Lubricantes
           </button>
 
           <button
@@ -177,7 +219,7 @@ export default function DepoCombustiblePage() {
               vista === "historial-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
-            Historial Lubricantes
+            Historial de Lubricantes
           </button>
         </div>
       </div>
@@ -194,7 +236,6 @@ export default function DepoCombustiblePage() {
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Cantidad</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Tipo</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Observaciones</th>
-                <th className="px-3 py-3 text-center font-semibold text-gray-600">Eliminar</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -253,14 +294,6 @@ export default function DepoCombustiblePage() {
                       className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 resize-y min-h-[36px]"
                     />
                   </td>
-                  <td className="px-3 py-2 text-center">
-                    <button
-                      onClick={() => eliminarFilaLubricante(fila.id)}
-                      disabled={filasLubricantes.length === 1}
-                      title="Eliminar fila"
-                      className="w-7 h-7 rounded-md bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center mx-auto transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                    >✕</button>
-                  </td>
                 </tr>
               ))}
             </tbody>
@@ -273,6 +306,155 @@ export default function DepoCombustiblePage() {
               <span className="text-lg leading-none">+</span> Agregar Registro
             </button>
           </div>
+        </div>
+      )}
+
+      {vista === "listado-lubricantes" && (
+        <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="px-3 py-3 text-left font-semibold text-gray-600">Fecha</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600">N° Orden de Retiro</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600">Unidad</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600">Cantidad</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600">Tipo</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600">Observaciones</th>
+                <th className="px-3 py-3 text-right font-semibold text-gray-600">Acciones</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {registrosGuardados.map((fila) => {
+                const editando = filaEditando === fila.id && borrador !== null;
+                const mostrado = editando ? borrador : fila;
+
+                return (
+                  <tr
+                    key={fila.id}
+                    className={`hover:bg-gray-50 transition-colors ${editando ? "bg-blue-50" : ""}`}
+                  >
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <input
+                          type="date"
+                          value={mostrado.fecha}
+                          onChange={(e) => updateBorradorLubricante("fecha", e.target.value)}
+                          className="border border-blue-300 rounded-md px-2 py-1.5 text-sm w-36"
+                        />
+                      ) : (
+                        mostrado.fecha || "-"
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <input
+                          type="text"
+                          value={mostrado.ordenRetiro}
+                          onChange={(e) => updateBorradorLubricante("ordenRetiro", e.target.value)}
+                          className="border border-blue-300 rounded-md px-2 py-1.5 text-sm w-36"
+                        />
+                      ) : (
+                        mostrado.ordenRetiro || "-"
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <input
+                          type="text"
+                          value={mostrado.unidad}
+                          onChange={(e) => updateBorradorLubricante("unidad", e.target.value)}
+                          className="border border-blue-300 rounded-md px-2 py-1.5 text-sm w-40"
+                        />
+                      ) : (
+                        mostrado.unidad || "-"
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <input
+                          type="number"
+                          min={0}
+                          value={mostrado.cantidad}
+                          onChange={(e) =>
+                            updateBorradorLubricante("cantidad", Math.max(0, Number(e.target.value)))
+                          }
+                          className="border border-blue-300 rounded-md px-2 py-1.5 text-sm text-center w-24"
+                        />
+                      ) : (
+                        mostrado.cantidad
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <input
+                          type="text"
+                          value={mostrado.tipo}
+                          onChange={(e) => updateBorradorLubricante("tipo", e.target.value)}
+                          className="border border-blue-300 rounded-md px-2 py-1.5 text-sm w-40"
+                        />
+                      ) : (
+                        mostrado.tipo || "-"
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <textarea
+                          value={mostrado.observaciones}
+                          onChange={(e) => updateBorradorLubricante("observaciones", e.target.value)}
+                          rows={1}
+                          className="border border-blue-300 rounded-md px-2 py-1.5 text-sm w-48 resize-y min-h-[36px]"
+                        />
+                      ) : (
+                        mostrado.observaciones || "-"
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-right">
+                      <div className="flex justify-end gap-2">
+                        {editando ? (
+                          <>
+                            <button
+                              onClick={guardarEdicionLubricante}
+                              className="text-white bg-blue-600 hover:bg-blue-700 text-sm font-medium rounded px-3 py-1 transition-colors"
+                            >
+                              Guardar
+                            </button>
+                            <button
+                              onClick={cancelarEdicionLubricante}
+                              className="text-gray-600 hover:text-gray-800 text-sm font-medium border border-gray-300 rounded px-3 py-1 hover:bg-gray-50 transition-colors"
+                            >
+                              Cancelar
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => iniciarEdicionLubricante(fila.id)}
+                              className="text-blue-600 hover:text-blue-800 text-sm font-medium border border-blue-200 rounded px-3 py-1 hover:bg-blue-50 transition-colors"
+                            >
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => eliminarFilaLubricante(fila.id)}
+                              className="text-red-600 hover:text-red-800 text-sm font-medium border border-red-200 rounded px-3 py-1 hover:bg-red-50 transition-colors"
+                            >
+                              Eliminar
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+              {registrosGuardados.length === 0 && (
+                <tr>
+                  <td colSpan={7} className="px-3 py-6 text-center text-gray-400">
+                    Todavía no hay lubricantes cargados.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
         </div>
       )}
 
@@ -359,6 +541,16 @@ export default function DepoCombustiblePage() {
 
           <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
             <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600">Fecha</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600">N° Orden de Retiro</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600">Unidad</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600">Cantidad</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600">Tipo</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600">Observaciones</th>
+                </tr>
+              </thead>
               <tbody className="divide-y divide-gray-100">
                 {historialFiltrado.map((fila) => (
                   <tr key={fila.id} className="hover:bg-gray-50 transition-colors">
@@ -370,6 +562,13 @@ export default function DepoCombustiblePage() {
                     <td className="px-3 py-2">{fila.observaciones || "-"}</td>
                   </tr>
                 ))}
+                {historialFiltrado.length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-3 py-6 text-center text-gray-400">
+                      No se encontraron lubricantes con los filtros aplicados.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
