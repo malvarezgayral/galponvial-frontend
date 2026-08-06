@@ -19,13 +19,8 @@ const filaVacia = (): Omit<FilaReparacion, "id"> => ({
   observaciones: "",
 });
 
-const MARCAS: string[] = [
-  // Completar con las marcas disponibles, ej: "Ford", "Chevrolet", "Iveco"
-];
-
-const MODELOS: string[] = [
-  // Completar con los modelos disponibles
-];
+const MARCAS: string[] = [];
+const MODELOS: string[] = [];
 
 const TALLERES = [
   "Taller 1 (General)",
@@ -33,13 +28,15 @@ const TALLERES = [
   "Taller 3 (Pintura)",
 ];
 
-type Vista = "registro" | "historial";
+type Vista = "registro" | "listado" | "historial";
 
 export default function ReparacionPage() {
   const [filas, setFilas] = useState<FilaReparacion[]>([
     { id: 1, ...filaVacia() },
   ]);
   const [vista, setVista] = useState<Vista>("registro");
+  const [filaEditando, setFilaEditando] = useState<number | null>(null);
+  const [borrador, setBorrador] = useState<FilaReparacion | null>(null);
   const [filtroUnidad, setFiltroUnidad] = useState("");
   const [filtroModelo, setFiltroModelo] = useState("");
   const [filtroMarca, setFiltroMarca] = useState("");
@@ -67,6 +64,36 @@ export default function ReparacionPage() {
     setFilas((prev) => prev.filter((fila) => fila.id !== id));
   };
 
+  const iniciarEdicion = (id: number) => {
+    setFilaEditando(id);
+    const fila = filas.find((f) => f.id === id);
+    if (fila) {
+      setBorrador({ ...fila });
+    }
+  };
+
+  const cancelarEdicion = () => {
+    setFilaEditando(null);
+    setBorrador(null);
+  };
+
+  const guardarEdicion = () => {
+    if (filaEditando !== null && borrador) {
+      setFilas((prev) =>
+        prev.map((f) => (f.id === filaEditando ? borrador : f))
+      );
+      setFilaEditando(null);
+      setBorrador(null);
+    }
+  };
+
+  const updateBorrador = <K extends keyof FilaReparacion>(
+    campo: K,
+    valor: FilaReparacion[K]
+  ) => {
+    setBorrador((prev) => (prev ? { ...prev, [campo]: valor } : prev));
+  };
+
   const limpiarFiltros = () => {
     setFiltroUnidad("");
     setFiltroModelo("");
@@ -76,7 +103,6 @@ export default function ReparacionPage() {
   };
 
   const buscarHistorial = () => {
-    // TODO: conectar con el backend cuando esté disponible el endpoint de historial
     console.log("Buscando con filtros:", {
       filtroUnidad,
       filtroModelo,
@@ -85,6 +111,8 @@ export default function ReparacionPage() {
       filtroFechaHasta,
     });
   };
+
+  const inputClass = "border border-blue-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-36";
 
   return (
     <div className="space-y-6">
@@ -102,7 +130,14 @@ export default function ReparacionPage() {
             Registro de Reparaciones
           </button>
 
-
+          <button
+            onClick={() => setVista("listado")}
+            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              vista === "listado" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+            }`}
+          >
+            Listado de Reparaciones
+          </button>
 
           <button
             onClick={() => setVista("historial")}
@@ -110,7 +145,7 @@ export default function ReparacionPage() {
               vista === "historial" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
-            Historial de Reparación
+            Historial de Reparaciones
           </button>
         </div>
       </div>
@@ -139,9 +174,6 @@ export default function ReparacionPage() {
                   </th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">
                     Observaciones
-                  </th>
-                  <th className="px-3 py-3 text-center font-semibold text-gray-600 whitespace-nowrap">
-                    Eliminar
                   </th>
                 </tr>
               </thead>
@@ -217,16 +249,6 @@ export default function ReparacionPage() {
                         className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
                       />
                     </td>
-                    <td className="px-3 py-2 text-center">
-                      <button
-                        onClick={() => eliminarFila(fila.id)}
-                        disabled={filas.length === 1}
-                        title="Eliminar fila"
-                        className="w-7 h-7 rounded-md bg-red-100 hover:bg-red-200 text-red-600 flex items-center justify-center mx-auto transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-                      >
-                        ✕
-                      </button>
-                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -240,6 +262,152 @@ export default function ReparacionPage() {
             <span className="text-lg leading-none">+</span> Agregar Registro
           </button>
         </>
+      )}
+
+      {/* Vista: Listado */}
+      {vista === "listado" && (
+        <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead>
+              <tr className="bg-gray-50 border-b border-gray-200">
+                <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Unidad</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Descripción del trabajo</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Taller</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Fecha de entrada</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Fecha de salida</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Observaciones</th>
+                <th className="px-3 py-3 text-right font-semibold text-gray-600 whitespace-nowrap">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filas.map((fila) => {
+                const editando = filaEditando === fila.id && borrador !== null;
+                const mostrado = editando ? borrador : fila;
+
+                return (
+                  <tr
+                    key={fila.id}
+                    className={`border-b border-gray-100 last:border-0 ${editando ? "bg-blue-50" : ""}`}
+                  >
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <input
+                          type="text"
+                          value={mostrado.unidad}
+                          onChange={(e) => updateBorrador("unidad", e.target.value)}
+                          className={inputClass}
+                        />
+                      ) : (
+                        mostrado.unidad
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <textarea
+                          value={mostrado.descripcion}
+                          onChange={(e) => updateBorrador("descripcion", e.target.value)}
+                          rows={2}
+                          className={`${inputClass} w-64 resize-none`}
+                        />
+                      ) : (
+                        mostrado.descripcion
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <select
+                          value={mostrado.taller}
+                          onChange={(e) => updateBorrador("taller", e.target.value)}
+                          className={inputClass}
+                        >
+                          <option value="">— Seleccionar —</option>
+                          {TALLERES.map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        mostrado.taller
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <input
+                          type="date"
+                          value={mostrado.fechaEntrada}
+                          onChange={(e) => updateBorrador("fechaEntrada", e.target.value)}
+                          className={inputClass}
+                        />
+                      ) : (
+                        mostrado.fechaEntrada
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <input
+                          type="date"
+                          value={mostrado.fechaSalida}
+                          onChange={(e) => updateBorrador("fechaSalida", e.target.value)}
+                          className={inputClass}
+                        />
+                      ) : (
+                        mostrado.fechaSalida
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <input
+                          type="text"
+                          value={mostrado.observaciones}
+                          onChange={(e) => updateBorrador("observaciones", e.target.value)}
+                          className={`${inputClass} w-44`}
+                        />
+                      ) : (
+                        mostrado.observaciones
+                      )}
+                    </td>
+                    <td className="px-3 py-2 text-right">
+                      <div className="flex justify-end gap-2">
+                        {editando ? (
+                          <>
+                            <button
+                              onClick={guardarEdicion}
+                              className="text-white bg-blue-600 hover:bg-blue-700 text-sm font-medium rounded px-3 py-1 transition-colors"
+                            >
+                              Guardar
+                            </button>
+                            <button
+                              onClick={cancelarEdicion}
+                              className="text-gray-600 hover:text-gray-800 text-sm font-medium border border-gray-300 rounded px-3 py-1 hover:bg-gray-50 transition-colors"
+                            >
+                              Cancelar
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => iniciarEdicion(fila.id)}
+                              className="text-blue-600 hover:text-blue-800 text-sm font-medium border border-blue-200 rounded px-3 py-1 hover:bg-blue-50 transition-colors"
+                            >
+                              Editar
+                            </button>
+                            <button
+                              onClick={() => eliminarFila(fila.id)}
+                              className="text-red-600 hover:text-red-800 text-sm font-medium border border-red-200 rounded px-3 py-1 hover:bg-red-50 transition-colors"
+                            >
+                              Eliminar
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
 
       {/* Vista: Historial */}
@@ -258,33 +426,33 @@ export default function ReparacionPage() {
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-600">Modelo</label>
-                <select
-                  value={filtroModelo}
-                  onChange={(e) => setFiltroModelo(e.target.value)}
-                  className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 text-gray-500"
-                >
-                  <option value="">— Seleccionar —</option>
-                  {MODELOS.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
+              <select
+                value={filtroModelo}
+                onChange={(e) => setFiltroModelo(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 text-gray-500"
+              >
+                <option value="">— Seleccionar —</option>
+                {MODELOS.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-600">Marca</label>
-                <select
-                  value={filtroMarca}
-                  onChange={(e) => setFiltroMarca(e.target.value)}
-                  className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 text-gray-500"
-                >
-                  <option value="">— Seleccionar —</option>
-                  {MARCAS.map((m) => (
-                    <option key={m} value={m}>
-                      {m}
-                    </option>
-                  ))}
-                </select>
+              <select
+                value={filtroMarca}
+                onChange={(e) => setFiltroMarca(e.target.value)}
+                className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 text-gray-500"
+              >
+                <option value="">— Seleccionar —</option>
+                {MARCAS.map((m) => (
+                  <option key={m} value={m}>
+                    {m}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-600">Desde</label>
@@ -310,12 +478,64 @@ export default function ReparacionPage() {
             >
               Buscar
             </button>
-              <button
-                onClick={limpiarFiltros}
-                className="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium rounded-lg shadow transition-colors"
-              >
-                Limpiar filtros
-              </button>
+            <button
+              onClick={limpiarFiltros}
+              className="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium rounded-lg shadow transition-colors"
+            >
+              Limpiar filtros
+            </button>
+          </div>
+
+          <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto mt-4">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Unidad</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Descripción del trabajo</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Taller</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Fecha de entrada</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Fecha de salida</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Observaciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filas
+                  .filter((f) => {
+                    if (filtroUnidad && !f.unidad.toLowerCase().includes(filtroUnidad.toLowerCase())) {
+                      return false;
+                    }
+                    if (filtroFechaDesde && f.fechaEntrada && f.fechaEntrada < filtroFechaDesde) {
+                      return false;
+                    }
+                    if (filtroFechaHasta && f.fechaEntrada && f.fechaEntrada > filtroFechaHasta) {
+                      return false;
+                    }
+                    return true;
+                  })
+                  .map((fila) => (
+                    <tr key={fila.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-3 py-2">{fila.unidad || "—"}</td>
+                      <td className="px-3 py-2">{fila.descripcion || "—"}</td>
+                      <td className="px-3 py-2">{fila.taller || "—"}</td>
+                      <td className="px-3 py-2">{fila.fechaEntrada || "—"}</td>
+                      <td className="px-3 py-2">{fila.fechaSalida || "—"}</td>
+                      <td className="px-3 py-2">{fila.observaciones || "—"}</td>
+                    </tr>
+                  ))}
+                {filas.filter((f) => {
+                  if (filtroUnidad && !f.unidad.toLowerCase().includes(filtroUnidad.toLowerCase())) return false;
+                  if (filtroFechaDesde && f.fechaEntrada && f.fechaEntrada < filtroFechaDesde) return false;
+                  if (filtroFechaHasta && f.fechaEntrada && f.fechaEntrada > filtroFechaHasta) return false;
+                  return true;
+                }).length === 0 && (
+                  <tr>
+                    <td colSpan={6} className="px-3 py-6 text-center text-gray-400">
+                      No se encontraron reparaciones con los filtros aplicados.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
