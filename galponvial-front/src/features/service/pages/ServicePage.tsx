@@ -603,6 +603,60 @@ export default function ServicePage() {
               </div>
             </div>
           </div>
+
+          <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Vehículo</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Fecha</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Motor</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Caja</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Próximo Service</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Stock</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Observaciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {filas
+                  .filter((f) => {
+                    if (filtroUnidad && !f.vehiculo.toLowerCase().includes(filtroUnidad.toLowerCase())) {
+                      return false;
+                    }
+                    if (filtroPeriodoDesde && f.fecha && f.fecha < filtroPeriodoDesde) {
+                      return false;
+                    }
+                    if (filtroPeriodoHasta && f.fecha && f.fecha > filtroPeriodoHasta) {
+                      return false;
+                    }
+                    return true;
+                  })
+                  .map((fila) => (
+                    <tr key={fila.id} className="hover:bg-gray-50 transition-colors">
+                      <td className="px-3 py-2">{fila.vehiculo || "—"}</td>
+                      <td className="px-3 py-2">{fila.fecha || "—"}</td>
+                      <td className="px-3 py-2">{fila.aceiteMotor || "—"}</td>
+                      <td className="px-3 py-2">{fila.aceiteCaja || "—"}</td>
+                      <td className="px-3 py-2">{fila.proximoService || "—"}</td>
+                      <td className="px-3 py-2">{fila.stock || "—"}</td>
+                      <td className="px-3 py-2">{fila.observaciones || "—"}</td>
+                    </tr>
+                  ))}
+                {filas.filter((f) => {
+                  if (filtroUnidad && !f.vehiculo.toLowerCase().includes(filtroUnidad.toLowerCase())) return false;
+                  if (filtroPeriodoDesde && f.fecha && f.fecha < filtroPeriodoDesde) return false;
+                  if (filtroPeriodoHasta && f.fecha && f.fecha > filtroPeriodoHasta) return false;
+                  return true;
+                }).length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="px-3 py-6 text-center text-gray-400">
+                      No se encontraron registros de Service con los filtros aplicados.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
 
