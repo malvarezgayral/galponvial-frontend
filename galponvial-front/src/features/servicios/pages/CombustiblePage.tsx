@@ -80,7 +80,7 @@ const CombustiblePage = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-4xl mx-auto">
           <div className="flex flex-nowrap gap-3 mb-6 overflow-x-auto pb-1">
             <button
               onClick={() => navigate('/servicios/combustible')}
@@ -111,7 +111,7 @@ const CombustiblePage = () => {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Selector de vehículo */}
         <div className="bg-white rounded-lg shadow-md p-8 mb-6">
           <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-3">
@@ -132,7 +132,7 @@ const CombustiblePage = () => {
         </div>
 
         {/* Botones de navegación */}
-        <div className="flex flex-nowrap gap-3 mb-6 overflow-x-auto pb-1">
+        <div className="flex flex-nowrap justify-center gap-3 mb-6 overflow-x-auto pb-1">
           <button
             onClick={() => navigate('/servicios/combustible')}
             className="px-7 py-3 rounded-lg bg-[#0062e3] text-white text-base font-semibold hover:bg-[#0054c2] transition-colors duration-200 cursor-pointer"

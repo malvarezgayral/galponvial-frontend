@@ -12,7 +12,7 @@ const RecordatorioPage = () => {
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-4xl mx-auto">
         {/* Botón de volver */}
         <button
           onClick={() => navigate('/servicios')}
