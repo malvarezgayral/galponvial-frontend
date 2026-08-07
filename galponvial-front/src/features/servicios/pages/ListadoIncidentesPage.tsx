@@ -91,25 +91,25 @@ const ListadoIncidentesPage = () => {
           Volver a Servicios
         </button>
 
-        <div className="flex gap-3 mb-6">
+        <div className="flex flex-nowrap justify-center gap-3 mb-6">
           <button
             type="button"
             onClick={() => navigate('/servicios/incidente')}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-300 text-[var(--color-text-primary)] font-medium rounded-lg hover:bg-gray-400 transition-colors duration-200 cursor-pointer"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-300 text-[var(--color-text-primary)] font-medium rounded-lg hover:bg-gray-400 transition-colors duration-200 cursor-pointer min-w-[220px]"
           >
             Incidentes
           </button>
           <button
             type="button"
             onClick={() => navigate('/servicios/incidente/listado')}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors duration-200 cursor-pointer"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors duration-200 cursor-pointer"
           >
             Listado de Incidentes
           </button>
           <button
             type="button"
             onClick={() => navigate('/servicios/incidente/historial')}
-            className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gray-300 text-[var(--color-text-primary)] font-medium rounded-lg hover:bg-gray-400 transition-colors duration-200 cursor-pointer"
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-gray-300 text-[var(--color-text-primary)] font-medium rounded-lg hover:bg-gray-400 transition-colors duration-200 cursor-pointer"
           >
             Historial de Incidentes
           </button>
