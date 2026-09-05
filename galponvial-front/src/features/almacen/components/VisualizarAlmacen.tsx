@@ -36,7 +36,7 @@ export const VisualizarAlmacen: React.FC = () => {
   const { isAdmin } = useAdminPermissions();
   const { isSuperAdmin } = useAdminPermissions()
   const canEdit = isAdmin() || isSuperAdmin();
-  const canDelete = isAdmin() || isSuperAdmin();
+  const canDelete = isSuperAdmin();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<ApiError | null>(null);
   const [gruposLoading, setGruposLoading] = useState(false);

@@ -35,7 +35,7 @@ interface UsuariosState {
   crearUsuario: (data: CreateUserDto) => Promise<User | null>;
   actualizarUsuario: (id: string, data: UpdateUserDto) => Promise<User | null>;
   actualizarPorDni: (dni: number, data: UpdateUserDto) => Promise<User | null>;
-  actualizarRol: (dni: number, rol: 'user' | 'admin' | 'superuser') => Promise<User | null>;
+  actualizarRol: (dni: number, rol: 'user' | 'admin' | 'superadmin') => Promise<User | null>;
   eliminarUsuario: (id: string) => Promise<boolean>;
   toggleUsuarioActivo: (id: string) => Promise<void>;
   resetearPassword: (id: string, newPassword: string) => Promise<void>;
@@ -58,7 +58,7 @@ interface UsuariosState {
   fetchRolePermissionStructure: () => Promise<void>;
 }
 
-export const useUsuariosStore = create<UsuariosState>((set) => ({
+export const useUsuariosStore = create<UsuariosState>((set, get) => ({
   // Initial state
   usuarios: [],
   usuarioSeleccionado: null,
@@ -200,13 +200,13 @@ crearUsuario: async (data: CreateUserDto) => {
     }
   },
 
-  actualizarRol: async (dni: number, rol: 'user' | 'admin' | 'superuser') => {
+  actualizarRol: async (dni: number, rol: 'user' | 'admin' | 'superadmin') => {
     try {
       set({ isLoading: true, error: null });
       const usuario = await usuariosService.updateRol(dni, rol);
       set((state: UsuariosState) => ({
-        usuarios: state.usuarios.map((u: User) => (u.dni === dni ? usuario : u)),
-        usuarioSeleccionado: usuario,
+        usuarios: state.usuarios.map((u: User) => (u.dni === dni ? { ...u, rol: usuario.rol } : u)),
+        usuarioSeleccionado: state.usuarioSeleccionado ? { ...state.usuarioSeleccionado, rol: usuario.rol } : state.usuarioSeleccionado,
       }));
       return usuario;
     } catch (error) {
@@ -239,7 +239,12 @@ crearUsuario: async (data: CreateUserDto) => {
   toggleUsuarioActivo: async (id: string) => {
     try {
       set({ isLoading: true, error: null });
-      const usuario = await usuariosService.toggleActive(id);
+      const dniNum = Number(id);
+      const actual = get().usuarios.find((u: User) => u.dni === dniNum);
+      if (!actual) {
+        throw new Error('Usuario no encontrado en el estado local');
+      }
+      const usuario = await usuariosService.updateStatus(dniNum, !actual.isActive);
       set((state: UsuariosState) => ({
         usuarios: state.usuarios.map((u: User) => (u.dni === usuario.dni ? usuario : u)),
       }));

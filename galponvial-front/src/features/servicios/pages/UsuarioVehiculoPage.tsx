@@ -7,6 +7,7 @@ import { ConfirmarAsignarModal } from '../components/ConfirmarAsignarModal';
 import { AsignarForm } from '../components/AsignarForm';
 import { Button } from '@/shared/ui/Button';
 import type { User } from '@/features/usuarios/types';
+import { useAdminPermissions } from '../../usuarios/hooks/useAdminPermissions';
 
 type FeedbackType = 'success' | 'error' | null;
 
@@ -31,6 +32,7 @@ interface AsignarState {
  * Shows a table with all relationships and allows viewing details, unassigning, and assigning new ones
  */
 const UsuarioVehiculoPage: React.FC = () => {
+  const { isSuperAdmin } = useAdminPermissions();
   const [relaciones, setRelaciones] = useState<UsuarioVehiculoRelacion[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -294,14 +296,16 @@ const UsuarioVehiculoPage: React.FC = () => {
                           >
                             Ver Detalles
                           </Button>
-                          <Button
-                            variant="danger"
-                            size="sm"
-                            onClick={() => handleAbrirConfirmDesasignar(relacion)}
-                            disabled={relacion.fecha_hasta !== null}
-                          >
-                            {relacion.fecha_hasta !== null ? 'Finalizada' : 'Desasignar'}
-                          </Button>
+                          {isSuperAdmin() && (
+                            <Button
+                              variant="danger"
+                              size="sm"
+                              onClick={() => handleAbrirConfirmDesasignar(relacion)}
+                              disabled={relacion.fecha_hasta !== null}
+                            >
+                              {relacion.fecha_hasta !== null ? 'Finalizada' : 'Desasignar'}
+                            </Button>
+                          )}
                         </div>
                       </td>
                     </tr>

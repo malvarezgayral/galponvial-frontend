@@ -20,7 +20,7 @@ export const VehiculoCard: React.FC<VehiculoCardProps> = ({
   onViewDetails,
 }) => {
   const { user } = useAppStore();
-  // Check if user can edit (superuser or greater)
+  // Check if user can edit (admin or superadmin)
   const canEdit =
     user &&
     "rol" in user &&
@@ -30,7 +30,7 @@ export const VehiculoCard: React.FC<VehiculoCardProps> = ({
   const canDelete =
     user &&
     "rol" in user &&
-    (user.rol === "admin" || user.rol === "superadmin");
+    user.rol === "superadmin";
 
   return (
     <div className="relative bg-[#1E1E1E] rounded-lg p-6 shadow-lg hover:shadow-xl transition-shadow h-full flex flex-col">

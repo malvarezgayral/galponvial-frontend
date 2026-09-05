@@ -60,7 +60,7 @@ export const VehiculosView: React.FC = () => {
   const canDelete =
     user &&
     "rol" in user &&
-    (user.rol === "admin" || user.rol === "super-admin");
+    user.rol === "superadmin";
 
   /**
    * Load vehicles on component mount

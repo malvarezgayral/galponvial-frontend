@@ -18,35 +18,30 @@ const UserFormModal: React.FC = () => {
     setUsuarioSeleccionado,
     crearUsuario,
     actualizarPorDni,
+    actualizarRol,
     fetchRolePermissionStructure,
   } = useUsuariosStore();
 
   /**
-   * Helper function to check if current user is super-admin
+   * Helper function to check if current user is superadmin
    */
   const isSuperAdmin = (): boolean => {
     if (!user || !("rol" in user)) return false;
-    // Verificar ambas variaciones: "super-admin" y "superadmin"
-    return user.rol === "super-admin" || user.rol === "superadmin";
+    return user.rol === "superadmin";
   };
 
   /**
    * Get available roles for the current user to assign to others
-   * Super-admin can assign all roles
-   * Admin can only assign user and superuser roles
+   * Superadmin can assign all roles
+   * Admin can assign the roles available to their level
    */
-  const getAvailableRoles = (): { value: UserRole; label: string }[] => {
-    if (isSuperAdmin()) {
-      return [
-        { value: 'user', label: 'Usuario' },
-        { value: 'admin', label: 'Admin' },
-        { value: 'superuser', label: 'Super usuario' },
-      ];
-    }
-    // Admin can only assign user and superuser
+    const getAvailableRoles = (): { value: UserRole; label: string }[] => {
+    // El select se deshabilita para no-superadmin (ver más abajo).
+    // Esta lista sirve tanto para elegir rol como para mostrar el label correcto.
     return [
       { value: 'user', label: 'Usuario' },
-      { value: 'superuser', label: 'Super usuario' },
+      { value: 'admin', label: 'Admin' },
+      { value: 'superadmin', label: 'Super Admin' },
     ];
   };
 
@@ -149,11 +144,11 @@ const UserFormModal: React.FC = () => {
       return;
     }
 
-    if (modoEdicion && usuarioSeleccionado) {
+       if (modoEdicion && usuarioSeleccionado) {
       try {
         const updateData: UpdateUserDto = {};
         let hasChanges = false;
-
+        const rolCambio = usuarioSeleccionado.rol !== formData.rol;
         if (usuarioSeleccionado.nombre !== formData.nombre) {
           updateData.nombre = formData.nombre;
           hasChanges = true;
@@ -174,16 +169,27 @@ const UserFormModal: React.FC = () => {
           updateData.rol_ids = formData.permisos;
           hasChanges = true;
         }
-
-        if (!hasChanges) {
+        if (!hasChanges && !rolCambio) {
           setFeedbackMessage({
             type: 'error',
             text: 'No hay cambios para guardar',
           });
           return;
         }
-
-        const result = await actualizarPorDni(dniNum, updateData);
+        let result = null;
+        if (hasChanges) {
+          result = await actualizarPorDni(dniNum, updateData);
+        }
+        if (rolCambio) {
+          if (!isSuperAdmin()) {
+            setFeedbackMessage({
+              type: 'error',
+              text: 'Solo el Super Admin puede modificar el rol',
+            });
+            return;
+          }
+          result = await actualizarRol(dniNum, formData.rol as 'user' | 'admin' | 'superadmin');
+        }
         if (result) {
           setFeedbackMessage({
             type: 'success',
@@ -254,8 +260,6 @@ const UserFormModal: React.FC = () => {
     const labels: Record<UserRole, string> = {
       'user': 'Usuario',
       'admin': 'Admin',
-      'superuser': 'Super usuario',
-      'super-admin': 'Super Admin',
       'superadmin': 'Super Admin',
     };
     return labels[rol] || rol;
@@ -391,7 +395,7 @@ const UserFormModal: React.FC = () => {
               name="rol"
               value={formData.rol}
               onChange={handleChange}
-              disabled={!modoEdicion}
+                           disabled={!modoEdicion || !isSuperAdmin()}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-navbar-nav)] focus:border-transparent disabled:bg-gray-100"
             >
               {getAvailableRoles().map((role) => (
@@ -400,16 +404,17 @@ const UserFormModal: React.FC = () => {
                 </option>
               ))}
             </select>
-            {modoEdicion && !isSuperAdmin() && (
+                        {modoEdicion && !isSuperAdmin() && (
               <p className="text-xs text-gray-500 mt-1">
-                * Como admin, solo puedes asignar roles de Usuario o Super usuario
+                * Solo el Super Admin puede modificar el rol de un usuario
               </p>
             )}
             {modoEdicion && isSuperAdmin() && (
               <p className="text-xs text-gray-500 mt-1">
-                * Como super-admin, puedes asignar cualquier rol
+                * Como Super Admin, podés asignar cualquier rol
               </p>
             )}
+            
           </div>
 
           {/* Permisos - Multi-select (Only in edit mode) */}

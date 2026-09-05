@@ -55,7 +55,7 @@ export const usuariosService = {
 
   updateRol: async (
     dni: number,
-    rol: "user" | "admin" | "superuser",
+    rol: "user" | "admin" | "superadmin",
   ): Promise<User> => {
     const { data: response } = await apiClient.patch(`/usuario/addRol/${dni}`, {
       rol,
@@ -74,11 +74,6 @@ export const usuariosService = {
       isActive,
     });
     return response.data || response;
-  },
-
-  toggleActive: async (id: string): Promise<User> => {
-    const { data } = await apiClient.patch(`/usuarios/${id}/toggle-active`);
-    return data;
   },
 
   resetPassword: async (id: string, newPassword: string): Promise<void> => {

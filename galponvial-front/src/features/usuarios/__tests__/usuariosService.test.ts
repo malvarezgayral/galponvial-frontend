@@ -64,14 +64,6 @@ describe('usuariosService', () => {
       expect(apiClient.post).toHaveBeenCalledWith(API_ENDPOINTS.USUARIOS.CREATE, newUser);
     });
 
-    it('should toggle user active status', async () => {
-      const updatedUser = { ...mockUser, activo: false };
-      (apiClient.patch as jest.Mock).mockResolvedValue({ data: updatedUser });
-
-      const result = await usuariosService.toggleActive('1');
-
-      expect(result.activo).toBe(false);
-    });
 
     it('should reset user password', async () => {
       (apiClient.post as jest.Mock).mockResolvedValue({});
