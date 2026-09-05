@@ -1,13 +1,14 @@
+// galponvial-front/src/features/notificaciones/services/notificacionesService.ts
+import { apiClient } from "@/services/api";
 import type { Notificacion, Tab } from "../types";
 
-// TODO: cuando el backend esté listo, reemplazar el cuerpo de esta función por:
-// const res = await fetch(`${import.meta.env.VITE_API_URL}/notificaciones?tipo=${tipo}`);
-// if (!res.ok) throw new Error("Error al obtener notificaciones");
-// return res.json();
-export async function getNotificacionesPorTipo(_tipo: Tab): Promise<Notificacion[]> {
-  return [];
+export async function getNotificacionesPorTipo(tipo: Tab): Promise<Notificacion[]> {
+  const { data } = await apiClient.get<Notificacion[]>("/notificaciones", {
+    params: { tipo },
+  });
+  return data;
 }
 
-export async function marcarComoLeida(_id: number): Promise<void> {
-  // TODO: PATCH ${import.meta.env.VITE_API_URL}/notificaciones/${_id}/leida
+export async function marcarComoLeida(id: number): Promise<void> {
+  await apiClient.patch(`/notificaciones/${id}/leida`);
 }

@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { serviceService } from "../services/serviceService";
+import { useAdminPermissions } from "../../usuarios/hooks/useAdminPermissions";
 
 interface FilaService {
   id: number;
@@ -54,24 +56,81 @@ const STOCK_OPCIONES = ["Stock", "Sin stock"];
 type Vista = "registro" | "listado" | "historial" | "filtros";
 
 export default function ServicePage() {
+  const { isAdmin, isSuperAdmin } = useAdminPermissions();
   const [filas, setFilas] = useState<FilaService[]>([
-    { id: 1, ...filaVacia() },
+    { id: -1, ...filaVacia() },
   ]);
+
+  // Navegación entre las vistas de Service.
   const [vista, setVista] = useState<Vista>("registro");
+
+  // Estado de carga de los registros.
+  const [cargando, setCargando] = useState(false);
+
+  // Estado de edición del listado.
   const [filaEditando, setFilaEditando] = useState<number | null>(null);
   const [borrador, setBorrador] = useState<FilaService | null>(null);
+
+  // Filtros del Historial de Service.
   const [filtroUnidad, setFiltroUnidad] = useState("");
   const [filtroMarca, setFiltroMarca] = useState("");
   const [filtroModelo, setFiltroModelo] = useState("");
   const [filtroPeriodoDesde, setFiltroPeriodoDesde] = useState("");
   const [filtroPeriodoHasta, setFiltroPeriodoHasta] = useState("");
+
+  const [filtrosAplicados, setFiltrosAplicados] = useState({
+    unidad: "",
+    periodoDesde: "",
+    periodoHasta: "",
+  });
+
+  // Controla si hay una búsqueda visible en Historial de Service.
+  // NO elimina ni modifica ningún registro de la base de datos.
+  const [busquedaRealizada, setBusquedaRealizada] = useState(false);
+
+  // Filtros de la vista "Filtros".
   const [unidadFiltros, setUnidadFiltros] = useState("");
   const [listaFiltros, setListaFiltros] = useState("");
 
+  useEffect(() => {
+    const cargarDatos = async () => {
+      try {
+        setCargando(true);
+        const datos = await serviceService.obtenerTodos();
+        setFilas(datos.length > 0 ? datos : [{ id: -1, ...filaVacia() }]);
+      } catch (err) {
+        console.error("Error al cargar los registros de Service:", err);
+      } finally {
+        setCargando(false);
+      }
+    };
+    cargarDatos();
+  }, []);
+
   const agregarFila = () => {
-    const nuevoId =
-      filas.length > 0 ? Math.max(...filas.map((f) => f.id)) + 1 : 1;
+    const nuevoId = -Date.now();
     setFilas((prev) => [...prev, { id: nuevoId, ...filaVacia() }]);
+  };
+
+  const guardarEnServidor = async () => {
+    const pendientes = filas.filter(
+      (f) => f.id < 0 && f.vehiculo.trim() !== ""
+    );
+    if (pendientes.length === 0) {
+      alert("Completá al menos el campo Vehículo en alguna fila para guardar.");
+      return;
+    }
+    try {
+      for (const fila of pendientes) {
+        const { id, ...datos } = fila;
+        const creado = await serviceService.crear(datos);
+        setFilas((prev) => prev.map((f) => (f.id === id ? creado : f)));
+      }
+      alert("Registro(s) guardado(s) correctamente en el servidor.");
+    } catch (err) {
+      console.error(err);
+      alert("Ocurrió un error al guardar en el servidor.");
+    }
   };
 
   const actualizarFila = (
@@ -84,8 +143,16 @@ export default function ServicePage() {
     );
   };
 
-  const eliminarFila = (id: number) => {
-    if (filas.length === 1) return;
+  const eliminarFila = async (id: number) => {
+    if (id > 0) {
+      try {
+        await serviceService.eliminar(id);
+      } catch (err) {
+        console.error(err);
+        alert("No se pudo eliminar (verificá que tengas permisos de Super Admin).");
+        return;
+      }
+    }
     setFilas((prev) => prev.filter((fila) => fila.id !== id));
   };
 
@@ -102,14 +169,29 @@ export default function ServicePage() {
     setBorrador(null);
   };
 
-  const guardarEdicion = () => {
-    if (filaEditando !== null && borrador) {
+  const guardarEdicion = async () => {
+    if (filaEditando === null || !borrador) return;
+
+    if (filaEditando > 0) {
+      try {
+        const { id, ...datos } = borrador;
+        const actualizado = await serviceService.actualizar(filaEditando, datos);
+        setFilas((prev) =>
+          prev.map((f) => (f.id === filaEditando ? actualizado : f))
+        );
+      } catch (err) {
+        console.error(err);
+        alert("Ocurrió un error al actualizar el registro.");
+        return;
+      }
+    } else {
       setFilas((prev) =>
         prev.map((f) => (f.id === filaEditando ? borrador : f))
       );
-      setFilaEditando(null);
-      setBorrador(null);
     }
+
+    setFilaEditando(null);
+    setBorrador(null);
   };
 
   const updateBorrador = <K extends keyof FilaService>(
@@ -120,22 +202,34 @@ export default function ServicePage() {
   };
 
   const buscarHistorial = () => {
-    console.log("Buscando con filtros:", {
-      filtroUnidad,
-      filtroMarca,
-      filtroModelo,
-      filtroPeriodoDesde,
-      filtroPeriodoHasta,
+    setFiltrosAplicados({
+      unidad: filtroUnidad,
+      periodoDesde: filtroPeriodoDesde,
+      periodoHasta: filtroPeriodoHasta,
     });
+
+    setBusquedaRealizada(true);
   };
 
-  const limpiarFiltros = () => {
+  // Limpia solamente la búsqueda visible en pantalla.
+  // NO elimina registros, NO modifica "filas" y NO llama al backend.
+  const limpiarBusquedaHistorial = () => {
     setFiltroUnidad("");
     setFiltroMarca("");
     setFiltroModelo("");
     setFiltroPeriodoDesde("");
     setFiltroPeriodoHasta("");
+
+    setFiltrosAplicados({
+      unidad: "",
+      periodoDesde: "",
+      periodoHasta: "",
+    });
+
+    setBusquedaRealizada(false);
   };
+
+  
 
   const selectSiNo = (
     id: number,
@@ -243,7 +337,13 @@ export default function ServicePage() {
         </div>
       </div>
 
-      {vista === "registro" && (
+      {cargando && (
+        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 text-gray-400 text-sm">
+          Cargando registros de Service...
+        </div>
+      )}
+
+      {!cargando && vista === "registro" && (
         <>
           <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
             <table className="min-w-full text-sm">
@@ -269,6 +369,7 @@ export default function ServicePage() {
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cuenta Hora</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Stock</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Observaciones</th>
+                  <th className="px-3 py-3 text-center font-semibold text-gray-600 whitespace-nowrap">Estado</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -332,22 +433,39 @@ export default function ServicePage() {
                         className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-44 resize-y"
                       />
                     </td>
+                    <td className="px-3 py-2 text-center whitespace-nowrap">
+                      {fila.id > 0 ? (
+                        <span className="text-xs font-medium text-green-600">Guardado</span>
+                      ) : (
+                        <span className="text-xs font-medium text-amber-600">Sin guardar</span>
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
           </div>
 
-          <button
-            onClick={agregarFila}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition-colors"
-          >
-            <span className="text-lg leading-none">+</span> Agregar Registro
-          </button>
+          {isAdmin() && (
+            <div className="flex gap-3">
+              <button
+                onClick={agregarFila}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg shadow transition-colors"
+              >
+                <span className="text-lg leading-none">+</span> Agregar Registro
+              </button>
+              <button
+                onClick={guardarEnServidor}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg shadow transition-colors"
+              >
+                Guardar en servidor
+              </button>
+            </div>
+          )}
         </>
       )}
 
-      {vista === "listado" && (
+      {!cargando && vista === "listado" && (
         <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
@@ -509,18 +627,22 @@ export default function ServicePage() {
                           </>
                         ) : (
                           <>
-                            <button
-                              onClick={() => iniciarEdicion(fila.id)}
-                              className="text-blue-600 hover:text-blue-800 text-sm font-medium border border-blue-200 rounded px-3 py-1 hover:bg-blue-50 transition-colors"
-                            >
-                              Editar
-                            </button>
-                            <button
-                              onClick={() => eliminarFila(fila.id)}
-                              className="text-red-600 hover:text-red-800 text-sm font-medium border border-red-200 rounded px-3 py-1 hover:bg-red-50 transition-colors"
-                            >
-                              Eliminar
-                            </button>
+                            {isAdmin() && (
+                              <button
+                                onClick={() => iniciarEdicion(fila.id)}
+                                className="text-blue-600 hover:text-blue-800 text-sm font-medium border border-blue-200 rounded px-3 py-1 hover:bg-blue-50 transition-colors"
+                              >
+                                Editar
+                              </button>
+                            )}
+                            {isSuperAdmin() && (
+                              <button
+                                onClick={() => eliminarFila(fila.id)}
+                                className="text-red-600 hover:text-red-800 text-sm font-medium border border-red-200 rounded px-3 py-1 hover:bg-red-50 transition-colors"
+                              >
+                                Eliminar
+                              </button>
+                            )}
                           </>
                         )}
                       </div>
@@ -533,10 +655,11 @@ export default function ServicePage() {
         </div>
       )}
 
-      {vista === "historial" && (
+      {!cargando && vista === "historial" && (
         <>
           <div className="bg-white rounded-xl shadow border border-gray-200 p-4 mb-4">
             <div className="flex flex-wrap gap-4 items-end">
+
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-gray-500">Unidad</label>
                 <input
@@ -547,6 +670,7 @@ export default function ServicePage() {
                   className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
                 />
               </div>
+
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-gray-500">Marca</label>
                 <select
@@ -557,6 +681,7 @@ export default function ServicePage() {
                   <option value="">Todas</option>
                 </select>
               </div>
+
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-gray-500">Modelo</label>
                 <select
@@ -567,6 +692,7 @@ export default function ServicePage() {
                   <option value="">Todos</option>
                 </select>
               </div>
+
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-gray-500">Período desde</label>
                 <input
@@ -577,6 +703,7 @@ export default function ServicePage() {
                   className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
                 />
               </div>
+
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-gray-500">Período hasta</label>
                 <input
@@ -587,6 +714,7 @@ export default function ServicePage() {
                   className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
                 />
               </div>
+
               <div className="flex gap-2">
                 <button
                   onClick={buscarHistorial}
@@ -594,69 +722,124 @@ export default function ServicePage() {
                 >
                   Buscar
                 </button>
+
                 <button
-                  onClick={limpiarFiltros}
+                  onClick={limpiarBusquedaHistorial}
                   className="px-5 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium rounded-lg shadow transition-colors"
                 >
-                  Limpiar filtros
+                  Limpiar búsqueda
                 </button>
               </div>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Vehículo</th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Fecha</th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Motor</th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Caja</th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Próximo Service</th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Stock</th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Observaciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {filas
-                  .filter((f) => {
-                    if (filtroUnidad && !f.vehiculo.toLowerCase().includes(filtroUnidad.toLowerCase())) {
-                      return false;
-                    }
-                    if (filtroPeriodoDesde && f.fecha && f.fecha < filtroPeriodoDesde) {
-                      return false;
-                    }
-                    if (filtroPeriodoHasta && f.fecha && f.fecha > filtroPeriodoHasta) {
-                      return false;
-                    }
-                    return true;
-                  })
-                  .map((fila) => (
-                    <tr key={fila.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="px-3 py-2">{fila.vehiculo || "—"}</td>
-                      <td className="px-3 py-2">{fila.fecha || "—"}</td>
-                      <td className="px-3 py-2">{fila.aceiteMotor || "—"}</td>
-                      <td className="px-3 py-2">{fila.aceiteCaja || "—"}</td>
-                      <td className="px-3 py-2">{fila.proximoService || "—"}</td>
-                      <td className="px-3 py-2">{fila.stock || "—"}</td>
-                      <td className="px-3 py-2">{fila.observaciones || "—"}</td>
-                    </tr>
-                  ))}
-                {filas.filter((f) => {
-                  if (filtroUnidad && !f.vehiculo.toLowerCase().includes(filtroUnidad.toLowerCase())) return false;
-                  if (filtroPeriodoDesde && f.fecha && f.fecha < filtroPeriodoDesde) return false;
-                  if (filtroPeriodoHasta && f.fecha && f.fecha > filtroPeriodoHasta) return false;
-                  return true;
-                }).length === 0 && (
-                  <tr>
-                    <td colSpan={7} className="px-3 py-6 text-center text-gray-400">
-                      No se encontraron registros de Service con los filtros aplicados.
-                    </td>
+          {busquedaRealizada && (
+            <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
+              <table className="min-w-full text-sm">
+                <thead>
+                  <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Vehículo</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Fecha</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Motor</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Caja</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Próximo Service</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Stock</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Observaciones</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+
+                <tbody className="divide-y divide-gray-100">
+                  {filas
+                    .filter((f) => {
+                      if (
+                        filtrosAplicados.unidad &&
+                        !f.vehiculo.toLowerCase().includes(
+                          filtrosAplicados.unidad.toLowerCase()
+                        )
+                      ) {
+                        return false;
+                      }
+
+                      if (
+                        filtrosAplicados.periodoDesde &&
+                        f.fecha &&
+                        f.fecha < filtrosAplicados.periodoDesde
+                      ) {
+                        return false;
+                      }
+
+                      if (
+                        filtrosAplicados.periodoHasta &&
+                        f.fecha &&
+                        f.fecha > filtrosAplicados.periodoHasta
+                      ) {
+                        return false;
+                      }
+
+                      return true;
+                    })
+                    .map((fila) => (
+                      <tr
+                        key={fila.id}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="px-3 py-2">{fila.vehiculo || "—"}</td>
+                        <td className="px-3 py-2">{fila.fecha || "—"}</td>
+                        <td className="px-3 py-2">{fila.aceiteMotor || "—"}</td>
+                        <td className="px-3 py-2">{fila.aceiteCaja || "—"}</td>
+                        <td className="px-3 py-2">{fila.proximoService || "—"}</td>
+                        <td className="px-3 py-2">{fila.stock || "—"}</td>
+                        <td className="px-3 py-2">{fila.observaciones || "—"}</td>
+                      </tr>
+                    ))}
+
+                  {filas.filter((f) => {
+                    if (
+                      filtrosAplicados.unidad &&
+                      !f.vehiculo.toLowerCase().includes(
+                        filtrosAplicados.unidad.toLowerCase()
+                      )
+                    ) {
+                      return false;
+                    }
+
+                    if (
+                      filtrosAplicados.periodoDesde &&
+                      f.fecha &&
+                      f.fecha < filtrosAplicados.periodoDesde
+                    ) {
+                      return false;
+                    }
+
+                    if (
+                      filtrosAplicados.periodoHasta &&
+                      f.fecha &&
+                      f.fecha > filtrosAplicados.periodoHasta
+                    ) {
+                      return false;
+                    }
+
+                    return true;
+                  }).length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={7}
+                        className="px-3 py-6 text-center text-gray-400"
+                      >
+                        No se encontraron registros de Service con los filtros aplicados.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          )}
+
+          {!busquedaRealizada && (
+            <div className="bg-white rounded-xl shadow border border-gray-200 p-8 text-center text-gray-400">
+              Realizá una búsqueda para mostrar el historial de Service.
+            </div>
+          )}
         </>
       )}
 
