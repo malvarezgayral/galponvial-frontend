@@ -41,11 +41,11 @@ describe('useAdminPermissions', () => {
     expect(result.current.isSuperAdmin()).toBe(false);
   });
 
-  it('should return true for super-admin user', () => {
+  it('should return true for superadmin user', () => {
     (useAppStore as jest.Mock).mockReturnValue({
       user: {
         id: '1',
-        rol: 'super-admin',
+        rol: 'superadmin',
         permisos: [],
       },
     });

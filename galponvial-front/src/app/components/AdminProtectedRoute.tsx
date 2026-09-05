@@ -8,7 +8,7 @@ interface AdminProtectedRouteProps {
 
 /**
  * Admin protected route component that requires user authentication and admin role
- * Allows access to: admin, super-admin, superadmin, superuser
+ * Allows access to: admin, superadmin
  * Redirects unauthenticated users to login page
  * Redirects non-admin users to home page
  */
@@ -21,11 +21,7 @@ const AdminProtectedRoute: React.FC<AdminProtectedRouteProps> = ({ children }) =
   }
 
   // User doesn't have admin role - redirect to home
-  if (
-    user.rol !== 'admin' &&
-    user.rol !== 'super-admin' &&
-    user.rol !== 'superadmin'
-  ) {
+    if (user.rol !== 'admin' && user.rol !== 'superadmin') {
     return <Navigate to="/" replace />;
   }
 

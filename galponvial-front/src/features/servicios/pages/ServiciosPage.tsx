@@ -67,7 +67,7 @@ const ServiciosPage = () => {
   const { user } = useAppStore();
 
   const isAdmin =
-    user && (user.rol === 'admin' || user.rol === 'super-admin' || user.rol === 'superadmin' || user.rol === 'superuser');
+    user && (user.rol === 'admin' || user.rol === 'superadmin');
 
   const handleCombustible = () => navigate('/servicios/combustible');
   const handleIncidente = () => navigate('/servicios/incidente');

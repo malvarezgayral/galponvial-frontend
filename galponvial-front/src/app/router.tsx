@@ -71,7 +71,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.reparacion, element: <ProtectedRoute><ReparacionPage /></ProtectedRoute> },
       { path: ROUTES.compras, element: <ProtectedRoute><ComprasPage /></ProtectedRoute> },
       { path: ROUTES.documentacionPersonal, element: <ProtectedRoute><DocumentacionPersonalPage /></ProtectedRoute> },
-      { path: ROUTES.notificaciones, element: <ProtectedRoute><NotificacionesPage /></ProtectedRoute> },
+     { path: ROUTES.notificaciones, element: <AdminProtectedRoute><NotificacionesPage /></AdminProtectedRoute> },
     ],
   },
 ]);

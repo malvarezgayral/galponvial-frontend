@@ -7,24 +7,21 @@ import { useState } from "react";
 interface NavItem {
   name: string;
   href: string;
+  roles?: string[];
 }
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const { selfLogout, isLoading } = useAppStore();
+  const { selfLogout, isLoading, user } = useAppStore();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
- const navLinks: NavItem[] = [
-  { name: "Almacén", href: ROUTES.almacen },
-  { name: "Vehículos", href: ROUTES.vehiculos },
-  { name: "Servicios", href: ROUTES.servicios },
-  
-  
-  
- 
-  { name: "Notificaciones", href: ROUTES.notificaciones },
-  { name: "Usuarios", href: ROUTES.usuarios },
-];
+  const navLinks: NavItem[] = [
+    { name: "Almacén", href: ROUTES.almacen },
+    { name: "Vehículos", href: ROUTES.vehiculos },
+    { name: "Servicios", href: ROUTES.servicios },
+    { name: "Notificaciones", href: ROUTES.notificaciones, roles: ["admin", "superadmin"] },
+    { name: "Usuarios", href: ROUTES.usuarios, roles: ["admin", "superadmin"] },
+  ];
 
   const handleSelfLogout = async () => {
     try {
@@ -61,19 +58,20 @@ const Navbar = () => {
           />
         </button>
       </div>
-
       <nav className="navbar-nav">
         <ul className="w-full flex flex-row items-center justify-center gap-2 m-0 p-0 h-full">
-          {navLinks.map((link) => (
-            <li
-              key={link.name}
-              className="h-full text-center flex items-center justify-center"
-            >
-              <Link to={link.href} className="navbar-link">
-                {link.name}
-              </Link>
-            </li>
-          ))}
+          {navLinks
+            .filter((link) => !link.roles || (user && link.roles.includes(user.rol)))
+            .map((link) => (
+              <li
+                key={link.name}
+                className="h-full text-center flex items-center justify-center"
+              >
+                <Link to={link.href} className="navbar-link">
+                  {link.name}
+                </Link>
+              </li>
+            ))}
           {/* Logout Button */}
           <li className="h-full flex items-center justify-center">
             <button

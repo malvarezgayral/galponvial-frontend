@@ -4,7 +4,7 @@ import { useAppStore } from '@/app/stores/appStore';
 
 interface ProtectedAdminRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'admin' | 'super-admin';
+  requiredRole?: 'admin' | 'superadmin';
 }
 
 /**
@@ -23,7 +23,7 @@ const ProtectedAdminRoute: React.FC<ProtectedAdminRouteProps> = ({
   }
 
   // User is not admin
-  if (user.rol !== 'admin' && user.rol !== 'super-admin') {
+  if (user.rol !== 'admin' && user.rol !== 'superadmin') {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-red-50">
         <div className="text-center">
@@ -43,7 +43,7 @@ const ProtectedAdminRoute: React.FC<ProtectedAdminRouteProps> = ({
   }
 
   // Super-admin required but user is only admin
-  if (requiredRole === 'super-admin' && user.rol === 'admin') {
+  if (requiredRole === 'superadmin' && user.rol === 'admin') {
     return (
       <div className="w-full h-screen flex items-center justify-center bg-red-50">
         <div className="text-center">

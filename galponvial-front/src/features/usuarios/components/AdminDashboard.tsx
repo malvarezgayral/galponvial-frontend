@@ -26,23 +26,21 @@ const AdminDashboard: React.FC = () => {
   } = useUsuariosStore();
 
   /**
-   * Helper function to check if current user is super-admin
+   * Helper function to check if current user is superadmin
    */
   const isSuperAdmin = (): boolean => {
     if (!user || !("rol" in user)) return false;
-    // Verificar ambas variaciones: "super-admin" y "superadmin"
-    return user.rol === "super-admin" || user.rol === "superadmin";
+    return user.rol === "superadmin";
   };
 
   /**
    * Helper function to check if a user can be edited/managed by the current user
-   * Super-admin can manage everyone
-   * Admin can only manage users who are not admin or super-admin
+   * Superadmin can manage everyone
+   * Admin can only manage users who are not admin or superadmin
    */
   const canManageUser = (targetUser: any): boolean => {
     if (isSuperAdmin()) return true;
-    // Admin can only manage users, not other admins or super-admins
-    // Verificar ambas variaciones de super-admin
+    // Admin can only manage users, not other admins or superadmins
     const usuarioRoles = targetUser?.usuarioRoles;
     if (!usuarioRoles || !Array.isArray(usuarioRoles) || usuarioRoles.length === 0) {
       return true; // Si no tiene roles, es un usuario regular
@@ -107,7 +105,8 @@ const AdminDashboard: React.FC = () => {
   const totalPages = Math.max(1, Math.ceil((Number(usuariosTotal) || 0) / (Number(usuariosPageSize) || 10)));
 
   const handleEditarUsuario = (usuario: User) => {
-    setUsuarioSeleccionado(usuario);
+    const rolActual = (usuario as any).usuarioRoles?.[0]?.rol?.rol ?? usuario.rol ?? "user";
+    setUsuarioSeleccionado({ ...usuario, rol: rolActual } as User);
     setModoEdicion(true);
     setModalAbierto(true);
   };
@@ -260,8 +259,7 @@ const AdminDashboard: React.FC = () => {
       key: "isActive" as const,
       label: "Estado",
       render: (value: boolean, row: any) => {
-        // No mostrar estado para super-admin (siempre activo)
-        // Verificar ambas variaciones de super-admin
+        // No mostrar estado para superadmin (siempre activo)
         const usuarioRoles = row?.usuarioRoles;
         if (usuarioRoles && Array.isArray(usuarioRoles) && usuarioRoles.length > 0) {
           const superAdminFound = usuarioRoles.find(

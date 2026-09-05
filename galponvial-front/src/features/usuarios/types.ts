@@ -22,7 +22,7 @@ export type ValidPermissionsType = typeof ValidPermissions[keyof typeof ValidPer
 /**
  * Valid role names - Must match backend values
  */
-export type UserRole = 'user' | 'admin' | 'superuser' | 'super-admin' | 'superadmin';
+export type UserRole = 'user' | 'admin' | 'superadmin';
 
 export interface User {
   dni: number;

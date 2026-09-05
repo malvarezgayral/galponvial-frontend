@@ -7,8 +7,8 @@ interface SuperUserProtectedRouteProps {
 }
 
 /**
- * SuperUser protected route component that requires user authentication and superuser role
- * Allows access to: admin, super-admin, superadmin, superuser
+ * SuperUser protected route component that requires user authentication and admin/superadmin role
+ * Allows access to: admin, superadmin
  * Redirects unauthenticated users to login page
  * Redirects non-admin users to home page
  */
@@ -21,12 +21,7 @@ const SuperUserProtectedRoute: React.FC<SuperUserProtectedRouteProps> = ({ child
   }
 
   // User doesn't have admin role - redirect to home
-  if (
-    user.rol !== 'admin' &&
-    user.rol !== 'super-admin' &&
-    user.rol !== 'superadmin' && 
-    user.rol !== 'superuser'
-  ) {
+    if (user.rol !== 'admin' && user.rol !== 'superadmin') {
     return <Navigate to="/" replace />;
   }
 

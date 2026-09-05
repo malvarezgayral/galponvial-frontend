@@ -17,7 +17,7 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
   onSuccess,
 }) => {
   const { user } = useAppStore();
-  const isAdmin = user && (user.rol === 'admin' || user.rol === 'super-admin');
+  const isAdmin = user && (user.rol === 'admin' || user.rol === 'superadmin');
   
   const [formData, setFormData] = useState<RecordatorioRequest>({
     fecha: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16).replace('T', ' '),
