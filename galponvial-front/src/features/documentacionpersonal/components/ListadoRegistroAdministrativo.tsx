@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { FileInput, type RegistroAdministrativoFormData } from './RegistroAdministrativoForm';
+import { useAdminPermissions } from '../../usuarios/hooks/useAdminPermissions';
 
 interface ListadoRegistroAdministrativoProps {
   registros: RegistroAdministrativoFormData[];
@@ -54,6 +55,7 @@ export default function ListadoRegistroAdministrativo({
   onEliminar,
   onEditar,
 }: ListadoRegistroAdministrativoProps) {
+  const { isAdmin, isSuperAdmin } = useAdminPermissions();
   const [filaEditando, setFilaEditando] = useState<number | null>(null);
   const [borrador, setBorrador] = useState<RegistroAdministrativoFormData | null>(null);
 
@@ -618,6 +620,7 @@ export default function ListadoRegistroAdministrativo({
                       </>
                     ) : (
                       <>
+                        {isAdmin() && (
                         <button
                           type="button"
                           onClick={() => iniciarEdicion(index)}
@@ -625,6 +628,8 @@ export default function ListadoRegistroAdministrativo({
                         >
                           Editar
                         </button>
+                        )}
+                        {isSuperAdmin() && (
                         <button
                           type="button"
                           onClick={() => handleEliminar(index, r.nombre, r.apellido)}
@@ -632,6 +637,7 @@ export default function ListadoRegistroAdministrativo({
                         >
                           Eliminar
                         </button>
+                        )}
                       </>
                     )}
                   </div>

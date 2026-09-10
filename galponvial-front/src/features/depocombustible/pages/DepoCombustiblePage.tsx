@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useAdminPermissions } from "../../usuarios/hooks/useAdminPermissions";
 
 interface FilaLubricante {
   id: number;
@@ -44,6 +45,7 @@ type Vista =
   | "historial-lubricantes";
 
 export default function DepoCombustiblePage() {
+  const { isAdmin, isSuperAdmin } = useAdminPermissions();
   const [filasLubricantes, setFilasLubricantes] = useState<FilaLubricante[]>([
     { id: 1, ...filaLubricanteVacia() },
   ]);
@@ -427,18 +429,22 @@ export default function DepoCombustiblePage() {
                           </>
                         ) : (
                           <>
+                            {isAdmin() && (
                             <button
                               onClick={() => iniciarEdicionLubricante(fila.id)}
                               className="text-blue-600 hover:text-blue-800 text-sm font-medium border border-blue-200 rounded px-3 py-1 hover:bg-blue-50 transition-colors"
                             >
                               Editar
                             </button>
+                            )}
+                            {isSuperAdmin() && (
                             <button
                               onClick={() => eliminarFilaLubricante(fila.id)}
                               className="text-red-600 hover:text-red-800 text-sm font-medium border border-red-200 rounded px-3 py-1 hover:bg-red-50 transition-colors"
                             >
                               Eliminar
                             </button>
+                            )}
                           </>
                         )}
                       </div>

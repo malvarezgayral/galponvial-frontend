@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { PersonalDocumentacionFormData } from './PersonalDocumentacionForm';
+import { useAdminPermissions } from '../../usuarios/hooks/useAdminPermissions';
 
 interface ListadoDocumentacionPersonalProps {
   registros: PersonalDocumentacionFormData[];
@@ -26,6 +27,7 @@ export default function ListadoDocumentacionPersonal({
   onEliminar,
   onEditar,
 }: ListadoDocumentacionPersonalProps) {
+  const { isAdmin, isSuperAdmin } = useAdminPermissions();
   const [filaEditando, setFilaEditando] = useState<number | null>(null);
   const [borrador, setBorrador] = useState<PersonalDocumentacionFormData | null>(null);
 
@@ -340,6 +342,7 @@ export default function ListadoDocumentacionPersonal({
                       </>
                     ) : (
                       <>
+                        {isAdmin() && (
                         <button
                           type="button"
                           onClick={() => iniciarEdicion(index)}
@@ -347,6 +350,8 @@ export default function ListadoDocumentacionPersonal({
                         >
                           Editar
                         </button>
+                        )}
+                        {isSuperAdmin() && (
                         <button
                           type="button"
                           onClick={() => handleEliminar(index, r.nombre, r.apellido)}
@@ -354,6 +359,7 @@ export default function ListadoDocumentacionPersonal({
                         >
                           Eliminar
                         </button>
+                        )}
                       </>
                     )}
                   </div>

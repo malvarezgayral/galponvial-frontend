@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAdminPermissions } from "../../usuarios/hooks/useAdminPermissions";
 
 interface FilaReparacion {
   id: number;
@@ -31,6 +32,7 @@ const TALLERES = [
 type Vista = "registro" | "listado" | "historial";
 
 export default function ReparacionPage() {
+  const { isAdmin, isSuperAdmin } = useAdminPermissions();
   const [filas, setFilas] = useState<FilaReparacion[]>([
     { id: 1, ...filaVacia() },
   ]);
@@ -386,18 +388,22 @@ export default function ReparacionPage() {
                           </>
                         ) : (
                           <>
-                            <button
-                              onClick={() => iniciarEdicion(fila.id)}
-                              className="text-blue-600 hover:text-blue-800 text-sm font-medium border border-blue-200 rounded px-3 py-1 hover:bg-blue-50 transition-colors"
-                            >
-                              Editar
-                            </button>
-                            <button
-                              onClick={() => eliminarFila(fila.id)}
-                              className="text-red-600 hover:text-red-800 text-sm font-medium border border-red-200 rounded px-3 py-1 hover:bg-red-50 transition-colors"
-                            >
-                              Eliminar
-                            </button>
+                            {isAdmin() && (
+                              <button
+                                onClick={() => iniciarEdicion(fila.id)}
+                                className="text-blue-600 hover:text-blue-800 text-sm font-medium border border-blue-200 rounded px-3 py-1 hover:bg-blue-50 transition-colors"
+                              >
+                                Editar
+                              </button>
+                            )}
+                            {isSuperAdmin() && (
+                              <button
+                                onClick={() => eliminarFila(fila.id)}
+                                className="text-red-600 hover:text-red-800 text-sm font-medium border border-red-200 rounded px-3 py-1 hover:bg-red-50 transition-colors"
+                              >
+                                Eliminar
+                              </button>
+                            )}
                           </>
                         )}
                       </div>
