@@ -67,5 +67,18 @@ export const useAdminPermissions = () => {
     hasAdminAccess: () => {
       return user?.rol === 'admin' || user?.rol === 'superadmin';
     },
+
+    /**
+     * Check if user has full system access (superadmin, or admin with global permisos).
+     * An admin without all:read/all:write is considered "acotado" -- scoped to a specific module.
+     */
+    hasFullAccess: () => {
+      if (!user) return false;
+      if (user?.rol === 'superadmin') return true;
+      if (user?.rol !== 'admin') return false;
+      const userWithPermisos = user as User;
+      const perms = (userWithPermisos.permisos || []) as Permission[];
+      return perms.some((p) => p.nombre === 'all:read' || p.nombre === 'all:write');
+    },
   };
 };

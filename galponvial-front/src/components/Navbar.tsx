@@ -3,24 +3,28 @@ import logoMunicipio from "../assets/logos/municipio-logo.png";
 import { ROUTES } from "../app/routes";
 import { useAppStore } from "@/app/stores/appStore";
 import { useState } from "react";
+import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
 
 interface NavItem {
   name: string;
   href: string;
+  requiresFullAccess?: boolean;
   roles?: string[];
 }
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { selfLogout, isLoading, user } = useAppStore();
+  const { hasFullAccess } = useAdminPermissions();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const navLinks: NavItem[] = [
     { name: "Almacén", href: ROUTES.almacen },
-    { name: "Vehículos", href: ROUTES.vehiculos },
-    { name: "Servicios", href: ROUTES.servicios },
+    { name: "Vehículos", href: ROUTES.vehiculos, requiresFullAccess: true },
+    { name: "Servicios", href: ROUTES.servicios, requiresFullAccess: true },
+    { name: "Recordatorio", href: "/servicios/recordatorio" },
     { name: "Notificaciones", href: ROUTES.notificaciones, roles: ["admin", "superadmin"] },
-    { name: "Usuarios", href: ROUTES.usuarios, roles: ["admin", "superadmin"] },
+    { name: "Usuarios", href: ROUTES.usuarios, roles: ["admin", "superadmin"], requiresFullAccess: true },
   ];
 
   const handleSelfLogout = async () => {
@@ -62,6 +66,7 @@ const Navbar = () => {
         <ul className="w-full flex flex-row items-center justify-center gap-2 m-0 p-0 h-full">
           {navLinks
             .filter((link) => !link.roles || (user && link.roles.includes(user.rol)))
+            .filter((link) => !link.requiresFullAccess || hasFullAccess())
             .map((link) => (
               <li
                 key={link.name}
