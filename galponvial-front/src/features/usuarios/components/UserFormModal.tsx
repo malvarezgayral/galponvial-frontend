@@ -226,9 +226,16 @@ const UserFormModal: React.FC = () => {
       try {
         const result = await crearUsuario(createData);
         if (result) {
+          let rolAsignado = true;
+          if (formData.rol !== 'user' && isSuperAdmin()) {
+            const rolResult = await actualizarRol(dniNum, formData.rol as 'user' | 'admin' | 'superadmin');
+            rolAsignado = !!rolResult;
+          }
           setFeedbackMessage({
-            type: 'success',
-            text: 'Usuario creado correctamente',
+            type: rolAsignado ? 'success' : 'error',
+            text: rolAsignado
+              ? 'Usuario creado correctamente'
+              : 'Usuario creado, pero no se pudo asignar el rol. Editalo para reintentar.',
           });
           setTimeout(() => {
             setModalAbierto(false);
@@ -395,7 +402,7 @@ const UserFormModal: React.FC = () => {
               name="rol"
               value={formData.rol}
               onChange={handleChange}
-                           disabled={!modoEdicion || !isSuperAdmin()}
+                           disabled={!isSuperAdmin()}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[var(--color-navbar-nav)] focus:border-transparent disabled:bg-gray-100"
             >
               {getAvailableRoles().map((role) => (
@@ -404,12 +411,12 @@ const UserFormModal: React.FC = () => {
                 </option>
               ))}
             </select>
-                        {modoEdicion && !isSuperAdmin() && (
+                        {!isSuperAdmin() && (
               <p className="text-xs text-gray-500 mt-1">
-                * Solo el Super Admin puede modificar el rol de un usuario
+                * Solo el Super Admin puede asignar o modificar el rol de un usuario
               </p>
             )}
-            {modoEdicion && isSuperAdmin() && (
+            {isSuperAdmin() && (
               <p className="text-xs text-gray-500 mt-1">
                 * Como Super Admin, podés asignar cualquier rol
               </p>
