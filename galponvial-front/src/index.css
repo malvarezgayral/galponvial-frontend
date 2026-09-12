@@ -41,7 +41,7 @@
   }
 
  .navbar-nav {
-  @apply bg-[var(--color-navbar-nav)] w-fit max-w-[700px] h-[68px] rounded-full shadow-lg flex items-center px-8;
+  @apply bg-[var(--color-navbar-nav)] w-fit h-[68px] rounded-full shadow-lg flex items-center px-8;
 }
 
   .navbar-link {
