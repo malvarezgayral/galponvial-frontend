@@ -8,7 +8,8 @@ export type Tab =
   | "combustible"
   | "proveedores"
   | "lubricentro"
-  | "privada";
+  | "privada"
+  | "almacen";
 
 export interface Notificacion {
   id: number;

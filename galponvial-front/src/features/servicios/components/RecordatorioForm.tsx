@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { recordatorioService } from '../services/recordatorioService';
-import { useUsuariosStore } from '@/features/usuarios/store';
 import { RecordatorioSuccessModal } from './RecordatorioSuccessModal';
 import { useAppStore } from '@/app/stores/appStore';
 import type { RecordatorioRequest, RecordatorioResponse } from '../types';
@@ -17,45 +16,17 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
   onSuccess,
 }) => {
   const { user } = useAppStore();
-  const isAdmin = user && (user.rol === 'admin' || user.rol === 'superadmin');
-  
+
   const [formData, setFormData] = useState<RecordatorioRequest>({
     fecha: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16).replace('T', ' '),
     descripcion: '',
   });
-  
-  const [selectedUserDni, setSelectedUserDni] = useState<number | null>(null);
-
-  // Get users from store
-  const { usuarios, isLoading: usuariosLoading, fetchUsuarios } = useUsuariosStore();
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successData, setSuccessData] = useState<RecordatorioResponse | null>(null);
   const [generalError, setGeneralError] = useState<string | null>(null);
-
-  /**
-   * Carga la lista de usuarios si el usuario actual es admin
-   */
-  useEffect(() => {
-    if (isAdmin) {
-      // Fetch usuarios from store
-      fetchUsuarios();
-    } else if (user) {
-      // Si no es admin, establecer su propio DNI
-      setSelectedUserDni(user.dni);
-    }
-  }, [isAdmin, user, fetchUsuarios]);
-
-  /**
-   * Establece el primer usuario cuando se cargan desde el store
-   */
-  useEffect(() => {
-    if (isAdmin && usuarios.length > 0 && selectedUserDni === null) {
-      setSelectedUserDni(usuarios[0].dni);
-    }
-  }, [usuarios, isAdmin, selectedUserDni]);
 
   /**
    * Obtiene la fecha mínima permitida (hoy + 1 día)
@@ -81,10 +52,6 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
    */
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
-
-    if (isAdmin && !selectedUserDni) {
-      newErrors.usuario = 'Debe seleccionar un usuario';
-    }
 
     if (!formData.fecha) {
       newErrors.fecha = 'La fecha del recordatorio es obligatoria';
@@ -136,9 +103,9 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
     setLoading(true);
 
     try {
-      // Determinar el DNI del usuario
-      const userDni = isAdmin ? selectedUserDni : user?.dni;
-      
+      // El recordatorio siempre se crea a nombre de quien está logueado
+      const userDni = user?.dni;
+
       if (!userDni) {
         setGeneralError('No se pudo determinar el usuario');
         return;
@@ -197,37 +164,19 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
         )}
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Usuario (solo para admins) */}
-          {isAdmin && (
-            <div>
-              <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
-                Usuario *
-              </label>
-              {usuariosLoading ? (
-                <div className="w-full px-4 py-2 border border-[var(--color-border-light)] rounded-lg bg-gray-50 text-gray-500">
-                  Cargando usuarios...
-                </div>
-              ) : (
-                <select
-                  value={selectedUserDni || ''}
-                  onChange={(e) => setSelectedUserDni(parseInt(e.target.value))}
-                  className={`
-                    w-full px-4 py-2 border rounded-lg
-                    focus:outline-none focus:ring-2 focus:ring-[#378AFE]
-                    ${errors.usuario ? 'border-red-500' : 'border-[var(--color-border-light)]'}
-                  `}
-                >
-                  <option value="">Seleccionar usuario</option>
-                  {usuarios.map((usr) => (
-                    <option key={usr.dni} value={usr.dni}>
-                      {usr.nombre} {usr.apellido} ({usr.dni})
-                    </option>
-                  ))}
-                </select>
-              )}
-              {errors.usuario && <p className="text-red-500 text-sm mt-1">{errors.usuario}</p>}
+          {/* Creador del Recordatorio: siempre el usuario logueado, no editable */}
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+              Creador del Recordatorio
+            </label>
+            <div className="w-full px-4 py-2 border border-[var(--color-border-light)] rounded-lg bg-gray-50 text-gray-700">
+              {user
+                ? 'nombre' in user
+                  ? `${user.nombre} ${user.apellido} (${user.dni})`
+                  : `${user.email} (${user.dni})`
+                : '—'}
             </div>
-          )}
+          </div>
 
           {/* Fecha y hora del recordatorio */}
           <div>
