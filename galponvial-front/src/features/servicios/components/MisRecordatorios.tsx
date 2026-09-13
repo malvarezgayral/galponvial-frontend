@@ -4,6 +4,7 @@ import { RecordatorioCard } from './RecordatorioCard';
 import { EditRecordatorioModal } from './EditRecordatorioModal';
 import { DeleteRecordatorioConfirmationModal } from './DeleteRecordatorioConfirmationModal';
 import { useAppStore } from '@/app/stores/appStore';
+import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
 import type { RecordatorioResponse } from '../types';
 
 /**
@@ -12,6 +13,7 @@ import type { RecordatorioResponse } from '../types';
  */
 export const MisRecordatorios: React.FC = () => {
   const { user } = useAppStore();
+  const { isSuperAdmin } = useAdminPermissions();
   const [recordatorios, setRecordatorios] = useState<RecordatorioResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -140,7 +142,7 @@ export const MisRecordatorios: React.FC = () => {
         </div>
 
         {/* Botón eliminar todos (solo si hay recordatorios) */}
-        {!loading && recordatorios.length > 0 && (
+        {!loading && recordatorios.length > 0 && isSuperAdmin() && (
           <button
             onClick={() => setShowDeleteAllModal(true)}
             className="
@@ -242,7 +244,7 @@ export const MisRecordatorios: React.FC = () => {
               key={recordatorio.id}
               recordatorio={recordatorio}
               onEdit={handleEditClick}
-              onDelete={handleDeleteClick}
+              onDelete={isSuperAdmin() ? handleDeleteClick : undefined}
             />
           ))}
         </div>

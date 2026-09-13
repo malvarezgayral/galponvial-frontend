@@ -3,11 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { recordatorioService } from '../services/recordatorioService';
 import { ShareRecordatorioModal } from '../components/ShareRecordatorioModal';
 import { useAppStore } from '@/app/stores/appStore';
+import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
 import type { RecordatorioResponse } from '../types';
 
 const ListadoRecordatoriosPage = () => {
   const navigate = useNavigate();
   const { user } = useAppStore();
+  const { isSuperAdmin } = useAdminPermissions();
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [recordatorios, setRecordatorios] = useState<RecordatorioResponse[]>([]);
   const [loading, setLoading] = useState(true);
@@ -213,13 +215,15 @@ const ListadoRecordatoriosPage = () => {
                               >
                                 Editar
                               </button>
-                              <button
-                                type="button"
-                                onClick={() => handleEliminar(index, r.descripcion)}
-                                className="text-red-600 hover:text-red-800 text-sm font-medium border border-red-200 rounded px-3 py-1 hover:bg-red-50 transition-colors"
-                              >
-                                Eliminar
-                              </button>
+                              {isSuperAdmin() && (
+                                <button
+                                  type="button"
+                                  onClick={() => handleEliminar(index, r.descripcion)}
+                                  className="text-red-600 hover:text-red-800 text-sm font-medium border border-red-200 rounded px-3 py-1 hover:bg-red-50 transition-colors"
+                                >
+                                  Eliminar
+                                </button>
+                              )}
                             </>
                           )}
                         </div>

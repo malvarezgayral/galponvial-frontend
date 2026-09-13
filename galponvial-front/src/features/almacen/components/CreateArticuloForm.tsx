@@ -148,7 +148,7 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
         setGrupoId('');
         setSuccess(false);
         onSuccess?.();
-      }, 1500);
+      }, 3000);
 
     } catch (err) {
       const apiError = handleApiError(err);
@@ -181,8 +181,9 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
       )}
 
       {success && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800">
-          <p className="font-medium">✓ Artículo creado exitosamente</p>
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 px-6 py-4 bg-green-50 border border-green-300 rounded-lg shadow-lg text-green-800 flex items-center gap-2">
+          <span className="text-xl">✓</span>
+          <p className="font-medium">Creado correctamente</p>
         </div>
       )}
 
