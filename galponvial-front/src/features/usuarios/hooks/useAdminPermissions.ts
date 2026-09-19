@@ -80,5 +80,18 @@ export const useAdminPermissions = () => {
       const perms = (userWithPermisos.permisos || []) as Permission[];
       return perms.some((p) => p.nombre === 'all:read' || p.nombre === 'all:write');
     },
+
+    /**
+     * Acceso a la seccion Usuarios: superadmin, o admin con all:write.
+     * Un admin con solo all:read no la ve.
+     */
+    canAccessUsuarios: () => {
+      if (!user) return false;
+      if (user?.rol === 'superadmin') return true;
+      if (user?.rol !== 'admin') return false;
+      const userWithPermisos = user as User;
+      const perms = (userWithPermisos.permisos || []) as Permission[];
+      return perms.some((p) => p.nombre === 'all:write');
+    },
   };
 };
