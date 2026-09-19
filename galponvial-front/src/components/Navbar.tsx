@@ -23,6 +23,7 @@ const Navbar = () => {
     { name: "Almacén", href: ROUTES.almacen },
     { name: "Vehículos", href: ROUTES.vehiculos, requiresFullAccess: true },
     { name: "Servicios", href: ROUTES.servicios, requiresFullAccess: true },
+    { name: "Lubricentro", href: ROUTES.depoCombustible, roles: ["admin", "superadmin"] },
     { name: "Recordatorio", href: "/servicios/recordatorio" },
     { name: "Notificaciones", href: ROUTES.notificaciones, roles: ["admin", "superadmin"] },
     { name: "Usuarios", href: ROUTES.usuarios, roles: ["admin", "superadmin"], requiresUsuariosAccess: true },
