@@ -9,6 +9,7 @@ interface NavItem {
   name: string;
   href: string;
   requiresFullAccess?: boolean;
+  onlyScoped?: boolean;
   requiresUsuariosAccess?: boolean;
   roles?: string[];
 }
@@ -23,7 +24,7 @@ const Navbar = () => {
     { name: "Almacén", href: ROUTES.almacen },
     { name: "Vehículos", href: ROUTES.vehiculos, requiresFullAccess: true },
     { name: "Servicios", href: ROUTES.servicios, requiresFullAccess: true },
-    { name: "Lubricentro", href: ROUTES.depoCombustible, roles: ["admin", "superadmin"] },
+    { name: "Lubricentro", href: ROUTES.depoCombustible, roles: ["admin", "superadmin"], onlyScoped: true },
     { name: "Recordatorio", href: "/servicios/recordatorio" },
     { name: "Notificaciones", href: ROUTES.notificaciones, roles: ["admin", "superadmin"] },
     { name: "Usuarios", href: ROUTES.usuarios, roles: ["admin", "superadmin"], requiresUsuariosAccess: true },
@@ -69,6 +70,7 @@ const Navbar = () => {
           {navLinks
             .filter((link) => !link.roles || (user && link.roles.includes(user.rol)))
             .filter((link) => !link.requiresFullAccess || hasFullAccess())
+            .filter((link) => !link.onlyScoped || !hasFullAccess())
             .filter((link) => !link.requiresUsuariosAccess || canAccessUsuarios())
             .map((link) => (
               <li
