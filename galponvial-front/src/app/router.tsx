@@ -67,7 +67,7 @@ export const router = createBrowserRouter([
       { path: '/almacen/grupos/:id', element: <ProtectedRoute><GrupoDetallesPage /></ProtectedRoute> },
       { path: ROUTES.auditoria, element: <AuditoriaPage /> },
       { path: ROUTES.proveedores, element: <FullAccessProtectedRoute><ProveedoresPage /></FullAccessProtectedRoute> },
-      { path: ROUTES.depoCombustible, element: <FullAccessProtectedRoute><DepoCombustiblePage /></FullAccessProtectedRoute> },
+      { path: ROUTES.depoCombustible, element: <ProtectedRoute><DepoCombustiblePage /></ProtectedRoute> },
       { path: ROUTES.tanqueCombustible, element: <FullAccessProtectedRoute><TanqueCombustiblePage /></FullAccessProtectedRoute> },
       { path: ROUTES.service, element: <FullAccessProtectedRoute><ServicePage /></FullAccessProtectedRoute> },
       { path: ROUTES.reparacion, element: <FullAccessProtectedRoute><ReparacionPage /></FullAccessProtectedRoute> },
