@@ -9,6 +9,7 @@ import DocumentacionPersonalPage from "../features/documentacionpersonal/pages/D
 import NotificacionesPage from "../features/notificaciones/pages/NotificacionesPage";
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./routes";
+import UsuariosProtectedRoute from "./components/UsuariosProtectedRoute";
 import { MainLayout } from "./layouts/MainLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
@@ -62,7 +63,7 @@ export const router = createBrowserRouter([
       { path: "/servicios/recordatorio/listado", element: <ProtectedRoute><ListadoRecordatoriosPage /></ProtectedRoute> },
       { path: "/servicios/recordatorio/historial", element: <ProtectedRoute><HistorialRecordatoriosPage /></ProtectedRoute> },
       { path: "/servicios/usuario-vehiculo", element: <SuperUserProtectedRoute><UsuarioVehiculoPage /></SuperUserProtectedRoute> },
-      { path: ROUTES.usuarios, element: <FullAccessProtectedRoute><AdminProtectedRoute><UsuariosPage /></AdminProtectedRoute></FullAccessProtectedRoute> },
+      { path: ROUTES.usuarios, element: <UsuariosProtectedRoute><UsuariosPage /></UsuariosProtectedRoute> },
       { path: '/almacen/grupos/:id', element: <ProtectedRoute><GrupoDetallesPage /></ProtectedRoute> },
       { path: ROUTES.auditoria, element: <AuditoriaPage /> },
       { path: ROUTES.proveedores, element: <FullAccessProtectedRoute><ProveedoresPage /></FullAccessProtectedRoute> },

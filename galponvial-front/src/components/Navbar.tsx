@@ -9,13 +9,14 @@ interface NavItem {
   name: string;
   href: string;
   requiresFullAccess?: boolean;
+  requiresUsuariosAccess?: boolean;
   roles?: string[];
 }
 
 const Navbar = () => {
   const navigate = useNavigate();
   const { selfLogout, isLoading, user } = useAppStore();
-  const { hasFullAccess } = useAdminPermissions();
+  const { hasFullAccess, canAccessUsuarios } = useAdminPermissions();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const navLinks: NavItem[] = [
@@ -24,7 +25,7 @@ const Navbar = () => {
     { name: "Servicios", href: ROUTES.servicios, requiresFullAccess: true },
     { name: "Recordatorio", href: "/servicios/recordatorio" },
     { name: "Notificaciones", href: ROUTES.notificaciones, roles: ["admin", "superadmin"] },
-    { name: "Usuarios", href: ROUTES.usuarios, roles: ["admin", "superadmin"], requiresFullAccess: true },
+    { name: "Usuarios", href: ROUTES.usuarios, roles: ["admin", "superadmin"], requiresUsuariosAccess: true },
   ];
 
   const handleSelfLogout = async () => {
@@ -67,6 +68,7 @@ const Navbar = () => {
           {navLinks
             .filter((link) => !link.roles || (user && link.roles.includes(user.rol)))
             .filter((link) => !link.requiresFullAccess || hasFullAccess())
+            .filter((link) => !link.requiresUsuariosAccess || canAccessUsuarios())
             .map((link) => (
               <li
                 key={link.name}
