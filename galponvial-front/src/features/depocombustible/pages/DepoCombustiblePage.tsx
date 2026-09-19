@@ -34,7 +34,9 @@ type Vista = "lubricantes" | "listado-lubricantes" | "historial-lubricantes";
 export default function DepoCombustiblePage() {
   const { user } = useAppStore();
   const { isSuperAdmin } = useAdminPermissions();
-  const permisosUsuario = (user && "permisos" in user ? user.permisos : []) as unknown as string[];
+  const permisosRaw = (user && "permisos" in user ? user.permisos : []) as unknown as Array<string | { nombre?: string }>;
+  // El login guarda los permisos como objetos { nombre }, pero aceptamos tambien texto plano
+  const permisosUsuario = permisosRaw.map((p) => (typeof p === "string" ? p : p?.nombre ?? ""));
   const puedeEscribir = permisosUsuario.includes("lubricentro:write");
 
   const [vista, setVista] = useState<Vista>("lubricantes");
