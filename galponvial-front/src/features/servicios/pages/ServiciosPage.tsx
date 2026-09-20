@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAppStore } from '@/app/stores/appStore';
 import { ServicioCard } from '../components/ServicioCard';
+import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
 
 const FuelIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
@@ -78,6 +79,7 @@ const ServiciosPage = () => {
   const handleReparacion = () => navigate('/reparacion');
   const handleDeposito = () => navigate('/depo-combustible');
   const handleCompras = () => navigate("/compras");
+  const { canReadPersonal } = useAdminPermissions();
   const handleDocumentacionPersonal = () => navigate("/documentacion-personal");
 
   return (
@@ -141,12 +143,14 @@ const ServiciosPage = () => {
             icon={<ComprasIcon />}
             onClick={handleCompras}
           />
-          <ServicioCard
-            title="Personal"
-            description="Gestioná la documentación asociada al personal"
-            icon={<DocumentacionIcon />}
-            onClick={handleDocumentacionPersonal}
-          />
+          {canReadPersonal() && (
+            <ServicioCard
+              title="Personal"
+              description="Gestioná la documentación asociada al personal"
+              icon={<DocumentacionIcon />}
+              onClick={handleDocumentacionPersonal}
+            />
+          )}
           {isAdmin && (
             <ServicioCard
               title="Relaciones Usuario-Vehículo"

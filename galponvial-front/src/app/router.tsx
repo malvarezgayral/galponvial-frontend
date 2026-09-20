@@ -10,6 +10,7 @@ import NotificacionesPage from "../features/notificaciones/pages/NotificacionesP
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./routes";
 import UsuariosProtectedRoute from "./components/UsuariosProtectedRoute";
+import PersonalProtectedRoute from "./components/PersonalProtectedRoute";
 import { MainLayout } from "./layouts/MainLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
@@ -72,7 +73,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.service, element: <FullAccessProtectedRoute><ServicePage /></FullAccessProtectedRoute> },
       { path: ROUTES.reparacion, element: <FullAccessProtectedRoute><ReparacionPage /></FullAccessProtectedRoute> },
       { path: ROUTES.compras, element: <FullAccessProtectedRoute><ComprasPage /></FullAccessProtectedRoute> },
-      { path: ROUTES.documentacionPersonal, element: <FullAccessProtectedRoute><DocumentacionPersonalPage /></FullAccessProtectedRoute> },
+      { path: ROUTES.documentacionPersonal, element: <PersonalProtectedRoute><DocumentacionPersonalPage /></PersonalProtectedRoute> },
      { path: ROUTES.notificaciones, element: <AdminProtectedRoute><NotificacionesPage /></AdminProtectedRoute> },
     ],
   },

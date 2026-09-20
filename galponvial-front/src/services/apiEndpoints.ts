@@ -75,6 +75,20 @@ export const API_ENDPOINTS = {
     UPDATE: (id: number | string) => `/lubricantes/${id}`,
     DELETE: (id: number | string) => `/lubricantes/${id}`,
   },
+  PERSONAL_DOCUMENTACION: {
+    LIST: '/personal/documentacion',
+    DETAIL: (id: number | string) => `/personal/documentacion/${id}`,
+    CREATE: '/personal/documentacion',
+    UPDATE: (id: number | string) => `/personal/documentacion/${id}`,
+    DELETE: (id: number | string) => `/personal/documentacion/${id}`,
+  },
+  PERSONAL_REGISTRO: {
+    LIST: '/personal/registro',
+    DETAIL: (id: number | string) => `/personal/registro/${id}`,
+    CREATE: '/personal/registro',
+    UPDATE: (id: number | string) => `/personal/registro/${id}`,
+    DELETE: (id: number | string) => `/personal/registro/${id}`,
+  },
   AUDITORIA: {
     LIST: '/auditoria',
     DETAIL: (id: string) => `/auditoria/${id}`,
