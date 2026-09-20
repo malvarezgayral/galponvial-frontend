@@ -27,7 +27,7 @@ export default function ListadoDocumentacionPersonal({
   onEliminar,
   onEditar,
 }: ListadoDocumentacionPersonalProps) {
-  const { isAdmin, isSuperAdmin } = useAdminPermissions();
+  const { canWritePersonal, isSuperAdmin } = useAdminPermissions();
   const [filaEditando, setFilaEditando] = useState<number | null>(null);
   const [borrador, setBorrador] = useState<PersonalDocumentacionFormData | null>(null);
 
@@ -342,7 +342,7 @@ export default function ListadoDocumentacionPersonal({
                       </>
                     ) : (
                       <>
-                        {isAdmin() && (
+                        {canWritePersonal() && (
                         <button
                           type="button"
                           onClick={() => iniciarEdicion(index)}

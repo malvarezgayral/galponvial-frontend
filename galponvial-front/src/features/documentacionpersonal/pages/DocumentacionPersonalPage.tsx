@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import PersonalDocumentacionForm, {
   type PersonalDocumentacionFormData,
 } from '../components/PersonalDocumentacionForm';
@@ -9,6 +9,15 @@ import RegistroAdministrativoForm, {
 } from '../components/RegistroAdministrativoForm';
 import ListadoRegistroAdministrativo from '../components/ListadoRegistroAdministrativo';
 import HistorialRegistroAdministrativo from '../components/HistorialRegistroAdministrativo';
+import { useAdminPermissions } from '../../usuarios/hooks/useAdminPermissions';
+import {
+  documentacionService,
+  registroService,
+  documentacionToForm,
+  registroToForm,
+  type DocumentacionPersonalDto,
+  type RegistroAdministrativoDto,
+} from '../services/personalService';
 
 type Vista =
   | 'agregar-doc'
@@ -18,45 +27,133 @@ type Vista =
   | 'listado-registro'
   | 'historial-registro';
 
+const mensajeError = (e: unknown): string => {
+  const m = (e as { response?: { data?: { message?: string | string[] } } })
+    ?.response?.data?.message;
+  if (Array.isArray(m)) return m.join('. ');
+  if (typeof m === 'string') return m;
+  return 'No se pudo completar la operación. Intentá de nuevo.';
+};
+
 const DocumentacionPersonalPage = () => {
-  const [vista, setVista] = useState<Vista>('agregar-doc');
-  const [registros, setRegistros] = useState<PersonalDocumentacionFormData[]>([]);
-  const [registrosAdministrativos, setRegistrosAdministrativos] = useState<RegistroAdministrativoFormData[]>([]);
+  const { canWritePersonal } = useAdminPermissions();
+  const puedeEscribir = canWritePersonal();
+
+  const [vista, setVista] = useState<Vista>(
+    puedeEscribir ? 'agregar-doc' : 'listado-doc'
+  );
+  const [docs, setDocs] = useState<DocumentacionPersonalDto[]>([]);
+  const [regs, setRegs] = useState<RegistroAdministrativoDto[]>([]);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const cargar = useCallback(async () => {
+    try {
+      const [d, r] = await Promise.all([
+        documentacionService.getAll(),
+        registroService.getAll(),
+      ]);
+      setDocs(d);
+      setRegs(r);
+    } catch (e) {
+      setError(mensajeError(e));
+    } finally {
+      setCargando(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    cargar();
+  }, [cargar]);
 
   const handleGuardarDocumentacion = async (data: PersonalDocumentacionFormData) => {
-    // TODO: conectar con el backend (NestJS) cuando esté listo
-    setRegistros((prev) => [...prev, data]);
-    setVista('listado-doc');
+    setError(null);
+    try {
+      await documentacionService.create(data);
+      await cargar();
+      setVista('listado-doc');
+    } catch (e) {
+      setError(mensajeError(e));
+    }
   };
 
-  const handleEditarRegistroAdministrativo = (index: number, data: RegistroAdministrativoFormData) => {
-    setRegistrosAdministrativos((prev) => prev.map((r, i) => (i === index ? data : r)));
+  const handleEditarDocumentacion = async (
+    index: number,
+    data: PersonalDocumentacionFormData
+  ) => {
+    setError(null);
+    const id = docs[index]?.id;
+    if (id === undefined) return;
+    try {
+      await documentacionService.update(id, data);
+    } catch (e) {
+      setError(mensajeError(e));
+    }
+    await cargar();
   };
 
-  const handleEliminarRegistro = (index: number) => {
-    // TODO: conectar con el backend (NestJS) cuando esté listo
-    setRegistros((prev) => prev.filter((_, i) => i !== index));
+  const handleEliminarDocumentacion = async (index: number) => {
+    setError(null);
+    const id = docs[index]?.id;
+    if (id === undefined) return;
+    try {
+      await documentacionService.remove(id);
+    } catch (e) {
+      setError(mensajeError(e));
+    }
+    await cargar();
   };
 
-  const handleEditarRegistro = (index: number, data: PersonalDocumentacionFormData) => {
-    // TODO: conectar con el backend (NestJS) cuando esté listo
-    setRegistros((prev) => prev.map((r, i) => (i === index ? data : r)));
+  const handleGuardarRegistro = async (data: RegistroAdministrativoFormData) => {
+    setError(null);
+    try {
+      await registroService.create(data);
+      await cargar();
+      setVista('listado-registro');
+    } catch (e) {
+      setError(mensajeError(e));
+    }
   };
 
-  const handleGuardarRegistroAdministrativo = async (data: RegistroAdministrativoFormData) => {
-    // TODO: conectar con el backend (NestJS) cuando esté listo
-    setRegistrosAdministrativos((prev) => [...prev, data]);
-    setVista('listado-registro');
+  const handleEditarRegistro = async (
+    index: number,
+    data: RegistroAdministrativoFormData
+  ) => {
+    setError(null);
+    const id = regs[index]?.id;
+    if (id === undefined) return;
+    try {
+      await registroService.update(id, data);
+    } catch (e) {
+      setError(mensajeError(e));
+    }
+    await cargar();
   };
 
-  const botones: { key: Vista; label: string }[] = [
-    { key: 'agregar-doc', label: 'Agregar Documentación Personal' },
+  const handleEliminarRegistro = async (index: number) => {
+    setError(null);
+    const id = regs[index]?.id;
+    if (id === undefined) return;
+    try {
+      await registroService.remove(id);
+    } catch (e) {
+      setError(mensajeError(e));
+    }
+    await cargar();
+  };
+
+  const todosLosBotones: { key: Vista; label: string; escritura?: boolean }[] = [
+    { key: 'agregar-doc', label: 'Agregar Documentación Personal', escritura: true },
     { key: 'listado-doc', label: 'Listado Documentación Personal' },
     { key: 'historial-doc', label: 'Historial Documentación Personal' },
-    { key: 'agregar-registro', label: 'Agregar Registro Administrativo' },
+    { key: 'agregar-registro', label: 'Agregar Registro Administrativo', escritura: true },
     { key: 'listado-registro', label: 'Listado Registro Administrativo' },
     { key: 'historial-registro', label: 'Historial Registro Administrativo' },
   ];
+  const botones = todosLosBotones.filter((b) => !b.escritura || puedeEscribir);
+
+  const docsForm = docs.map(documentacionToForm);
+  const regsForm = regs.map(registroToForm);
 
   return (
     <div className="space-y-6">
@@ -78,7 +175,15 @@ const DocumentacionPersonalPage = () => {
         </div>
       </div>
 
-      {vista === 'agregar-doc' && (
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 rounded-lg px-4 py-3 text-sm">
+          {error}
+        </div>
+      )}
+
+      {cargando && <p className="text-sm text-gray-500">Cargando...</p>}
+
+      {vista === 'agregar-doc' && puedeEscribir && (
         <PersonalDocumentacionForm
           onCancel={() => setVista('listado-doc')}
           onSubmit={handleGuardarDocumentacion}
@@ -86,29 +191,29 @@ const DocumentacionPersonalPage = () => {
       )}
       {vista === 'listado-doc' && (
         <ListadoDocumentacionPersonal
-          registros={registros}
-          onEliminar={handleEliminarRegistro}
-          onEditar={handleEditarRegistro}
+          registros={docsForm}
+          onEliminar={handleEliminarDocumentacion}
+          onEditar={handleEditarDocumentacion}
         />
       )}
       {vista === 'historial-doc' && (
-        <HistorialDocumentacionPersonal registros={registros} />
+        <HistorialDocumentacionPersonal registros={docsForm} />
       )}
-      {vista === 'agregar-registro' && (
+      {vista === 'agregar-registro' && puedeEscribir && (
         <RegistroAdministrativoForm
           onCancel={() => setVista('listado-registro')}
-          onSubmit={handleGuardarRegistroAdministrativo}
+          onSubmit={handleGuardarRegistro}
         />
       )}
       {vista === 'listado-registro' && (
         <ListadoRegistroAdministrativo
-  registros={registrosAdministrativos}
-  onEliminar={(index) => setRegistrosAdministrativos((prev) => prev.filter((_, i) => i !== index))}
-  onEditar={handleEditarRegistroAdministrativo}
-/>
+          registros={regsForm}
+          onEliminar={handleEliminarRegistro}
+          onEditar={handleEditarRegistro}
+        />
       )}
       {vista === 'historial-registro' && (
-          <HistorialRegistroAdministrativo registros={registrosAdministrativos} />
+        <HistorialRegistroAdministrativo registros={regsForm} />
       )}
     </div>
   );

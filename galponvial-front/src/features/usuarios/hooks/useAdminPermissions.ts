@@ -93,5 +93,29 @@ export const useAdminPermissions = () => {
       const perms = (userWithPermisos.permisos || []) as Permission[];
       return perms.some((p) => p.nombre === 'all:write');
     },
+
+    /**
+     * Personal: ver. Rol admin o superadmin con personal:read o personal:write.
+     * Replica lo que exige el backend (ScopedAuth + ScopedReadPermissions).
+     */
+    canReadPersonal: () => {
+      if (!user) return false;
+      if (user?.rol !== 'admin' && user?.rol !== 'superadmin') return false;
+      const perms = ((user as User).permisos || []) as unknown as Array<Permission | string>;
+      return perms.some((p) => {
+        const n = typeof p === 'string' ? p : p.nombre;
+        return n === 'personal:read' || n === 'personal:write';
+      });
+    },
+
+    /**
+     * Personal: crear y editar. Rol admin con personal:write (superadmin no).
+     */
+    canWritePersonal: () => {
+      if (!user) return false;
+      if (user?.rol !== 'admin') return false;
+      const perms = ((user as User).permisos || []) as unknown as Array<Permission | string>;
+      return perms.some((p) => (typeof p === 'string' ? p : p.nombre) === 'personal:write');
+    },
   };
 };

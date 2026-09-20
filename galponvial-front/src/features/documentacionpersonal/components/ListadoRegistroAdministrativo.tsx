@@ -55,7 +55,7 @@ export default function ListadoRegistroAdministrativo({
   onEliminar,
   onEditar,
 }: ListadoRegistroAdministrativoProps) {
-  const { isAdmin, isSuperAdmin } = useAdminPermissions();
+  const { canWritePersonal, isSuperAdmin } = useAdminPermissions();
   const [filaEditando, setFilaEditando] = useState<number | null>(null);
   const [borrador, setBorrador] = useState<RegistroAdministrativoFormData | null>(null);
 
@@ -620,7 +620,7 @@ export default function ListadoRegistroAdministrativo({
                       </>
                     ) : (
                       <>
-                        {isAdmin() && (
+                        {canWritePersonal() && (
                         <button
                           type="button"
                           onClick={() => iniciarEdicion(index)}
