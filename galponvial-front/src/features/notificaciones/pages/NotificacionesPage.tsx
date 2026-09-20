@@ -48,15 +48,16 @@ export default function NotificacionesPage() {
   const [tab, setTab] = useState<Tab>(
     esAdminAcotadoAlmacen ? "almacen" : "service",
   );
-  const { notificaciones, loading, error } = useNotificaciones(tab);
+  const { notificaciones, loading, error, recargar } = useNotificaciones(tab);
   const labelActual = tabsVisibles.find((t) => t.key === tab)?.label ?? "";
   const [detalle, setDetalle] = useState<{ tipo: string; id: number } | null>(null);
   const { conteo } = useNoLeidas();
 
   const handleClick = (n: Notificacion) => {
-    marcarComoLeida(n.id).finally(() =>
-      window.dispatchEvent(new Event(REFRESCAR_NO_LEIDAS)),
-    );
+    marcarComoLeida(n.id).finally(() => {
+      window.dispatchEvent(new Event(REFRESCAR_NO_LEIDAS));
+      recargar();
+    });
     // Personal es confidencial: solo el superadmin abre el detalle
     if (
       isSuperAdmin() &&
