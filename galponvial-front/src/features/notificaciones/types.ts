@@ -18,4 +18,6 @@ export interface Notificacion {
   mensaje: string;
   fecha: string;
   leida: boolean;
+  referenciaTipo?: string | null;
+  referenciaId?: number | null;
 }
