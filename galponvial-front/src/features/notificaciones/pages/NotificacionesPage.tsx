@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import type { Tab } from "../types";
+import type { Notificacion, Tab } from "../types";
+import PersonalDetalleModal from "../components/PersonalDetalleModal";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 import { marcarComoLeida } from "../services/notificacionesService";
 import { useAdminPermissions } from "@/features/usuarios/hooks/useAdminPermissions";
@@ -48,6 +49,20 @@ export default function NotificacionesPage() {
   );
   const { notificaciones, loading, error } = useNotificaciones(tab);
   const labelActual = tabsVisibles.find((t) => t.key === tab)?.label ?? "";
+  const [detalle, setDetalle] = useState<{ tipo: string; id: number } | null>(null);
+
+  const handleClick = (n: Notificacion) => {
+    marcarComoLeida(n.id);
+    // Personal es confidencial: solo el superadmin abre el detalle
+    if (
+      isSuperAdmin() &&
+      n.tipo === "personal" &&
+      n.referenciaTipo &&
+      n.referenciaId
+    ) {
+      setDetalle({ tipo: n.referenciaTipo, id: n.referenciaId });
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -81,7 +96,7 @@ export default function NotificacionesPage() {
             {notificaciones.map((n) => (
               <li
                 key={n.id}
-                onClick={() => marcarComoLeida(n.id)}
+                onClick={() => handleClick(n)}
                 className={`py-3 flex justify-between items-start cursor-pointer hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors ${
                   n.leida ? "opacity-60" : ""
                 }`}
@@ -99,6 +114,13 @@ export default function NotificacionesPage() {
           </ul>
         )}
       </div>
+      {detalle && (
+        <PersonalDetalleModal
+          referenciaTipo={detalle.tipo}
+          referenciaId={detalle.id}
+          onClose={() => setDetalle(null)}
+        />
+      )}
     </div>
   );
 }
