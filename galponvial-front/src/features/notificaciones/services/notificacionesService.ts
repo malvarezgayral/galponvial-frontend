@@ -14,6 +14,10 @@ export async function getNoLeidas(): Promise<Record<string, number>> {
   return data;
 }
 
+export async function marcarTipoComoLeido(tipo: Tab): Promise<void> {
+  await apiClient.patch(`/notificaciones/tipo/${tipo}/leidas`);
+}
+
 export async function marcarComoLeida(id: number): Promise<void> {
   await apiClient.patch(`/notificaciones/${id}/leida`);
 }

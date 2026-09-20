@@ -3,7 +3,7 @@ import type { Notificacion, Tab } from "../types";
 import PersonalDetalleModal from "../components/PersonalDetalleModal";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 import { useNoLeidas, REFRESCAR_NO_LEIDAS } from "../hooks/useNoLeidas";
-import { marcarComoLeida } from "../services/notificacionesService";
+import { marcarComoLeida, marcarTipoComoLeido } from "../services/notificacionesService";
 import { useAdminPermissions } from "@/features/usuarios/hooks/useAdminPermissions";
 import { ValidPermissions } from "@/features/usuarios/types";
 
@@ -77,7 +77,13 @@ export default function NotificacionesPage() {
           {tabsVisibles.map((t) => (
             <button
               key={t.key}
-              onClick={() => setTab(t.key)}
+              onClick={() => {
+                setTab(t.key);
+                // Como Facebook: al tocar la pestaña, sus avisos pasan a leidos y el globo baja
+                marcarTipoComoLeido(t.key)
+                  .catch(() => undefined)
+                  .finally(() => window.dispatchEvent(new Event(REFRESCAR_NO_LEIDAS)));
+              }}
               className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
                 tab === t.key ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
               }`}
