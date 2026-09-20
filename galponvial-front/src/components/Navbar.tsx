@@ -4,6 +4,7 @@ import { ROUTES } from "../app/routes";
 import { useAppStore } from "@/app/stores/appStore";
 import { useState } from "react";
 import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
+import { useNoLeidas } from '@/features/notificaciones/hooks/useNoLeidas';
 
 interface NavItem {
   name: string;
@@ -19,6 +20,13 @@ const Navbar = () => {
   const { selfLogout, isLoading, user } = useAppStore();
   const { hasFullAccess, canAccessUsuarios } = useAdminPermissions();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const esAdmin = user?.rol === 'admin' || user?.rol === 'superadmin';
+  const { conteo } = useNoLeidas(esAdmin);
+  // Un admin acotado a Almacén solo cuenta los tipos que ve en las pestañas
+  const TIPOS_ALMACEN = ['almacen', 'recordatorio', 'privada'];
+  const noLeidas = Object.entries(conteo)
+    .filter(([tipo]) => hasFullAccess() || TIPOS_ALMACEN.includes(tipo))
+    .reduce((suma, [, n]) => suma + n, 0);
 
   const navLinks: NavItem[] = [
     { name: "Almacén", href: ROUTES.almacen },
@@ -77,8 +85,13 @@ const Navbar = () => {
                 key={link.name}
                 className="h-full text-center flex items-center justify-center"
               >
-                <Link to={link.href} className="navbar-link">
+                <Link to={link.href} className="navbar-link relative">
                   {link.name}
+                  {link.href === ROUTES.notificaciones && noLeidas > 0 && (
+                    <span className="ml-2 inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-red-600 text-white text-xs font-bold">
+                      {noLeidas}
+                    </span>
+                  )}
                 </Link>
               </li>
             ))}

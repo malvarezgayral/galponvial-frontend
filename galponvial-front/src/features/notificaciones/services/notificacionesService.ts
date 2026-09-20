@@ -9,6 +9,11 @@ export async function getNotificacionesPorTipo(tipo: Tab): Promise<Notificacion[
   return data;
 }
 
+export async function getNoLeidas(): Promise<Record<string, number>> {
+  const { data } = await apiClient.get<Record<string, number>>("/notificaciones/no-leidas");
+  return data;
+}
+
 export async function marcarComoLeida(id: number): Promise<void> {
   await apiClient.patch(`/notificaciones/${id}/leida`);
 }

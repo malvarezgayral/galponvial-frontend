@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import type { Notificacion, Tab } from "../types";
 import PersonalDetalleModal from "../components/PersonalDetalleModal";
 import { useNotificaciones } from "../hooks/useNotificaciones";
+import { useNoLeidas, REFRESCAR_NO_LEIDAS } from "../hooks/useNoLeidas";
 import { marcarComoLeida } from "../services/notificacionesService";
 import { useAdminPermissions } from "@/features/usuarios/hooks/useAdminPermissions";
 import { ValidPermissions } from "@/features/usuarios/types";
@@ -50,9 +51,12 @@ export default function NotificacionesPage() {
   const { notificaciones, loading, error } = useNotificaciones(tab);
   const labelActual = tabsVisibles.find((t) => t.key === tab)?.label ?? "";
   const [detalle, setDetalle] = useState<{ tipo: string; id: number } | null>(null);
+  const { conteo } = useNoLeidas();
 
   const handleClick = (n: Notificacion) => {
-    marcarComoLeida(n.id);
+    marcarComoLeida(n.id).finally(() =>
+      window.dispatchEvent(new Event(REFRESCAR_NO_LEIDAS)),
+    );
     // Personal es confidencial: solo el superadmin abre el detalle
     if (
       isSuperAdmin() &&
@@ -78,6 +82,11 @@ export default function NotificacionesPage() {
               }`}
             >
               {t.label}
+              {(conteo[t.key] ?? 0) > 0 && (
+                <span className="ml-2 inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-red-600 text-white text-xs font-bold">
+                  {conteo[t.key]}
+                </span>
+              )}
             </button>
           ))}
         </div>
