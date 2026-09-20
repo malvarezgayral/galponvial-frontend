@@ -23,7 +23,7 @@ const TABS: { key: Tab; label: string }[] = [
 const TABS_ALMACEN: Tab[] = ["almacen", "recordatorio", "privada"];
 
 export default function NotificacionesPage() {
-  const { hasFullAccess, hasPermission } = useAdminPermissions();
+  const { hasFullAccess, hasPermission, isSuperAdmin } = useAdminPermissions();
 
   const esAdminAcotadoAlmacen = useMemo(() => {
     if (hasFullAccess()) return false;
@@ -35,13 +35,13 @@ export default function NotificacionesPage() {
     );
   }, [hasFullAccess, hasPermission]);
 
-  const tabsVisibles = useMemo(
-    () =>
-      esAdminAcotadoAlmacen
-        ? TABS.filter((t) => TABS_ALMACEN.includes(t.key))
-        : TABS,
-    [esAdminAcotadoAlmacen],
-  );
+  const tabsVisibles = useMemo(() => {
+    const base = esAdminAcotadoAlmacen
+      ? TABS.filter((t) => TABS_ALMACEN.includes(t.key))
+      : TABS;
+    // Personal es confidencial: solo la ve el superadmin
+    return isSuperAdmin() ? base : base.filter((t) => t.key !== "personal");
+  }, [esAdminAcotadoAlmacen, isSuperAdmin]);
 
   const [tab, setTab] = useState<Tab>(
     esAdminAcotadoAlmacen ? "almacen" : "service",
