@@ -14,7 +14,7 @@ import PersonalProtectedRoute from "./components/PersonalProtectedRoute";
 import { MainLayout } from "./layouts/MainLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
-import FullAccessProtectedRoute from "./components/FullAccessProtectedRoute";
+import ModuloProtectedRoute from "./components/ModuloProtectedRoute";
 import AlmacenPage from "../features/almacen/pages/AlmacenPage";
 import ArticuloDetallesPage from "../features/almacen/pages/ArticuloDetallesPage";
 import VehiculosPage from "../features/vehiculos/pages/VehiculosPage";
@@ -48,18 +48,18 @@ export const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { path: ROUTES.home, element: <ProtectedRoute><HomePage /></ProtectedRoute> },
-      { path: ROUTES.vehiculos, element: <FullAccessProtectedRoute><VehiculosPage /></FullAccessProtectedRoute> },
-      { path: "/vehiculos/:id", element: <FullAccessProtectedRoute><VehiculoDetallesPage /></FullAccessProtectedRoute> },
+      { path: ROUTES.vehiculos, element: <ModuloProtectedRoute modulo="vehiculos"><VehiculosPage /></ModuloProtectedRoute> },
+      { path: "/vehiculos/:id", element: <ModuloProtectedRoute modulo="vehiculos"><VehiculoDetallesPage /></ModuloProtectedRoute> },
       { path: ROUTES.almacen, element: <ProtectedRoute><AlmacenPage /></ProtectedRoute> },
       { path: "/almacen/:id", element: <ProtectedRoute><ArticuloDetallesPage /></ProtectedRoute> },
       { path: ROUTES.articulosEliminados, element: <AdminProtectedRoute><ArticulosEliminadosPage /></AdminProtectedRoute> },
-      { path: ROUTES.servicios, element: <FullAccessProtectedRoute><ServiciosPage /></FullAccessProtectedRoute> },
-      { path: "/servicios/combustible", element: <FullAccessProtectedRoute><CombustiblePage /></FullAccessProtectedRoute> },
-      { path: "/servicios/combustible/listado", element: <FullAccessProtectedRoute><ListadoCargasPage /></FullAccessProtectedRoute> },
-      { path: "/servicios/combustible/historial", element: <FullAccessProtectedRoute><HistorialCombustiblePage /></FullAccessProtectedRoute> },
-      { path: "/servicios/incidente", element: <FullAccessProtectedRoute><IncidentePage /></FullAccessProtectedRoute> },
-      { path: "/servicios/incidente/listado", element: <FullAccessProtectedRoute><ListadoIncidentesPage /></FullAccessProtectedRoute> },
-      { path: "/servicios/incidente/historial", element: <FullAccessProtectedRoute><HistorialIncidentesPage /></FullAccessProtectedRoute> },
+      { path: ROUTES.servicios, element: <ModuloProtectedRoute modulo="servicios"><ServiciosPage /></ModuloProtectedRoute> },
+      { path: "/servicios/combustible", element: <ModuloProtectedRoute modulo="combustible"><CombustiblePage /></ModuloProtectedRoute> },
+      { path: "/servicios/combustible/listado", element: <ModuloProtectedRoute modulo="combustible"><ListadoCargasPage /></ModuloProtectedRoute> },
+      { path: "/servicios/combustible/historial", element: <ModuloProtectedRoute modulo="combustible"><HistorialCombustiblePage /></ModuloProtectedRoute> },
+      { path: "/servicios/incidente", element: <ModuloProtectedRoute modulo="incidente"><IncidentePage /></ModuloProtectedRoute> },
+      { path: "/servicios/incidente/listado", element: <ModuloProtectedRoute modulo="incidente"><ListadoIncidentesPage /></ModuloProtectedRoute> },
+      { path: "/servicios/incidente/historial", element: <ModuloProtectedRoute modulo="incidente"><HistorialIncidentesPage /></ModuloProtectedRoute> },
       { path: "/servicios/recordatorio", element: <ProtectedRoute><RecordatorioPage /></ProtectedRoute> },
       { path: "/servicios/recordatorio/listado", element: <ProtectedRoute><ListadoRecordatoriosPage /></ProtectedRoute> },
       { path: "/servicios/recordatorio/historial", element: <ProtectedRoute><HistorialRecordatoriosPage /></ProtectedRoute> },
@@ -67,12 +67,12 @@ export const router = createBrowserRouter([
       { path: ROUTES.usuarios, element: <UsuariosProtectedRoute><UsuariosPage /></UsuariosProtectedRoute> },
       { path: '/almacen/grupos/:id', element: <ProtectedRoute><GrupoDetallesPage /></ProtectedRoute> },
       { path: ROUTES.auditoria, element: <AuditoriaPage /> },
-      { path: ROUTES.proveedores, element: <FullAccessProtectedRoute><ProveedoresPage /></FullAccessProtectedRoute> },
+      { path: ROUTES.proveedores, element: <ModuloProtectedRoute modulo="proveedores"><ProveedoresPage /></ModuloProtectedRoute> },
       { path: ROUTES.depoCombustible, element: <ProtectedRoute><DepoCombustiblePage /></ProtectedRoute> },
-      { path: ROUTES.tanqueCombustible, element: <FullAccessProtectedRoute><TanqueCombustiblePage /></FullAccessProtectedRoute> },
-      { path: ROUTES.service, element: <FullAccessProtectedRoute><ServicePage /></FullAccessProtectedRoute> },
-      { path: ROUTES.reparacion, element: <FullAccessProtectedRoute><ReparacionPage /></FullAccessProtectedRoute> },
-      { path: ROUTES.compras, element: <FullAccessProtectedRoute><ComprasPage /></FullAccessProtectedRoute> },
+      { path: ROUTES.tanqueCombustible, element: <ModuloProtectedRoute modulo="tanque"><TanqueCombustiblePage /></ModuloProtectedRoute> },
+      { path: ROUTES.service, element: <ModuloProtectedRoute modulo="service"><ServicePage /></ModuloProtectedRoute> },
+      { path: ROUTES.reparacion, element: <ModuloProtectedRoute modulo="reparacion"><ReparacionPage /></ModuloProtectedRoute> },
+      { path: ROUTES.compras, element: <ModuloProtectedRoute modulo="compras"><ComprasPage /></ModuloProtectedRoute> },
       { path: ROUTES.documentacionPersonal, element: <PersonalProtectedRoute><DocumentacionPersonalPage /></PersonalProtectedRoute> },
      { path: ROUTES.notificaciones, element: <AdminProtectedRoute><NotificacionesPage /></AdminProtectedRoute> },
     ],
