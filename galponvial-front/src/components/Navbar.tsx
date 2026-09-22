@@ -30,7 +30,7 @@ const Navbar = () => {
     .reduce((suma, [, n]) => suma + n, 0);
 
   const navLinks: NavItem[] = [
-    { name: "Almacén", href: ROUTES.almacen },
+    { name: "Almacén", href: ROUTES.almacen, modulo: "almacen" },
     { name: "Vehículos", href: ROUTES.vehiculos, modulo: "vehiculos", roles: ["admin", "superadmin"] },
     { name: "Servicios", href: ROUTES.servicios, modulo: "servicios", roles: ["admin", "superadmin"] },
     { name: "Lubricentro", href: ROUTES.depoCombustible, roles: ["admin", "superadmin"], onlyScoped: true },

@@ -134,6 +134,11 @@ export const useAdminPermissions = () => {
       const n = nombresPermisos();
       // El menu Servicios se ve con cualquier permiso que no sea solo de Almacen
       if (modulo === 'servicios') return n.some((x) => !x.startsWith('almacen-'));
+      // Almacen tiene permisos separados (taller/comun), no existe 'almacen:read'
+      if (modulo === 'almacen') {
+        const comodin = n.includes('all:read') || n.includes('all:write');
+        return comodin || n.some((x) => x.startsWith('almacen-'));
+      }
       const comodin = n.includes('all:read') || n.includes('all:write');
       return comodin || n.includes(modulo + ':read') || n.includes(modulo + ':write');
     },
@@ -142,6 +147,10 @@ export const useAdminPermissions = () => {
       if (!user) return false;
       if (user.rol !== 'admin' && user.rol !== 'superadmin') return false;
       const n = nombresPermisos();
+      // Almacen tiene permisos separados (taller/comun), no existe 'almacen:write'
+      if (modulo === 'almacen') {
+        return n.includes('all:write') || n.some((x) => x.startsWith('almacen-') && x.endsWith(':write'));
+      }
       const comodin = modulo !== 'lubricentro' && n.includes('all:write');
       return comodin || n.includes(modulo + ':write');
     },
