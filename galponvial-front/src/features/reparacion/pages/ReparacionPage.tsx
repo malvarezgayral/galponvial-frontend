@@ -167,6 +167,7 @@ export default function ReparacionPage() {
     if (filaEditando === null || !borrador) return;
     try {
       await reparacionService.update(filaEditando, {
+        id_vehiculo: borrador.vehiculo.id_vehiculo,
         descripcion: borrador.descripcion,
         taller: borrador.taller as TallerTipo,
         fecha_entrada: borrador.fecha_entrada,
