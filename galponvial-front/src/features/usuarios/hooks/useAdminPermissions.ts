@@ -8,6 +8,11 @@ import type { Permission, User } from '../types';
 export const useAdminPermissions = () => {
   const { user } = useAppStore();
 
+  const nombresPermisos = (): string[] =>
+    (((user as User | null)?.permisos || []) as unknown as Array<Permission | string>).map((p) =>
+      typeof p === 'string' ? p : p.nombre,
+    );
+
   return {
     /**
      * Check if user is admin or superadmin
@@ -116,6 +121,38 @@ export const useAdminPermissions = () => {
       if (user?.rol !== 'admin') return false;
       const perms = ((user as User).permisos || []) as unknown as Array<Permission | string>;
       return perms.some((p) => (typeof p === 'string' ? p : p.nombre) === 'personal:write');
+    },
+
+    /**
+     * Acceso por modulo. Solo restringe a admin y superadmin; user conserva
+     * el comportamiento anterior (lo decide el backend). all:read y all:write
+     * valen como comodin; en escritura Lubricentro queda afuera (pide su fila).
+     */
+    canReadModulo: (modulo: string) => {
+      if (!user) return false;
+      if (user.rol !== 'admin' && user.rol !== 'superadmin') return true;
+      const n = nombresPermisos();
+      // El menu Servicios se ve con cualquier permiso que no sea solo de Almacen
+      if (modulo === 'servicios') return n.some((x) => !x.startsWith('almacen-'));
+      // Almacen tiene permisos separados (taller/comun), no existe 'almacen:read'
+      if (modulo === 'almacen') {
+        const comodin = n.includes('all:read') || n.includes('all:write');
+        return comodin || n.some((x) => x.startsWith('almacen-'));
+      }
+      const comodin = n.includes('all:read') || n.includes('all:write');
+      return comodin || n.includes(modulo + ':read') || n.includes(modulo + ':write');
+    },
+
+    canWriteModulo: (modulo: string) => {
+      if (!user) return false;
+      if (user.rol !== 'admin' && user.rol !== 'superadmin') return false;
+      const n = nombresPermisos();
+      // Almacen tiene permisos separados (taller/comun), no existe 'almacen:write'
+      if (modulo === 'almacen') {
+        return n.includes('all:write') || n.some((x) => x.startsWith('almacen-') && x.endsWith(':write'));
+      }
+      const comodin = modulo !== 'lubricentro' && n.includes('all:write');
+      return comodin || n.includes(modulo + ':write');
     },
   };
 };

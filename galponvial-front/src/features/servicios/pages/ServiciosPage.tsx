@@ -79,7 +79,7 @@ const ServiciosPage = () => {
   const handleReparacion = () => navigate('/reparacion');
   const handleDeposito = () => navigate('/depo-combustible');
   const handleCompras = () => navigate("/compras");
-  const { canReadPersonal } = useAdminPermissions();
+  const { canReadPersonal, canReadModulo } = useAdminPermissions();
   const handleDocumentacionPersonal = () => navigate("/documentacion-personal");
 
   return (
@@ -95,54 +95,68 @@ const ServiciosPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 place-items-center items-stretch">
-          <ServicioCard
-            title="Carga de Combustible"
-            description="Registra una nueva carga de combustible para un vehículo"
-            icon={<FuelIcon />}
-            onClick={handleCombustible}
-          />
-          <ServicioCard
-            title="Reporte de Incidente"
-            description="Reporta un incidente o problema con un vehículo"
-            icon={<IncidentIcon />}
-            onClick={handleIncidente}
-          />
+          {canReadModulo('combustible') && (
+            <ServicioCard
+              title="Carga de Combustible"
+              description="Registra una nueva carga de combustible para un vehículo"
+              icon={<FuelIcon />}
+              onClick={handleCombustible}
+            />
+          )}
+          {canReadModulo('incidente') && (
+            <ServicioCard
+              title="Reporte de Incidente"
+              description="Reporta un incidente o problema con un vehículo"
+              icon={<IncidentIcon />}
+              onClick={handleIncidente}
+            />
+          )}
           <ServicioCard
             title="Agregar Recordatorio"
             description="Crea un recordatorio para un mantenimiento o tarea futura"
             icon={<ReminderIcon />}
             onClick={handleRecordatorio}
           />
-          <ServicioCard
-            title="Proveedores"
-            description="Gestioná compras directas, presupuestos y proveedores"
-            icon={<ProveedoresIcon />}
-            onClick={handleProveedores}
-          />
-          <ServicioCard
-            title="Service"
-            description="Registrá y consultá el service de los vehículos"
-            icon={<ServiceIcon />}
-            onClick={handleService}
-          />
-          <ServicioCard
-            title="Reparación"
-            description="Registrá reparaciones y su estado en taller"
-            icon={<ReparacionIcon />}
-            onClick={handleReparacion}
-          />
-          <ServicioCard
-            title="Lubricentro"
-            description="Gestioná el depósito de combustible y lubricantes"
-            icon={<DepositoIcon />}
-            onClick={handleDeposito}
-          />
-          <ServicioCard
-            title="Compras"
-            description="Gestioná compras directas, suministros e historial"
-            icon={<ComprasIcon />}
-            onClick={handleCompras}
-          />
+          {canReadModulo('proveedores') && (
+            <ServicioCard
+              title="Proveedores"
+              description="Gestioná compras directas, presupuestos y proveedores"
+              icon={<ProveedoresIcon />}
+              onClick={handleProveedores}
+            />
+          )}
+          {canReadModulo('service') && (
+            <ServicioCard
+              title="Service"
+              description="Registrá y consultá el service de los vehículos"
+              icon={<ServiceIcon />}
+              onClick={handleService}
+            />
+          )}
+          {canReadModulo('reparacion') && (
+            <ServicioCard
+              title="Reparación"
+              description="Registrá reparaciones y su estado en taller"
+              icon={<ReparacionIcon />}
+              onClick={handleReparacion}
+            />
+          )}
+          {canReadModulo('lubricentro') && (
+            <ServicioCard
+              title="Lubricentro"
+              description="Gestioná el depósito de combustible y lubricantes"
+              icon={<DepositoIcon />}
+              onClick={handleDeposito}
+            />
+          )}
+          {canReadModulo('compras') && (
+            <ServicioCard
+              title="Compras"
+              description="Gestioná compras directas, suministros e historial"
+              icon={<ComprasIcon />}
+              onClick={handleCompras}
+            />
+          )}
           {canReadPersonal() && (
             <ServicioCard
               title="Personal"

@@ -10,6 +10,7 @@ interface NavItem {
   name: string;
   href: string;
   requiresFullAccess?: boolean;
+  modulo?: string;
   onlyScoped?: boolean;
   requiresUsuariosAccess?: boolean;
   roles?: string[];
@@ -18,7 +19,7 @@ interface NavItem {
 const Navbar = () => {
   const navigate = useNavigate();
   const { selfLogout, isLoading, user } = useAppStore();
-  const { hasFullAccess, canAccessUsuarios } = useAdminPermissions();
+  const { hasFullAccess, canAccessUsuarios, canReadModulo } = useAdminPermissions();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const esAdmin = user?.rol === 'admin' || user?.rol === 'superadmin';
   const { conteo } = useNoLeidas(esAdmin);
@@ -29,9 +30,9 @@ const Navbar = () => {
     .reduce((suma, [, n]) => suma + n, 0);
 
   const navLinks: NavItem[] = [
-    { name: "Almacén", href: ROUTES.almacen },
-    { name: "Vehículos", href: ROUTES.vehiculos, requiresFullAccess: true },
-    { name: "Servicios", href: ROUTES.servicios, requiresFullAccess: true },
+    { name: "Almacén", href: ROUTES.almacen, modulo: "almacen" },
+    { name: "Vehículos", href: ROUTES.vehiculos, modulo: "vehiculos", roles: ["admin", "superadmin"] },
+    { name: "Servicios", href: ROUTES.servicios, modulo: "servicios", roles: ["admin", "superadmin"] },
     { name: "Lubricentro", href: ROUTES.depoCombustible, roles: ["admin", "superadmin"], onlyScoped: true },
     { name: "Recordatorio", href: "/servicios/recordatorio" },
     { name: "Notificaciones", href: ROUTES.notificaciones, roles: ["admin", "superadmin"] },
@@ -78,6 +79,7 @@ const Navbar = () => {
           {navLinks
             .filter((link) => !link.roles || (user && link.roles.includes(user.rol)))
             .filter((link) => !link.requiresFullAccess || hasFullAccess())
+            .filter((link) => !link.modulo || canReadModulo(link.modulo))
             .filter((link) => !link.onlyScoped || !hasFullAccess())
             .filter((link) => !link.requiresUsuariosAccess || canAccessUsuarios())
             .map((link) => (
