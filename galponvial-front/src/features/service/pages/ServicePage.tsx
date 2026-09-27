@@ -1,33 +1,16 @@
 import { useEffect, useState } from "react";
 import { serviceService } from "../services/serviceService";
+import type { FilaService, CreateServicePayload } from "../services/serviceService";
+import { vehiculosService } from "../../vehiculos/services/vehiculosService";
+import type { Vehiculo } from "../../vehiculos/types";
 import { useAdminPermissions } from "../../usuarios/hooks/useAdminPermissions";
 
-interface FilaService {
-  id: number;
-  vehiculo: string;
-  fecha: string;
-  aceiteMotor: string;
-  aceiteCaja: string;
-  aceiteDiferencial: string;
-  aceiteTransmision: string;
-  filtroTransmision: string;
-  filtroMotorAceite: string;
-  filtroAire: string;
-  filtroGasoil: string;
-  aceiteHidraulico: string;
-  filtroHidraulico: string;
-  correasAuxiliares: string;
-  aceiteTande: string;
-  regulacionValvulas: string;
-  cambioDamper: string;
-  proximoService: string;
-  cuentaHora: string;
-  stock: string;
-  observaciones: string;
-}
+type FilaServiceLocal = FilaService & { idVehiculoSeleccionado: number };
 
-const filaVacia = (): Omit<FilaService, "id"> => ({
-  vehiculo: "",
+const filaVacia = (): Omit<FilaServiceLocal, "id"> => ({
+  vehiculo: null,
+  vehiculoRef: null,
+  idVehiculoSeleccionado: 0,
   fecha: "",
   aceiteMotor: "",
   aceiteCaja: "",
@@ -49,6 +32,11 @@ const filaVacia = (): Omit<FilaService, "id"> => ({
   observaciones: "",
 });
 
+const fromApi = (f: FilaService): FilaServiceLocal => ({
+  ...f,
+  idVehiculoSeleccionado: f.vehiculoRef?.id_vehiculo ?? 0,
+});
+
 const SI_NO = ["SI", "NO"];
 const LISTA_FILTROS: string[] = [];
 const STOCK_OPCIONES = ["Stock", "Sin stock"];
@@ -57,9 +45,10 @@ type Vista = "registro" | "listado" | "historial" | "filtros";
 
 export default function ServicePage() {
   const { isAdmin, isSuperAdmin } = useAdminPermissions();
-  const [filas, setFilas] = useState<FilaService[]>([
+  const [filas, setFilas] = useState<FilaServiceLocal[]>([
     { id: -1, ...filaVacia() },
   ]);
+  const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
 
   // Navegación entre las vistas de Service.
   const [vista, setVista] = useState<Vista>("registro");
@@ -69,7 +58,7 @@ export default function ServicePage() {
 
   // Estado de edición del listado.
   const [filaEditando, setFilaEditando] = useState<number | null>(null);
-  const [borrador, setBorrador] = useState<FilaService | null>(null);
+  const [borrador, setBorrador] = useState<FilaServiceLocal | null>(null);
 
   // Filtros del Historial de Service.
   const [filtroUnidad, setFiltroUnidad] = useState("");
@@ -96,8 +85,16 @@ export default function ServicePage() {
     const cargarDatos = async () => {
       try {
         setCargando(true);
-        const datos = await serviceService.obtenerTodos();
-        setFilas(datos.length > 0 ? datos : [{ id: -1, ...filaVacia() }]);
+        const [datos, vehiculosData] = await Promise.all([
+          serviceService.obtenerTodos(),
+          vehiculosService.getAll(),
+        ]);
+        setVehiculos(vehiculosData);
+        setFilas(
+          datos.length > 0
+            ? datos.map(fromApi)
+            : [{ id: -1, ...filaVacia() }]
+        );
       } catch (err) {
         console.error("Error al cargar los registros de Service:", err);
       } finally {
@@ -107,6 +104,13 @@ export default function ServicePage() {
     cargarDatos();
   }, []);
 
+  const nombreVehiculo = (fila: FilaServiceLocal): string => {
+    if (fila.vehiculoRef) {
+      return `${fila.vehiculoRef.nombre ?? ""} ${fila.vehiculoRef.codigo ? `(${fila.vehiculoRef.codigo})` : ""}`.trim();
+    }
+    return fila.vehiculo || "—";
+  };
+
   const agregarFila = () => {
     const nuevoId = -Date.now();
     setFilas((prev) => [...prev, { id: nuevoId, ...filaVacia() }]);
@@ -114,17 +118,27 @@ export default function ServicePage() {
 
   const guardarEnServidor = async () => {
     const pendientes = filas.filter(
-      (f) => f.id < 0 && f.vehiculo.trim() !== ""
+      (f) => f.id < 0 && f.idVehiculoSeleccionado > 0
     );
     if (pendientes.length === 0) {
-      alert("Completá al menos el campo Vehículo en alguna fila para guardar.");
+      alert("Seleccioná al menos un Vehículo en alguna fila para guardar.");
       return;
     }
     try {
       for (const fila of pendientes) {
-        const { id, ...datos } = fila;
-        const creado = await serviceService.crear(datos);
-        setFilas((prev) => prev.map((f) => (f.id === id ? creado : f)));
+        const {
+          id,
+          vehiculo,
+          vehiculoRef,
+          idVehiculoSeleccionado,
+          ...resto
+        } = fila;
+        const payload: CreateServicePayload = {
+          id_vehiculo: idVehiculoSeleccionado,
+          ...resto,
+        };
+        const creado = await serviceService.crear(payload);
+        setFilas((prev) => prev.map((f) => (f.id === id ? fromApi(creado) : f)));
       }
       alert("Registro(s) guardado(s) correctamente en el servidor.");
     } catch (err) {
@@ -135,8 +149,8 @@ export default function ServicePage() {
 
   const actualizarFila = (
     id: number,
-    campo: keyof Omit<FilaService, "id">,
-    valor: string
+    campo: keyof Omit<FilaServiceLocal, "id" | "vehiculo" | "vehiculoRef">,
+    valor: string | number
   ) => {
     setFilas((prev) =>
       prev.map((fila) => (fila.id === id ? { ...fila, [campo]: valor } : fila))
@@ -174,10 +188,20 @@ export default function ServicePage() {
 
     if (filaEditando > 0) {
       try {
-        const { id, ...datos } = borrador;
-        const actualizado = await serviceService.actualizar(filaEditando, datos);
+        const {
+          id,
+          vehiculo,
+          vehiculoRef,
+          idVehiculoSeleccionado,
+          ...resto
+        } = borrador;
+        const payload: Partial<CreateServicePayload> = {
+          ...resto,
+          ...(idVehiculoSeleccionado > 0 ? { id_vehiculo: idVehiculoSeleccionado } : {}),
+        };
+        const actualizado = await serviceService.actualizar(filaEditando, payload);
         setFilas((prev) =>
-          prev.map((f) => (f.id === filaEditando ? actualizado : f))
+          prev.map((f) => (f.id === filaEditando ? fromApi(actualizado) : f))
         );
       } catch (err) {
         console.error(err);
@@ -194,9 +218,9 @@ export default function ServicePage() {
     setBorrador(null);
   };
 
-  const updateBorrador = <K extends keyof FilaService>(
+  const updateBorrador = <K extends keyof FilaServiceLocal>(
     campo: K,
-    valor: FilaService[K]
+    valor: FilaServiceLocal[K]
   ) => {
     setBorrador((prev) => (prev ? { ...prev, [campo]: valor } : prev));
   };
@@ -229,19 +253,17 @@ export default function ServicePage() {
     setBusquedaRealizada(false);
   };
 
-  
-
   const selectSiNo = (
     id: number,
-    campo: keyof Omit<FilaService, "id">,
+    campo: keyof Omit<FilaServiceLocal, "id" | "vehiculo" | "vehiculoRef">,
     valor: string,
     editando: boolean = false
   ) => (
     <select
       value={valor}
-      onChange={(e) => 
-        editando 
-          ? updateBorrador(campo as keyof FilaService, e.target.value as any)
+      onChange={(e) =>
+        editando
+          ? updateBorrador(campo as keyof FilaServiceLocal, e.target.value as any)
           : actualizarFila(id, campo, e.target.value)
       }
       className={`border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-20 ${
@@ -263,7 +285,7 @@ export default function ServicePage() {
 
   const selectStock = (
     id: number,
-    campo: keyof Omit<FilaService, "id">,
+    campo: keyof Omit<FilaServiceLocal, "id" | "vehiculo" | "vehiculoRef">,
     valor: string,
     editando: boolean = false
   ) => (
@@ -271,7 +293,7 @@ export default function ServicePage() {
       value={valor}
       onChange={(e) =>
         editando
-          ? updateBorrador(campo as keyof FilaService, e.target.value as any)
+          ? updateBorrador(campo as keyof FilaServiceLocal, e.target.value as any)
           : actualizarFila(id, campo, e.target.value)
       }
       className={`border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-28 ${
@@ -286,6 +308,24 @@ export default function ServicePage() {
       {STOCK_OPCIONES.map((op) => (
         <option key={op} value={op}>
           {op}
+        </option>
+      ))}
+    </select>
+  );
+
+  const selectVehiculo = (
+    idVehiculoSeleccionado: number,
+    onChange: (id: number) => void
+  ) => (
+    <select
+      value={idVehiculoSeleccionado || ""}
+      onChange={(e) => onChange(Number(e.target.value))}
+      className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
+    >
+      <option value="">— Seleccionar —</option>
+      {vehiculos.map((v) => (
+        <option key={v.id_vehiculo} value={v.id_vehiculo}>
+          {v.nombre} {v.codigo ? `(${v.codigo})` : ""}
         </option>
       ))}
     </select>
@@ -376,13 +416,9 @@ export default function ServicePage() {
                 {filas.map((fila) => (
                   <tr key={fila.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-3 py-2">
-                      <input
-                        type="text"
-                        placeholder="Ingrese vehículo"
-                        value={fila.vehiculo}
-                        onChange={(e) => actualizarFila(fila.id, "vehiculo", e.target.value)}
-                        className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-36"
-                      />
+                      {selectVehiculo(fila.idVehiculoSeleccionado, (id) =>
+                        actualizarFila(fila.id, "idVehiculoSeleccionado", id)
+                      )}
                     </td>
                     <td className="px-3 py-2">
                       <input
@@ -496,7 +532,7 @@ export default function ServicePage() {
             <tbody>
               {filas.map((fila) => {
                 const editando = filaEditando === fila.id && borrador !== null;
-                const mostrado = editando ? borrador : fila;
+                const mostrado = editando ? borrador! : fila;
 
                 return (
                   <tr
@@ -504,16 +540,11 @@ export default function ServicePage() {
                     className={`border-b border-gray-100 last:border-0 ${editando ? "bg-blue-50" : ""}`}
                   >
                     <td className="px-3 py-2">
-                      {editando ? (
-                        <input
-                          type="text"
-                          value={mostrado.vehiculo}
-                          onChange={(e) => updateBorrador("vehiculo", e.target.value)}
-                          className={inputClass}
-                        />
-                      ) : (
-                        mostrado.vehiculo
-                      )}
+                      {editando
+                        ? selectVehiculo(mostrado.idVehiculoSeleccionado, (id) =>
+                            updateBorrador("idVehiculoSeleccionado", id)
+                          )
+                        : nombreVehiculo(mostrado)}
                     </td>
                     <td className="px-3 py-2">
                       {editando ? (
@@ -753,7 +784,7 @@ export default function ServicePage() {
                     .filter((f) => {
                       if (
                         filtrosAplicados.unidad &&
-                        !f.vehiculo.toLowerCase().includes(
+                        !nombreVehiculo(f).toLowerCase().includes(
                           filtrosAplicados.unidad.toLowerCase()
                         )
                       ) {
@@ -783,7 +814,7 @@ export default function ServicePage() {
                         key={fila.id}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-3 py-2">{fila.vehiculo || "—"}</td>
+                        <td className="px-3 py-2">{nombreVehiculo(fila)}</td>
                         <td className="px-3 py-2">{fila.fecha || "—"}</td>
                         <td className="px-3 py-2">{fila.aceiteMotor || "—"}</td>
                         <td className="px-3 py-2">{fila.aceiteCaja || "—"}</td>
@@ -796,7 +827,7 @@ export default function ServicePage() {
                   {filas.filter((f) => {
                     if (
                       filtrosAplicados.unidad &&
-                      !f.vehiculo.toLowerCase().includes(
+                      !nombreVehiculo(f).toLowerCase().includes(
                         filtrosAplicados.unidad.toLowerCase()
                       )
                     ) {
