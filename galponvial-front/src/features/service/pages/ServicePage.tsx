@@ -402,7 +402,7 @@ export default function ServicePage() {
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Hidráulico</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Hidráulico</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Correas Auxiliares</th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Tande</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Tándem</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Regulación de Válvulas</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cambio de Damper</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Próximo Service</th>
@@ -519,7 +519,7 @@ export default function ServicePage() {
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Hidráulico</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Hidráulico</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Correas Auxiliares</th>
-                <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Tande</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Tándem</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Regulación Válvulas</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cambio Damper</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Próximo Service</th>
