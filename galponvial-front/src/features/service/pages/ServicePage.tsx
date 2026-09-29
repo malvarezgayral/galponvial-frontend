@@ -879,13 +879,18 @@ export default function ServicePage() {
           <div className="flex flex-wrap gap-4 items-end">
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">Unidad</label>
-              <input
-                type="text"
-                placeholder="Ingrese unidad"
+              <select
                 value={unidadFiltros}
                 onChange={(e) => setUnidadFiltros(e.target.value)}
                 className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
-              />
+              >
+                <option value="">— Seleccionar unidad —</option>
+                {vehiculos.map((v) => (
+                  <option key={v.id_vehiculo} value={String(v.id_vehiculo)}>
+                    {v.nombre} {v.codigo ? `(${v.codigo})` : ""}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="flex flex-col gap-1">
               <label className="text-xs font-medium text-gray-500">Lista de filtros</label>
