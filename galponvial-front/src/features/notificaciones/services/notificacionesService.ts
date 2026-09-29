@@ -21,3 +21,7 @@ export async function marcarTipoComoLeido(tipo: Tab): Promise<void> {
 export async function marcarComoLeida(id: number): Promise<void> {
   await apiClient.patch(`/notificaciones/${id}/leida`);
 }
+
+export async function eliminarNotificacion(id: number): Promise<void> {
+  await apiClient.delete(`/notificaciones/${id}`);
+}
