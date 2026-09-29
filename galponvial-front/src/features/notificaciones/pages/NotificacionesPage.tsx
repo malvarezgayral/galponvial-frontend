@@ -3,7 +3,7 @@ import type { Notificacion, Tab } from "../types";
 import PersonalDetalleModal from "../components/PersonalDetalleModal";
 import { useNotificaciones } from "../hooks/useNotificaciones";
 import { useNoLeidas, REFRESCAR_NO_LEIDAS } from "../hooks/useNoLeidas";
-import { marcarComoLeida, marcarTipoComoLeido } from "../services/notificacionesService";
+import { marcarComoLeida, marcarTipoComoLeido, eliminarNotificacion } from "../services/notificacionesService";
 import { useAdminPermissions } from "@/features/usuarios/hooks/useAdminPermissions";
 import { ValidPermissions } from "@/features/usuarios/types";
 
@@ -69,6 +69,22 @@ export default function NotificacionesPage() {
     }
   };
 
+  const handleEliminar = (n: Notificacion) => {
+    if (
+      !window.confirm(
+        "¿Seguro que querés eliminar esta notificación? Se borra para todos y no se puede deshacer.",
+      )
+    ) {
+      return;
+    }
+    eliminarNotificacion(n.id)
+      .catch(() => window.alert("No se pudo eliminar la notificación."))
+      .finally(() => {
+        window.dispatchEvent(new Event(REFRESCAR_NO_LEIDAS));
+        recargar();
+      });
+  };
+
   return (
     <div className="space-y-6">
       <div className="mb-6">
@@ -122,9 +138,24 @@ export default function NotificacionesPage() {
                   <p className="text-sm text-gray-600">{n.mensaje}</p>
                   <p className="text-xs text-gray-400 mt-1">{n.fecha}</p>
                 </div>
-                {!n.leida && (
-                  <span className="w-2 h-2 rounded-full bg-[#0062e3] mt-1.5 flex-shrink-0" />
-                )}
+                <div className="flex items-center gap-3">
+                  {!n.leida && (
+                    <span className="w-2 h-2 rounded-full bg-[#0062e3] flex-shrink-0" />
+                  )}
+                  {isSuperAdmin() && (
+                    <button
+                      type="button"
+                      title="Eliminar notificación"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEliminar(n);
+                      }}
+                      className="text-red-600 hover:text-red-800 font-bold text-lg leading-none px-1"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
               </li>
             ))}
           </ul>
