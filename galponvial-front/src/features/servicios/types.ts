@@ -108,6 +108,15 @@ export interface IncidenteResponse {
 export interface RecordatorioRequest {
   fecha: string;
   descripcion: string;
+  destinoDni?: number | null;
+  paraTodos?: boolean;
+}
+
+export interface DestinoRecordatorio {
+  dni: number;
+  nombre: string;
+  apellido: string;
+  rol: string;
 }
 
 export interface RecordatorioResponse {
