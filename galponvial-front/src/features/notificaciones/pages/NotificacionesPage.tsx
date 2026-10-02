@@ -22,7 +22,7 @@ const TABS: { key: Tab; label: string }[] = [
 ];
 
 // Tabs visibles para un admin acotado a Almacén (sin acceso global all:read/all:write)
-const TABS_ALMACEN: Tab[] = ["almacen", "recordatorio", "privada"];
+const TABS_ALMACEN: Tab[] = ["almacen", "personal", "recordatorio", "privada"];
 
 export default function NotificacionesPage() {
   const { hasFullAccess, hasPermission, isSuperAdmin } = useAdminPermissions();
@@ -69,8 +69,9 @@ export default function NotificacionesPage() {
         case "recordatorio":
         case "privada":
           return true;
+        case "personal":
+          return hasPermission("personal:read") || hasPermission("personal:write");
         default:
-          // personal: solo superadmin
           return false;
       }
     };
@@ -88,9 +89,11 @@ export default function NotificacionesPage() {
       window.dispatchEvent(new Event(REFRESCAR_NO_LEIDAS));
       recargar();
     });
-    // Personal es confidencial: solo el superadmin abre el detalle
+    // Personal es confidencial: lo abre el superadmin o quien tenga permiso de Personal
     if (
-      isSuperAdmin() &&
+      (isSuperAdmin() ||
+        hasPermission("personal:read") ||
+        hasPermission("personal:write")) &&
       n.tipo === "personal" &&
       n.referenciaTipo &&
       n.referenciaId
