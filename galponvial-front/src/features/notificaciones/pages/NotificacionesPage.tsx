@@ -66,8 +66,11 @@ export default function NotificacionesPage() {
         case "incidentes":
         case "proveedores":
           return acceso;
+        case "recordatorio":
+        case "privada":
+          return true;
         default:
-          // recordatorio, personal y privada: solo superadmin (provisorio)
+          // personal: solo superadmin
           return false;
       }
     };
