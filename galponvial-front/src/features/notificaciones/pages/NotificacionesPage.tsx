@@ -41,13 +41,40 @@ export default function NotificacionesPage() {
     const base = esAdminAcotadoAlmacen
       ? TABS.filter((t) => TABS_ALMACEN.includes(t.key))
       : TABS;
-    // Personal es confidencial: solo la ve el superadmin
-    return isSuperAdmin() ? base : base.filter((t) => t.key !== "personal");
-  }, [esAdminAcotadoAlmacen, isSuperAdmin]);
+    // Misma regla que el servidor (tiposPermitidos)
+    const superAdmin = isSuperAdmin();
+    const acceso = hasFullAccess();
+    const puede = (key: Tab): boolean => {
+      if (superAdmin) return true;
+      switch (key) {
+        case "service":
+          return acceso || hasPermission("service:read") || hasPermission("service:write");
+        case "lubricentro":
+          return acceso || hasPermission("lubricentro:read") || hasPermission("lubricentro:write");
+        case "combustible":
+          return acceso || hasPermission("combustible:write");
+        case "almacen":
+          return (
+            acceso ||
+            hasPermission("almacen-taller:read") ||
+            hasPermission("almacen-taller:write") ||
+            hasPermission("almacen-comun:read") ||
+            hasPermission("almacen-comun:write")
+          );
+        case "reparacion":
+        case "compras":
+        case "incidentes":
+        case "proveedores":
+          return acceso;
+        default:
+          // recordatorio, personal y privada: solo superadmin (provisorio)
+          return false;
+      }
+    };
+    return base.filter((t) => puede(t.key));
+  }, [esAdminAcotadoAlmacen, isSuperAdmin, hasFullAccess, hasPermission]);
 
-  const [tab, setTab] = useState<Tab>(
-    esAdminAcotadoAlmacen ? "almacen" : "service",
-  );
+  const [tab, setTab] = useState<Tab>(tabsVisibles[0]?.key ?? "service");
   const { notificaciones, loading, error, recargar } = useNotificaciones(tab);
   const labelActual = tabsVisibles.find((t) => t.key === tab)?.label ?? "";
   const [detalle, setDetalle] = useState<{ tipo: string; id: number } | null>(null);
