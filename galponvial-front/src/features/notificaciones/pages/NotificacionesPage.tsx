@@ -163,13 +163,13 @@ export default function NotificacionesPage() {
                 key={n.id}
                 onClick={() => handleClick(n)}
                 className={`py-3 flex justify-between items-start cursor-pointer hover:bg-gray-50 -mx-2 px-2 rounded-lg transition-colors ${
-                  n.leida ? "opacity-60" : ""
+                  ""
                 }`}
               >
                 <div>
-                  <p className="font-semibold text-gray-900">{n.titulo}</p>
-                  <p className="text-sm text-gray-600">{n.mensaje}</p>
-                  <p className="text-xs text-gray-400 mt-1">{n.fecha}</p>
+                  <p className="font-bold text-gray-900">{n.titulo}</p>
+                  <p className="text-sm font-bold text-gray-900">{n.mensaje}</p>
+                  <p className="text-xs font-bold text-gray-900 mt-1">{n.fecha}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   {!n.leida && (
