@@ -216,11 +216,10 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
               `}
             >
               <option value="">— Seleccionar destino —</option>
-              <option value="todos">Todos</option>
+              <option value="todos">Todos los admin</option>
               {destinos.map((d) => (
                 <option key={d.dni} value={String(d.dni)}>
                   {d.apellido} {d.nombre}
-                  {d.rol === 'superadmin' ? ' (Super admin)' : ''}
                 </option>
               ))}
             </select>
