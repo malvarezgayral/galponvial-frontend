@@ -167,7 +167,7 @@ export default function NotificacionesPage() {
                 }`}
               >
                 <div>
-                  <p className="font-bold text-gray-900">{n.titulo}</p>
+                  <p className="font-bold text-[var(--color-navbar-nav)]">{n.titulo}</p>
                   <p className="text-sm font-bold text-gray-900">{n.mensaje}</p>
                   <p className="text-xs font-bold text-gray-900 mt-1">{n.fecha}</p>
                 </div>
