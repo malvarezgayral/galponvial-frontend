@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { recordatorioService } from '../services/recordatorioService';
 import { RecordatorioSuccessModal } from './RecordatorioSuccessModal';
 import { useAppStore } from '@/app/stores/appStore';
-import type { RecordatorioRequest, RecordatorioResponse } from '../types';
+import type { RecordatorioRequest, RecordatorioResponse, DestinoRecordatorio } from '../types';
 
 interface RecordatorioFormProps {
   onSuccess?: (response: RecordatorioResponse) => void;
@@ -21,6 +21,17 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
     fecha: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16).replace('T', ' '),
     descripcion: '',
   });
+
+  const [destinos, setDestinos] = useState<DestinoRecordatorio[]>([]);
+  // '' = sin elegir, 'todos' = para todos, o el DNI del destino elegido
+  const [destino, setDestino] = useState<string>('');
+
+  useEffect(() => {
+    recordatorioService
+      .obtenerDestinos()
+      .then(setDestinos)
+      .catch(() => setDestinos([]));
+  }, []);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
@@ -61,6 +72,10 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
 
     if (!formData.descripcion || formData.descripcion.trim() === '') {
       newErrors.descripcion = 'La descripción es obligatoria';
+    }
+
+    if (!destino) {
+      newErrors.destino = 'Elegí a quién va dirigido el recordatorio';
     }
 
     setErrors(newErrors);
@@ -115,6 +130,8 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
       const dataToSend = {
         ...formData,
         fecha: `${formData.fecha}:00`,
+        paraTodos: destino === 'todos',
+        destinoDni: destino && destino !== 'todos' ? Number(destino) : null,
       };
       const response = await recordatorioService.crearRecordatorio(userDni, dataToSend);
       setSuccessData(response);
@@ -140,6 +157,7 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
       fecha: getMinDate(),
       descripcion: '',
     });
+    setDestino('');
     setErrors({});
     setGeneralError(null);
   };
@@ -176,6 +194,37 @@ export const RecordatorioForm: React.FC<RecordatorioFormProps> = ({
                   : `${user.email} (${user.dni})`
                 : '—'}
             </div>
+          </div>
+
+          {/* Destino del Recordatorio */}
+          <div>
+            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
+              Destino del Recordatorio *
+            </label>
+            <select
+              value={destino}
+              onChange={(e) => {
+                setDestino(e.target.value);
+                if (errors.destino) {
+                  setErrors((prev) => ({ ...prev, destino: '' }));
+                }
+              }}
+              className={`
+                w-full px-4 py-2 border rounded-lg
+                focus:outline-none focus:ring-2 focus:ring-[#378AFE]
+                ${errors.destino ? 'border-red-500' : 'border-[var(--color-border-light)]'}
+              `}
+            >
+              <option value="">— Seleccionar destino —</option>
+              <option value="todos">Todos</option>
+              {destinos.map((d) => (
+                <option key={d.dni} value={String(d.dni)}>
+                  {d.apellido} {d.nombre}
+                  {d.rol === 'superadmin' ? ' (Super admin)' : ''}
+                </option>
+              ))}
+            </select>
+            {errors.destino && <p className="text-red-500 text-sm mt-1">{errors.destino}</p>}
           </div>
 
           {/* Fecha y hora del recordatorio */}

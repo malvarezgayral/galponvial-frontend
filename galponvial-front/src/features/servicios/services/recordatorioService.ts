@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/api';
-import type { RecordatorioRequest, RecordatorioResponse } from '../types';
+import type { RecordatorioRequest, RecordatorioResponse, DestinoRecordatorio } from '../types';
 import type { ObjectServiceResponse } from '@/shared/types/common-types';
 
 /**
@@ -21,6 +21,16 @@ export const recordatorioService = {
       data
     );
     return response;
+  },
+
+  /**
+   * Obtiene los posibles destinos de un recordatorio (admin y superadmin activos)
+   */
+  obtenerDestinos: async (): Promise<DestinoRecordatorio[]> => {
+    const { data } = await apiClient.get<DestinoRecordatorio[]>(
+      '/usuario/destinos-recordatorio'
+    );
+    return data;
   },
 
   /**
