@@ -6,6 +6,16 @@ import { useAppStore } from '@/app/stores/appStore';
 import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
 import type { RecordatorioResponse } from '../types';
 
+const mensajeError = (err: unknown, porDefecto: string): string => {
+  const e = err as {
+    response?: { data?: { message?: string | string[] } };
+    message?: string;
+  };
+  const m = e?.response?.data?.message;
+  if (Array.isArray(m)) return m.join(', ');
+  return m ?? e?.message ?? porDefecto;
+};
+
 const ListadoRecordatoriosPage = () => {
   const navigate = useNavigate();
   const { user } = useAppStore();
@@ -52,20 +62,31 @@ const ListadoRecordatoriosPage = () => {
     setBorrador(null);
   };
 
-  const guardarEdicion = () => {
-    if (filaEditando !== null && borrador) {
-      // TODO: conectar con recordatorioService.updateRecordatorio cuando se decida hacerlo real
+  const guardarEdicion = async () => {
+    if (filaEditando === null || !borrador) return;
+    try {
+      setError(null);
+      await recordatorioService.updateRecordatorio(borrador.id, {
+        fecha: borrador.fecha,
+        descripcion: borrador.descripcion,
+      });
       setRecordatorios((prev) => prev.map((r, i) => (i === filaEditando ? borrador : r)));
       setFilaEditando(null);
       setBorrador(null);
+    } catch (err) {
+      setError(mensajeError(err, 'No se pudo guardar el recordatorio'));
     }
   };
 
-  const handleEliminar = (index: number, descripcion: string) => {
+  const handleEliminar = async (index: number, descripcion: string) => {
     const confirmado = window.confirm(`¿Seguro que querés eliminar el recordatorio "${descripcion}"?`);
-    if (confirmado) {
-      // TODO: conectar con recordatorioService.deleteRecordatorio cuando se decida hacerlo real
+    if (!confirmado) return;
+    try {
+      setError(null);
+      await recordatorioService.deleteRecordatorio(recordatorios[index].id);
       setRecordatorios((prev) => prev.filter((_, i) => i !== index));
+    } catch (err) {
+      setError(mensajeError(err, 'No se pudo eliminar el recordatorio'));
     }
   };
 
