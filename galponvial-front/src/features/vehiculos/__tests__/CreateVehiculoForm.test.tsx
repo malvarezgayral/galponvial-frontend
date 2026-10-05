@@ -45,7 +45,13 @@ describe('CreateVehiculoForm', () => {
     expect(screen.getByLabelText(/Año/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Color/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Empresa de seguros/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Número de serie/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Número de motor/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Número de chasis/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Tipo de combustible/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Número de patente/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Categoría/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Clase/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Fecha de vencimiento/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Póliza/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/Licencia del conductor/i)).toBeInTheDocument();
   });

@@ -1,7 +1,15 @@
 // Vehiculos types
 export interface InfoAdicional {
-  numero_serie: number;
+  // Dato viejo: ya no se carga desde el formulario
+  numero_serie?: number | null;
+  numero_motor: string;
+  numero_chasis: string;
+  tipo_combustible: string;
+  patente: string;
   licencia_conductor: string;
+  licencia_categoria: string;
+  licencia_clase: string;
+  licencia_vencimiento: string;
   color: string;
   seguro_empresa: string;
   poliza: string;
