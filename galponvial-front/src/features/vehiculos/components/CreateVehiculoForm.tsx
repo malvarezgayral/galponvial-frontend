@@ -15,8 +15,14 @@ const INITIAL_FORM_STATE: CreateVehiculoPayload = {
   uso_km: 0,
   delegacion: "",
   infoAdicional: {
-    numero_serie: 0,
+    numero_motor: "",
+    numero_chasis: "",
+    tipo_combustible: "",
+    patente: "",
     licencia_conductor: "",
+    licencia_categoria: "",
+    licencia_clase: "",
+    licencia_vencimiento: "",
     color: "",
     seguro_empresa: "",
     poliza: "",
@@ -97,7 +103,7 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
         ...prev,
         infoAdicional: {
           ...prev.infoAdicional,
-          [field]: field === "numero_serie" ? parseInt(value, 10) : value,
+          [field]: value,
         },
       };
     });
@@ -124,8 +130,14 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
     ];
 
     const requiredAdditionalFields = [
-      "numero_serie",
+      "numero_motor",
+      "numero_chasis",
+      "tipo_combustible",
+      "patente",
       "licencia_conductor",
+      "licencia_categoria",
+      "licencia_clase",
+      "licencia_vencimiento",
       "color",
       "seguro_empresa",
       "poliza",
@@ -598,29 +610,113 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
               )}
             </div>
 
-            {/* Número de serie */}
+            {/* Número de motor */}
             <div>
               <label
-                htmlFor="numero_serie"
+                htmlFor="numero_motor"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Número de serie
+                Número de motor
               </label>
               <input
-                id="numero_serie"
-                type="number"
-                placeholder="Ej: 8008859404"
-                value={formData.infoAdicional.numero_serie || ""}
-                onChange={(e) => handleAdditionalInfoChange(e, "numero_serie")}
+                id="numero_motor"
+                type="text"
+                placeholder="Ej: MOT123456"
+                value={formData.infoAdicional.numero_motor}
+                onChange={(e) => handleAdditionalInfoChange(e, "numero_motor")}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  fieldErrors["infoAdicional.numero_serie"]
+                  fieldErrors["infoAdicional.numero_motor"]
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-blue-500"
                 }`}
               />
-              {fieldErrors["infoAdicional.numero_serie"] && (
+              {fieldErrors["infoAdicional.numero_motor"] && (
                 <p className="text-red-500 text-sm mt-1">
-                  {fieldErrors["infoAdicional.numero_serie"]}
+                  {fieldErrors["infoAdicional.numero_motor"]}
+                </p>
+              )}
+            </div>
+
+            {/* Número de chasis */}
+            <div>
+              <label
+                htmlFor="numero_chasis"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Número de chasis
+              </label>
+              <input
+                id="numero_chasis"
+                type="text"
+                placeholder="Ej: CHA987654"
+                value={formData.infoAdicional.numero_chasis}
+                onChange={(e) => handleAdditionalInfoChange(e, "numero_chasis")}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors["infoAdicional.numero_chasis"]
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
+              />
+              {fieldErrors["infoAdicional.numero_chasis"] && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldErrors["infoAdicional.numero_chasis"]}
+                </p>
+              )}
+            </div>
+
+            {/* Tipo de combustible */}
+            <div>
+              <label
+                htmlFor="tipo_combustible"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Tipo de combustible
+              </label>
+              <select
+                id="tipo_combustible"
+                value={formData.infoAdicional.tipo_combustible}
+                onChange={(e) => handleAdditionalInfoChange(e, "tipo_combustible")}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white ${
+                  fieldErrors["infoAdicional.tipo_combustible"]
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
+              >
+                <option value="">Selecciona un tipo</option>
+                <option value="Diesel">Diesel</option>
+                <option value="Euro">Euro</option>
+                <option value="Nafta">Nafta</option>
+              </select>
+              {fieldErrors["infoAdicional.tipo_combustible"] && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldErrors["infoAdicional.tipo_combustible"]}
+                </p>
+              )}
+            </div>
+
+            {/* Número de patente */}
+            <div>
+              <label
+                htmlFor="patente"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Número de patente
+              </label>
+              <input
+                id="patente"
+                type="text"
+                placeholder="Ej: AB123CD"
+                value={formData.infoAdicional.patente}
+                onChange={(e) => handleAdditionalInfoChange(e, "patente")}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors["infoAdicional.patente"]
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
+              />
+              {fieldErrors["infoAdicional.patente"] && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldErrors["infoAdicional.patente"]}
                 </p>
               )}
             </div>
@@ -677,6 +773,86 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
               {fieldErrors["infoAdicional.licencia_conductor"] && (
                 <p className="text-red-500 text-sm mt-1">
                   {fieldErrors["infoAdicional.licencia_conductor"]}
+                </p>
+              )}
+            </div>
+
+            {/* Categoría */}
+            <div>
+              <label
+                htmlFor="licencia_categoria"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Categoría
+              </label>
+              <input
+                id="licencia_categoria"
+                type="text"
+                placeholder="Ej: B1"
+                value={formData.infoAdicional.licencia_categoria}
+                onChange={(e) => handleAdditionalInfoChange(e, "licencia_categoria")}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors["infoAdicional.licencia_categoria"]
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
+              />
+              {fieldErrors["infoAdicional.licencia_categoria"] && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldErrors["infoAdicional.licencia_categoria"]}
+                </p>
+              )}
+            </div>
+
+            {/* Clase */}
+            <div>
+              <label
+                htmlFor="licencia_clase"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Clase
+              </label>
+              <input
+                id="licencia_clase"
+                type="text"
+                placeholder="Ej: Profesional"
+                value={formData.infoAdicional.licencia_clase}
+                onChange={(e) => handleAdditionalInfoChange(e, "licencia_clase")}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors["infoAdicional.licencia_clase"]
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
+              />
+              {fieldErrors["infoAdicional.licencia_clase"] && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldErrors["infoAdicional.licencia_clase"]}
+                </p>
+              )}
+            </div>
+
+            {/* Fecha de vencimiento */}
+            <div>
+              <label
+                htmlFor="licencia_vencimiento"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Fecha de vencimiento
+              </label>
+              <input
+                id="licencia_vencimiento"
+                type="date"
+                value={formData.infoAdicional.licencia_vencimiento}
+                onChange={(e) => handleAdditionalInfoChange(e, "licencia_vencimiento")}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                  fieldErrors["infoAdicional.licencia_vencimiento"]
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
+              />
+              {fieldErrors["infoAdicional.licencia_vencimiento"] && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldErrors["infoAdicional.licencia_vencimiento"]}
                 </p>
               )}
             </div>

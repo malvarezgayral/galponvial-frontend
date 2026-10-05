@@ -334,8 +334,23 @@ const VehiculoDetallesPage: React.FC = () => {
         <h2 className="text-lg font-semibold text-gray-900 mb-6">Información Adicional</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <div>
-            <span className="text-gray-600 font-medium block mb-2">Número de Serie</span>
-            <p className="text-gray-900 font-semibold text-lg">{vehiculo.infoAdicional?.numero_serie || "Sin info"}</p>
+            <span className="text-gray-600 font-medium block mb-2">Número de Motor</span>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.numero_motor || "Sin info"}</p>
+          </div>
+
+          <div>
+            <span className="text-gray-600 font-medium block mb-2">Número de Chasis</span>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.numero_chasis || "Sin info"}</p>
+          </div>
+
+          <div>
+            <span className="text-gray-600 font-medium block mb-2">Tipo de Combustible</span>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.tipo_combustible || "Sin info"}</p>
+          </div>
+
+          <div>
+            <span className="text-gray-600 font-medium block mb-2">Número de Patente</span>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.patente || "Sin info"}</p>
           </div>
 
           <div>
@@ -373,6 +388,21 @@ const VehiculoDetallesPage: React.FC = () => {
           <div>
             <span className="text-gray-600 font-medium block mb-2">Licencia del Conductor</span>
             <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.licencia_conductor || "Sin info"}</p>
+          </div>
+
+          <div>
+            <span className="text-gray-600 font-medium block mb-2">Categoría de Licencia</span>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.licencia_categoria || "Sin info"}</p>
+          </div>
+
+          <div>
+            <span className="text-gray-600 font-medium block mb-2">Clase de Licencia</span>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.licencia_clase || "Sin info"}</p>
+          </div>
+
+          <div>
+            <span className="text-gray-600 font-medium block mb-2">Vencimiento de Licencia</span>
+            <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.licencia_vencimiento || "Sin info"}</p>
           </div>
 
           <div>

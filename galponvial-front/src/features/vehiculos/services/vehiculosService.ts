@@ -34,8 +34,14 @@ const transformVehiculoPayload = (
     uso_km: vehiculo.uso_km,
     delegacion: vehiculo.delegacion,
     infoAdicional: {
-      numero_serie: vehiculo.infoAdicional.numero_serie,
+      numero_motor: vehiculo.infoAdicional.numero_motor,
+      numero_chasis: vehiculo.infoAdicional.numero_chasis,
+      tipo_combustible: vehiculo.infoAdicional.tipo_combustible,
+      patente: vehiculo.infoAdicional.patente,
       licencia_conductor: vehiculo.infoAdicional.licencia_conductor,
+      licencia_categoria: vehiculo.infoAdicional.licencia_categoria,
+      licencia_clase: vehiculo.infoAdicional.licencia_clase,
+      licencia_vencimiento: vehiculo.infoAdicional.licencia_vencimiento,
       color: vehiculo.infoAdicional.color,
       seguro_empresa: vehiculo.infoAdicional.seguro_empresa,
       poliza: vehiculo.infoAdicional.poliza,
@@ -58,7 +64,6 @@ const transformUpdatePayload = (vehiculo: Partial<Vehiculo>): Record<string, unk
     delegacion: vehiculo.delegacion,
     infoAdicional: {
       ...vehiculo.infoAdicional,
-      numero_serie: Number(vehiculo.infoAdicional.numero_serie),
       id_sector_pertenencia: vehiculo.infoAdicional.sector
         ? vehiculo.infoAdicional.sector.id_sector
         : undefined,

@@ -44,7 +44,13 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
         status: vehiculo.status,
         delegacion: vehiculo.delegacion,
         infoAdicional: {
-          numero_serie: vehiculo.infoAdicional.numero_serie,
+          numero_motor: vehiculo.infoAdicional.numero_motor ?? '',
+            numero_chasis: vehiculo.infoAdicional.numero_chasis ?? '',
+            tipo_combustible: vehiculo.infoAdicional.tipo_combustible ?? '',
+            patente: vehiculo.infoAdicional.patente ?? '',
+            licencia_categoria: vehiculo.infoAdicional.licencia_categoria ?? '',
+            licencia_clase: vehiculo.infoAdicional.licencia_clase ?? '',
+            licencia_vencimiento: vehiculo.infoAdicional.licencia_vencimiento ?? '',
           licencia_conductor: vehiculo.infoAdicional.licencia_conductor,
           color: vehiculo.infoAdicional.color,
           seguro_empresa: vehiculo.infoAdicional.seguro_empresa,
@@ -66,7 +72,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
   const validateForm = (): { isValid: boolean; errors: Record<string, string> } => {
     const errors: Record<string, string> = {};
     const requiredFields = ['codigo', 'nombre', 'marca', 'modelo', 'tipo_vehiculo', 'status', 'delegacion'];
-    const requiredAdditionalFields = ['numero_serie', 'licencia_conductor', 'color', 'seguro_empresa', 'poliza', 'sector'];
+    const requiredAdditionalFields = ['numero_motor', 'numero_chasis', 'tipo_combustible', 'patente', 'licencia_conductor', 'licencia_categoria', 'licencia_clase', 'licencia_vencimiento', 'color', 'seguro_empresa', 'poliza', 'sector'];
 
     for (const field of requiredFields) {
       const value = formData[field as keyof Vehiculo];
@@ -141,7 +147,13 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
       setFormData((prev) => ({
         ...prev,
         infoAdicional: {
-          numero_serie: prev.infoAdicional?.numero_serie ?? 0,
+          numero_motor: prev.infoAdicional?.numero_motor ?? '',
+            numero_chasis: prev.infoAdicional?.numero_chasis ?? '',
+            tipo_combustible: prev.infoAdicional?.tipo_combustible ?? '',
+            patente: prev.infoAdicional?.patente ?? '',
+            licencia_categoria: prev.infoAdicional?.licencia_categoria ?? '',
+            licencia_clase: prev.infoAdicional?.licencia_clase ?? '',
+            licencia_vencimiento: prev.infoAdicional?.licencia_vencimiento ?? '',
           licencia_conductor: prev.infoAdicional?.licencia_conductor ?? '',
           color: prev.infoAdicional?.color ?? '',
           seguro_empresa: prev.infoAdicional?.seguro_empresa ?? '',
@@ -332,128 +344,239 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
           <div className="border-t pt-4">
             <h3 className="text-sm font-semibold text-gray-900 mb-3">Información Adicional</h3>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Número de Serie
-                </label>
-                <input
-                  type="number"
-                  value={formData.infoAdicional?.numero_serie || ''}
-                  onChange={(e) =>
-                    handleInputChange('numero_serie', parseInt(e.target.value), true, 'numero_serie')
-                  }
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                    fieldErrors['infoAdicional.numero_serie'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-                  }`}
-                  disabled={loading}
-                />
-                {fieldErrors['infoAdicional.numero_serie'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.numero_serie']}</p>}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Color
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.infoAdicional?.color || ''}
+                    onChange={(e) =>
+                      handleInputChange('color', e.target.value, true, 'color')
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.color'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  />
+                  {fieldErrors['infoAdicional.color'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.color']}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Seguro Empresa
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.infoAdicional?.seguro_empresa || ''}
+                    onChange={(e) =>
+                      handleInputChange('seguro_empresa', e.target.value, true, 'seguro_empresa')
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.seguro_empresa'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  />
+                  {fieldErrors['infoAdicional.seguro_empresa'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.seguro_empresa']}</p>}
+                </div>
               </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Color
-                </label>
-                <input
-                  type="text"
-                  value={formData.infoAdicional?.color || ''}
-                  onChange={(e) =>
-                    handleInputChange('color', e.target.value, true, 'color')
-                  }
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                    fieldErrors['infoAdicional.color'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-                  }`}
-                  disabled={loading}
-                />
-                {fieldErrors['infoAdicional.color'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.color']}</p>}
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Número de Motor
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.infoAdicional?.numero_motor || ''}
+                    onChange={(e) =>
+                      handleInputChange('numero_motor', e.target.value, true, 'numero_motor')
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.numero_motor'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  />
+                  {fieldErrors['infoAdicional.numero_motor'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.numero_motor']}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Número de Chasis
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.infoAdicional?.numero_chasis || ''}
+                    onChange={(e) =>
+                      handleInputChange('numero_chasis', e.target.value, true, 'numero_chasis')
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.numero_chasis'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  />
+                  {fieldErrors['infoAdicional.numero_chasis'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.numero_chasis']}</p>}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Tipo de Combustible
+                  </label>
+                  <select
+                    value={formData.infoAdicional?.tipo_combustible || ''}
+                    onChange={(e) =>
+                      handleInputChange('tipo_combustible', e.target.value, true, 'tipo_combustible')
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.tipo_combustible'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  >
+                    <option value="">Seleccionar tipo</option>
+                    <option value="Diesel">Diesel</option>
+                    <option value="Euro">Euro</option>
+                    <option value="Nafta">Nafta</option>
+                  </select>
+                  {fieldErrors['infoAdicional.tipo_combustible'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.tipo_combustible']}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Número de Patente
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.infoAdicional?.patente || ''}
+                    onChange={(e) =>
+                      handleInputChange('patente', e.target.value, true, 'patente')
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.patente'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  />
+                  {fieldErrors['infoAdicional.patente'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.patente']}</p>}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Póliza
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.infoAdicional?.poliza || ''}
+                    onChange={(e) =>
+                      handleInputChange('poliza', e.target.value, true, 'poliza')
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.poliza'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  />
+                  {fieldErrors['infoAdicional.poliza'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.poliza']}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Licencia Conductor
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.infoAdicional?.licencia_conductor || ''}
+                    onChange={(e) =>
+                      handleInputChange('licencia_conductor', e.target.value, true, 'licencia_conductor')
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.licencia_conductor'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  />
+                  {fieldErrors['infoAdicional.licencia_conductor'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.licencia_conductor']}</p>}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Categoría
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.infoAdicional?.licencia_categoria || ''}
+                    onChange={(e) =>
+                      handleInputChange('licencia_categoria', e.target.value, true, 'licencia_categoria')
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.licencia_categoria'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  />
+                  {fieldErrors['infoAdicional.licencia_categoria'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.licencia_categoria']}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Clase
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.infoAdicional?.licencia_clase || ''}
+                    onChange={(e) =>
+                      handleInputChange('licencia_clase', e.target.value, true, 'licencia_clase')
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.licencia_clase'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  />
+                  {fieldErrors['infoAdicional.licencia_clase'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.licencia_clase']}</p>}
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Fecha de Vencimiento
+                  </label>
+                  <input
+                    type="date"
+                    value={formData.infoAdicional?.licencia_vencimiento || ''}
+                    onChange={(e) =>
+                      handleInputChange('licencia_vencimiento', e.target.value, true, 'licencia_vencimiento')
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.licencia_vencimiento'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  />
+                  {fieldErrors['infoAdicional.licencia_vencimiento'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.licencia_vencimiento']}</p>}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Sector Pertenencia
+                  </label>
+                  <select
+                    value={formData.infoAdicional?.sector?.id_sector || ''}
+                    onChange={(e) =>
+                      handleInputChange(
+                        'sector',
+                        parseInt(e.target.value),
+                        true,
+                        'sector'
+                      )
+                    }
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
+                      fieldErrors['infoAdicional.sector'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                    }`}
+                    disabled={loading}
+                  >
+                    <option value="">Seleccionar sector</option>
+                    {dropdownData?.sectoresPertenencia.map((sector) => (
+                      <option key={sector.id} value={sector.value}>
+                        {sector.label}
+                      </option>
+                    ))}
+                  </select>
+                  {fieldErrors['infoAdicional.sector'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.sector']}</p>}
+                </div>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Licencia Conductor
-                </label>
-                <input
-                  type="text"
-                  value={formData.infoAdicional?.licencia_conductor || ''}
-                  onChange={(e) =>
-                    handleInputChange('licencia_conductor', e.target.value, true, 'licencia_conductor')
-                  }
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                    fieldErrors['infoAdicional.licencia_conductor'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-                  }`}
-                  disabled={loading}
-                />
-                {fieldErrors['infoAdicional.licencia_conductor'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.licencia_conductor']}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Seguro Empresa
-                </label>
-                <input
-                  type="text"
-                  value={formData.infoAdicional?.seguro_empresa || ''}
-                  onChange={(e) =>
-                    handleInputChange('seguro_empresa', e.target.value, true, 'seguro_empresa')
-                  }
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                    fieldErrors['infoAdicional.seguro_empresa'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-                  }`}
-                  disabled={loading}
-                />
-                {fieldErrors['infoAdicional.seguro_empresa'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.seguro_empresa']}</p>}
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4 mt-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Póliza
-                </label>
-                <input
-                  type="text"
-                  value={formData.infoAdicional?.poliza || ''}
-                  onChange={(e) =>
-                    handleInputChange('poliza', e.target.value, true, 'poliza')
-                  }
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                    fieldErrors['infoAdicional.poliza'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-                  }`}
-                  disabled={loading}
-                />
-                {fieldErrors['infoAdicional.poliza'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.poliza']}</p>}
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Sector Pertenencia
-                </label>
-                <select
-                  value={formData.infoAdicional?.sector?.id_sector || ''}
-                  onChange={(e) =>
-                    handleInputChange(
-                      'sector',
-                      parseInt(e.target.value),
-                      true,
-                      'sector'
-                    )
-                  }
-                  className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                    fieldErrors['infoAdicional.sector'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-                  }`}
-                  disabled={loading}
-                >
-                  <option value="">Seleccionar sector</option>
-                  {dropdownData?.sectoresPertenencia.map((sector) => (
-                    <option key={sector.id} value={sector.value}>
-                      {sector.label}
-                    </option>
-                  ))}
-                </select>
-                {fieldErrors['infoAdicional.sector'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.sector']}</p>}
-              </div>
-            </div>
-          </div>
 
           {/* Buttons */}
           <div className="flex gap-4 mt-6 border-t pt-4">
