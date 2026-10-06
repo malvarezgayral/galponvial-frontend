@@ -176,7 +176,7 @@ export const CreateGrupoArticuloForm: React.FC<CreateGrupoArticuloFormProps> = (
           disabled={loading || success}
           isLoading={loading}
         >
-          Crear Grupo
+          Guardo todo
         </Button>
       </div>
     </form>
