@@ -39,6 +39,29 @@ export const VisualizarAlmacen: React.FC = () => {
   
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Filtros escritos por el usuario: se aplican recién al apretar "Buscar"
+  const [draft, setDraft] = useState({
+    searchTerm: filters.searchTerm,
+    unidad_tipo: filters.unidad_tipo || "",
+    grupo: filters.grupo || "",
+    stockMin: filters.stockRange?.min ? String(filters.stockRange.min) : "",
+  });
+
+  const handleBuscar = () => {
+    setFilter("searchTerm", draft.searchTerm.trim());
+    setFilter("unidad_tipo", draft.unidad_tipo || null);
+    setFilter("grupo", draft.grupo || null);
+    setFilter(
+      "stockRange",
+      draft.stockMin ? { min: Number(draft.stockMin), max: 999999 } : null
+    );
+  };
+
+  const handleLimpiar = () => {
+    setDraft({ searchTerm: "", unidad_tipo: "", grupo: "", stockMin: "" });
+    resetFilters();
+  };
+
   // Sort filteredArticulos alphabetically before paginating
   const sortedArticulos = [...filteredArticulos].sort((a, b) =>
     a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
@@ -203,15 +226,15 @@ export const VisualizarAlmacen: React.FC = () => {
         </div>
 
         {/* Filters Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
+        <div onKeyDown={(e) => { if (e.key === "Enter") handleBuscar(); }} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 bg-gray-50 p-4 rounded-lg border border-gray-100">
             {/* Search */}
             <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Búsqueda</label>
             <input
                 type="text"
                 placeholder="Nombre, modelo o código..."
-                value={filters.searchTerm}
-                onChange={(e) => setFilter("searchTerm", e.target.value)}
+                value={draft.searchTerm}
+                onChange={(e) => setDraft((d) => ({ ...d, searchTerm: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
             </div>
@@ -219,8 +242,8 @@ export const VisualizarAlmacen: React.FC = () => {
             <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Tipo de Unidad</label>
             <select
-                value={filters.unidad_tipo || ""}
-                onChange={(e) => setFilter("unidad_tipo", e.target.value || null)}
+                value={draft.unidad_tipo}
+                onChange={(e) => setDraft((d) => ({ ...d, unidad_tipo: e.target.value }))}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
                 <option value="">Todos</option>
@@ -231,8 +254,8 @@ export const VisualizarAlmacen: React.FC = () => {
             <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Filtrar por Grupo</label>
             <select
-                value={filters.grupo || ""}
-                onChange={(e) => setFilter("grupo", e.target.value || null)}
+                value={draft.grupo}
+                onChange={(e) => setDraft((d) => ({ ...d, grupo: e.target.value }))}
                 disabled={gruposLoading}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
             >
@@ -247,18 +270,19 @@ export const VisualizarAlmacen: React.FC = () => {
                     type="number"
                     min="0"
                     placeholder="0"
-                    value={filters.stockRange?.min || ""}
+                    value={draft.stockMin}
                     onChange={(e) => {
-                        const val = e.target.value ? Number(e.target.value) : 0;
-                        setFilter("stockRange", { min: val, max: 999999 });
+                        const val = e.target.value;
+                        setDraft((d) => ({ ...d, stockMin: val }));
                     }}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
             </div>
         </div>
         
-        <div className="flex justify-end mb-6">
-            <button onClick={resetFilters} className="text-sm text-blue-600 hover:underline cursor-pointer">Limpiar filtros</button>
+        <div className="flex justify-end items-center mb-6">
+            <button onClick={handleBuscar} className="px-4 py-1.5 mr-4 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors cursor-pointer">Buscar</button>
+            <button onClick={handleLimpiar} className="text-sm text-blue-600 hover:underline cursor-pointer">Limpiar filtros</button>
         </div>
 
         {/* Content Artículos */}
