@@ -6,16 +6,13 @@ import { almacenService } from "../services/almacenService";
 import { useAlmacenStore } from "../store";
 import { ArticuloCard } from "./ArticuloCard";
 import { EditArticuloModal } from "./EditArticuloModal";
-import type { Articulo, Grupo } from "../types";
+import type { Articulo } from "../types";
 import { DeleteConfirmationModal } from "./DeleteConfirmationModal";
 import { ROUTES } from "@/app/routes";
 import { handleApiError, type ApiError } from "@/services/errorHandler";
-import { GrupoCard } from "./GrupoCard";
-import { EditGrupoModal } from "./EditGrupoModal";
 import { useAdminPermissions } from "@/features/usuarios/hooks/useAdminPermissions";
 
 const ARTICLES_PER_PAGE = 6;
-const GROUPS_PER_PAGE = 4; 
 
 export const VisualizarAlmacen: React.FC = () => {
   const navigate = useNavigate();
@@ -24,7 +21,6 @@ export const VisualizarAlmacen: React.FC = () => {
     setArticulos, 
     setGrupos, 
     removeArticulo, 
-    removeGrupo, 
     articulos, 
     filteredArticulos,
     grupos, 
@@ -54,32 +50,12 @@ export const VisualizarAlmacen: React.FC = () => {
   
   const totalPages = Math.ceil(sortedArticulos.length / ARTICLES_PER_PAGE);
 
-  const [currentGrupoPage, setCurrentGrupoPage] = useState(1);
-
-  // Sort grupos alphabetically before paginating
-  const sortedGrupos = [...grupos].sort((a, b) =>
-    a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
-  );
-
-  const indexOfLastGrupo = currentGrupoPage * GROUPS_PER_PAGE;
-  const indexOfFirstGrupo = indexOfLastGrupo - GROUPS_PER_PAGE;
-  const currentRenderedGrupos = sortedGrupos.slice(indexOfFirstGrupo, indexOfLastGrupo);
-  
-  const totalGrupoPages = Math.ceil(sortedGrupos.length / GROUPS_PER_PAGE);
-
   // Modales Artículos
   const [editingArticulo, setEditingArticulo] = useState<Articulo | null>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [deletingArticulo, setDeletingArticulo] = useState<Articulo | null>(null);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
-
-  // Modales Grupos
-  const [editingGrupo, setEditingGrupo] = useState<Grupo | null>(null);
-  const [showEditGrupoModal, setShowEditGrupoModal] = useState(false);
-  const [deletingGrupo, setDeletingGrupo] = useState<Grupo | null>(null);
-  const [showDeleteGrupoModal, setShowDeleteGrupoModal] = useState(false);
-  const [deleteGrupoLoading, setDeleteGrupoLoading] = useState(false);
 
   useEffect(() => {
     setCurrentPage(1);
@@ -120,15 +96,6 @@ export const VisualizarAlmacen: React.FC = () => {
     if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
   };
 
-  // Handlers Paginación GRUPOS
-  const handlePrevGrupoPage = () => {
-    if (currentGrupoPage > 1) setCurrentGrupoPage((prev) => prev - 1);
-  };
-
-  const handleNextGrupoPage = () => {
-    if (currentGrupoPage < totalGrupoPages) setCurrentGrupoPage((prev) => prev + 1);
-  };
-
   // Handlers Acciones
   const handleEdit = (articulo: Articulo) => {
     setEditingArticulo(articulo);
@@ -166,41 +133,6 @@ export const VisualizarAlmacen: React.FC = () => {
 
   const handleViewDetails = (articulo: Articulo) => {
     navigate(ROUTES.articuloDetalles(articulo.cod));
-  };
-
-  // Handlers Grupos
-  const handleEditGrupo = (grupo: Grupo) => {
-    setEditingGrupo(grupo);
-    setShowEditGrupoModal(true);
-  };
-
-  const handleGrupoSuccess = async () => {
-    const data = await almacenService.getGrupos();
-    setGrupos(data);
-  };
-
-  const handleDeleteGrupoClick = (grupo: Grupo) => {
-    setDeletingGrupo(grupo);
-    setShowDeleteGrupoModal(true);
-  };
-
-  const handleConfirmDeleteGrupo = async () => {
-    if(!deletingGrupo) return;
-    setDeleteGrupoLoading(true);
-    try {
-        await removeGrupo(deletingGrupo.id);
-        setShowDeleteGrupoModal(false);
-        setDeletingGrupo(null);
-    } catch (err: any) {
-        alert(err.response?.data?.message || "Error al eliminar");
-    } finally {
-        setDeleteGrupoLoading(false);
-    }
-  };
-
-  const handleViewGrupoDetails = (grupo: Grupo) => {
-    if (!grupo || !grupo.id) return; 
-    navigate(ROUTES.grupoDetalles(grupo.id)); 
   };
 
   if (error && articulos.length === 0) {
@@ -396,67 +328,6 @@ export const VisualizarAlmacen: React.FC = () => {
         )}
       </div>
 
-      {/* --- SECCIÓN 2: GRUPOS DE ARTÍCULOS --- */}
-      <div className="bg-white rounded-lg shadow p-6">
-        <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-                Grupos de Artículos
-            </h2>
-        </div>
-
-        {gruposLoading ? (
-            <div className="flex justify-center py-8"><div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600"></div></div>
-        ) : sortedGrupos.length === 0 ? (
-            <div className="text-center py-8 bg-gray-50 rounded border border-dashed">No hay grupos definidos.</div>
-        ) : (
-            <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {currentRenderedGrupos.map(grupo => (
-                        <GrupoCard
-                          key={grupo.id}
-                          grupo={grupo}
-                          onEdit={handleEditGrupo}
-                          onDelete={handleDeleteGrupoClick}
-                          onViewDetails={handleViewGrupoDetails}
-                          canEdit={canEdit}       
-                          canDelete={canDelete}  
-                        />
-                    ))}
-                </div>
-
-                 {/* BARRA DE PAGINACIÓN GRUPOS */}
-                 {totalGrupoPages > 1 && (
-                    <div className="mt-6 flex items-center justify-end border-t border-gray-100 pt-4 gap-2">
-                            <button
-                                onClick={handlePrevGrupoPage}
-                                disabled={currentGrupoPage === 1}
-                                className={`px-3 py-1 text-sm rounded transition-colors
-                                    ${currentGrupoPage === 1 
-                                        ? 'text-gray-300 cursor-not-allowed' 
-                                        : 'text-indigo-600 hover:bg-indigo-50'
-                                    }`}
-                            >
-                                Anterior
-                            </button>
-                            <span className="text-sm text-gray-500">{currentGrupoPage} / {totalGrupoPages}</span>
-                            <button
-                                onClick={handleNextGrupoPage}
-                                disabled={currentGrupoPage >= totalGrupoPages}
-                                className={`px-3 py-1 text-sm rounded transition-colors
-                                    ${currentGrupoPage >= totalGrupoPages 
-                                        ? 'text-gray-300 cursor-not-allowed' 
-                                        : 'text-indigo-600 hover:bg-indigo-50'
-                                    }`}
-                            >
-                                Siguiente
-                            </button>
-                    </div>
-                )}
-            </>
-        )}
-      </div>
-
       {/* --- MODALES --- */}
       <EditArticuloModal
         isOpen={showEditModal}
@@ -473,20 +344,6 @@ export const VisualizarAlmacen: React.FC = () => {
         message={`¿Estás seguro de que deseas eliminar "${deletingArticulo?.nombre}"?`}
       />
 
-      <EditGrupoModal
-        isOpen={showEditGrupoModal}
-        grupo={editingGrupo}
-        onClose={() => setShowEditGrupoModal(false)}
-        onSuccess={handleGrupoSuccess}
-      />
-      <DeleteConfirmationModal
-        isOpen={showDeleteGrupoModal}
-        onClose={() => setShowDeleteGrupoModal(false)}
-        onConfirm={handleConfirmDeleteGrupo}
-        loading={deleteGrupoLoading}
-        title="Eliminar Grupo"
-        message={`¿Eliminar el grupo "${deletingGrupo?.nombre}"? Si tiene artículos asociados no se podrá eliminar.`}
-      />
     </div>
   );
 };
