@@ -2,6 +2,7 @@ import { useState } from "react";
 import { CreateGrupoArticuloForm } from "../components/CreateGrupoArticuloForm";
 import { CreateArticuloForm } from "../components/CreateArticuloForm";
 import { VisualizarAlmacen } from "../components/VisualizarAlmacen";
+import { StockAlmacen } from "../components/StockAlmacen";
 import { useAlmacenPermissions } from "../hooks/useAlmacenPermissions";
 
 type AlmacenView = "administrar" | "visualizar" | "grupo" | "stock";
@@ -97,7 +98,7 @@ export default function AlmacenPage() {
           <CreateGrupoArticuloForm />
         )}
 
-        {currentView === "stock" && canAdminister && <div />}
+        {currentView === "stock" && canAdminister && <StockAlmacen />}
       </div>
     </div>
   );
