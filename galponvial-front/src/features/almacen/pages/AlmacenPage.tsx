@@ -4,7 +4,7 @@ import { CreateArticuloForm } from "../components/CreateArticuloForm";
 import { VisualizarAlmacen } from "../components/VisualizarAlmacen";
 import { useAlmacenPermissions } from "../hooks/useAlmacenPermissions";
 
-type AlmacenView = "administrar" | "visualizar" | "grupo";
+type AlmacenView = "administrar" | "visualizar" | "grupo" | "stock";
 
 /**
  * Almacén Page - Main warehouse management page
@@ -66,6 +66,18 @@ export default function AlmacenPage() {
               Crear Grupo de Artículos
             </button>
           )}
+          {canAdminister && (
+            <button
+              onClick={() => setCurrentView("stock")}
+              className={`px-6 py-2 rounded-md font-medium transition-colors ${
+                currentView === "stock"
+                  ? "bg-blue-600 text-white shadow"
+                  : "text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              Stock Almacén
+            </button>
+          )}
         </div>
       </div>
 
@@ -84,6 +96,8 @@ export default function AlmacenPage() {
         {currentView === "grupo" && canAdminister && (
           <CreateGrupoArticuloForm />
         )}
+
+        {currentView === "stock" && canAdminister && <div />}
       </div>
     </div>
   );
