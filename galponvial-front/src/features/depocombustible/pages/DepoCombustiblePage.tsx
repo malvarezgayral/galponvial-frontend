@@ -162,6 +162,7 @@ export default function DepoCombustiblePage() {
     if (filaEditando === null || !borrador || !puedeEscribir) return;
     try {
       await lubricanteService.update(filaEditando, {
+        id_vehiculo: borrador.vehiculo.id_vehiculo,
         fecha: borrador.fecha,
         ordenRetiro: borrador.ordenRetiro || undefined,
         cantidad: borrador.cantidad,
