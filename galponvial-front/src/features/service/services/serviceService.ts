@@ -22,6 +22,7 @@ export interface FilaService {
   filtroMotorAceite: string;
   filtroAire: string;
   filtroGasoil: string;
+  filtroNafta: string;
   aceiteHidraulico: string;
   filtroHidraulico: string;
   correasAuxiliares: string;
@@ -30,6 +31,7 @@ export interface FilaService {
   cambioDamper: string;
   proximoService: string;
   cuentaHora: string;
+  cuentaKm: string;
   stock: string;
   observaciones: string;
 }
@@ -45,6 +47,7 @@ export interface CreateServicePayload {
   filtroMotorAceite?: string;
   filtroAire?: string;
   filtroGasoil?: string;
+  filtroNafta?: string;
   aceiteHidraulico?: string;
   filtroHidraulico?: string;
   correasAuxiliares?: string;
@@ -53,6 +56,7 @@ export interface CreateServicePayload {
   cambioDamper?: string;
   proximoService?: string;
   cuentaHora?: string;
+  cuentaKm?: string;
   stock?: string;
   observaciones?: string;
 }

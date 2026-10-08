@@ -20,6 +20,7 @@ const filaVacia = (): Omit<FilaServiceLocal, "id"> => ({
   filtroMotorAceite: "",
   filtroAire: "",
   filtroGasoil: "",
+  filtroNafta: "",
   aceiteHidraulico: "",
   filtroHidraulico: "",
   correasAuxiliares: "",
@@ -28,6 +29,7 @@ const filaVacia = (): Omit<FilaServiceLocal, "id"> => ({
   cambioDamper: "",
   proximoService: "",
   cuentaHora: "",
+  cuentaKm: "",
   stock: "",
   observaciones: "",
 });
@@ -398,6 +400,7 @@ export default function ServicePage() {
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Motor Aceite</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro de Aire</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Gasoil</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Nafta</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Transmisión</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Hidráulico</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Hidráulico</th>
@@ -407,6 +410,7 @@ export default function ServicePage() {
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cambio de Damper</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Próximo Service</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cuenta Hora</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cuenta KM</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Stock</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Observaciones</th>
                   <th className="px-3 py-3 text-center font-semibold text-gray-600 whitespace-nowrap">Estado</th>
@@ -435,6 +439,7 @@ export default function ServicePage() {
                     <td className="px-3 py-2">{selectSiNo(fila.id, "filtroMotorAceite", fila.filtroMotorAceite)}</td>
                     <td className="px-3 py-2">{selectSiNo(fila.id, "filtroAire", fila.filtroAire)}</td>
                     <td className="px-3 py-2">{selectSiNo(fila.id, "filtroGasoil", fila.filtroGasoil)}</td>
+                    <td className="px-3 py-2">{selectSiNo(fila.id, "filtroNafta", fila.filtroNafta)}</td>
                     <td className="px-3 py-2">{selectSiNo(fila.id, "filtroTransmision", fila.filtroTransmision)}</td>
                     <td className="px-3 py-2">{selectSiNo(fila.id, "aceiteHidraulico", fila.aceiteHidraulico)}</td>
                     <td className="px-3 py-2">{selectSiNo(fila.id, "filtroHidraulico", fila.filtroHidraulico)}</td>
@@ -456,6 +461,15 @@ export default function ServicePage() {
                         placeholder="Cuenta hora"
                         value={fila.cuentaHora}
                         onChange={(e) => actualizarFila(fila.id, "cuentaHora", e.target.value)}
+                        className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-28"
+                      />
+                    </td>
+                    <td className="px-3 py-2">
+                      <input
+                        type="text"
+                        placeholder="Cuenta KM"
+                        value={fila.cuentaKm}
+                        onChange={(e) => actualizarFila(fila.id, "cuentaKm", e.target.value)}
                         className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-28"
                       />
                     </td>
@@ -515,6 +529,7 @@ export default function ServicePage() {
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Motor Aceite</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro de Aire</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Gasoil</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Nafta</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Transmisión</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Hidráulico</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Hidráulico</th>
@@ -524,6 +539,7 @@ export default function ServicePage() {
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cambio Damper</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Próximo Service</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cuenta Hora</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cuenta KM</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Stock</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Observaciones</th>
                 <th className="px-3 py-3 text-right font-semibold text-gray-600 whitespace-nowrap">Acciones</th>
@@ -580,6 +596,9 @@ export default function ServicePage() {
                       {editando ? selectSiNo(fila.id, "filtroGasoil", mostrado.filtroGasoil, true) : mostrado.filtroGasoil}
                     </td>
                     <td className="px-3 py-2">
+                      {editando ? selectSiNo(fila.id, "filtroNafta", mostrado.filtroNafta, true) : mostrado.filtroNafta}
+                    </td>
+                    <td className="px-3 py-2">
                       {editando ? selectSiNo(fila.id, "filtroTransmision", mostrado.filtroTransmision, true) : mostrado.filtroTransmision}
                     </td>
                     <td className="px-3 py-2">
@@ -622,6 +641,18 @@ export default function ServicePage() {
                         />
                       ) : (
                         mostrado.cuentaHora
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <input
+                          type="text"
+                          value={mostrado.cuentaKm}
+                          onChange={(e) => updateBorrador("cuentaKm", e.target.value)}
+                          className={inputClass}
+                        />
+                      ) : (
+                        mostrado.cuentaKm
                       )}
                     </td>
                     <td className="px-3 py-2">
