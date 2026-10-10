@@ -114,10 +114,11 @@ export const useAdminPermissions = () => {
     },
 
     /**
-     * Personal: crear y editar. Rol admin con personal:write (superadmin no).
+     * Personal: crear y editar. Superadmin siempre; admin con personal:write.
      */
     canWritePersonal: () => {
       if (!user) return false;
+      if (user?.rol === 'superadmin') return true;
       if (user?.rol !== 'admin') return false;
       const perms = ((user as User).permisos || []) as unknown as Array<Permission | string>;
       return perms.some((p) => (typeof p === 'string' ? p : p.nombre) === 'personal:write');
