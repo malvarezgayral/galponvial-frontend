@@ -804,7 +804,22 @@ export default function ServicePage() {
                     <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Fecha</th>
                     <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Motor</th>
                     <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Caja</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Diferencial</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Transmisión</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Motor Aceite</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro de Aire</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Gasoil</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Nafta</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Transmisión</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Hidráulico</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Filtro Hidráulico</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Correas Auxiliares</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Aceite Tándem</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Regulación Válvulas</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cambio Damper</th>
                     <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Próximo Service</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cuenta Hora</th>
+                    <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Cuenta KM</th>
                     <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Stock</th>
                     <th className="px-3 py-3 text-left font-semibold text-gray-600 whitespace-nowrap">Observaciones</th>
                   </tr>
@@ -849,7 +864,22 @@ export default function ServicePage() {
                         <td className="px-3 py-2">{fila.fecha || "—"}</td>
                         <td className="px-3 py-2">{fila.aceiteMotor || "—"}</td>
                         <td className="px-3 py-2">{fila.aceiteCaja || "—"}</td>
+                        <td className="px-3 py-2">{fila.aceiteDiferencial || "—"}</td>
+                        <td className="px-3 py-2">{fila.aceiteTransmision || "—"}</td>
+                        <td className="px-3 py-2">{fila.filtroMotorAceite || "—"}</td>
+                        <td className="px-3 py-2">{fila.filtroAire || "—"}</td>
+                        <td className="px-3 py-2">{fila.filtroGasoil || "—"}</td>
+                        <td className="px-3 py-2">{fila.filtroNafta || "—"}</td>
+                        <td className="px-3 py-2">{fila.filtroTransmision || "—"}</td>
+                        <td className="px-3 py-2">{fila.aceiteHidraulico || "—"}</td>
+                        <td className="px-3 py-2">{fila.filtroHidraulico || "—"}</td>
+                        <td className="px-3 py-2">{fila.correasAuxiliares || "—"}</td>
+                        <td className="px-3 py-2">{fila.aceiteTande || "—"}</td>
+                        <td className="px-3 py-2">{fila.regulacionValvulas || "—"}</td>
+                        <td className="px-3 py-2">{fila.cambioDamper || "—"}</td>
                         <td className="px-3 py-2">{fila.proximoService || "—"}</td>
+                        <td className="px-3 py-2">{fila.cuentaHora || "—"}</td>
+                        <td className="px-3 py-2">{fila.cuentaKm || "—"}</td>
                         <td className="px-3 py-2">{fila.stock || "—"}</td>
                         <td className="px-3 py-2">{fila.observaciones || "—"}</td>
                       </tr>
@@ -885,7 +915,7 @@ export default function ServicePage() {
                   }).length === 0 && (
                     <tr>
                       <td
-                        colSpan={7}
+                        colSpan={22}
                         className="px-3 py-6 text-center text-gray-400"
                       >
                         No se encontraron registros de Service con los filtros aplicados.
