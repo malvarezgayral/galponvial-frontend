@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { useAppStore } from "@/app/stores/appStore";
 import type { User } from "@/features/usuarios/types";
 
@@ -121,63 +120,6 @@ const HomePage = () => {
             </div>
           </div>
         )}
-
-        {/* Opciones rápidas*/}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Tarjeta de Vehículos */}
-          <Link
-            to="/vehiculos"
-            className="
-              bg-white rounded-lg shadow-md p-6 hover:shadow-lg
-              transform hover:scale-105 transition-all duration-300
-              border-l-4 border-[#378AFE] block
-            "
-          >
-            <div className="text-4xl mb-4">🚗</div>
-            <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-2">
-              Vehículos
-            </h3>
-            <p className="text-[var(--color-text-secondary)] text-sm">
-              Ver y gestionar tu flota de vehículos
-            </p>
-          </Link>
-
-          {/* Tarjeta de Servicios */}
-          <Link
-            to="/servicios"
-            className="
-              bg-white rounded-lg shadow-md p-6 hover:shadow-lg
-              transform hover:scale-105 transition-all duration-300
-              border-l-4 border-[#80DD4B] block
-            "
-          >
-            <div className="text-4xl mb-4">⚙️</div>
-            <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-2">
-              Servicios
-            </h3>
-            <p className="text-[var(--color-text-secondary)] text-sm">
-              Reportar incidentes y registrar combustible
-            </p>
-          </Link>
-
-          {/* Tarjeta de Almacén */}
-          <Link
-            to="/almacen"
-            className="
-              bg-white rounded-lg shadow-md p-6 hover:shadow-lg
-              transform hover:scale-105 transition-all duration-300
-              border-l-4 border-[#88BAFF] block
-            "
-          >
-            <div className="text-4xl mb-4">📦</div>
-            <h3 className="text-lg font-bold text-[var(--color-text-primary)] mb-2">
-              Almacén
-            </h3>
-            <p className="text-[var(--color-text-secondary)] text-sm">
-              Consultar inventario y artículos disponibles
-            </p>
-          </Link>
-        </div>
       </div>
     </div>
   );
