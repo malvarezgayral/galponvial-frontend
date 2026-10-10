@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { MisRecordatorios } from "@/features/servicios/components/MisRecordatorios";
 import { useAppStore } from "@/app/stores/appStore";
 import type { User } from "@/features/usuarios/types";
 
@@ -122,11 +121,6 @@ const HomePage = () => {
             </div>
           </div>
         )}
-
-        {/* Sección de Recordatorios */}
-        <div className="bg-white rounded-lg shadow-md p-8 mb-12">
-          <MisRecordatorios />
-        </div>
 
         {/* Opciones rápidas*/}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
