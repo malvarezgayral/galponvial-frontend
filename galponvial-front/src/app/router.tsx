@@ -29,6 +29,7 @@ import ListadoIncidentesPage from "../features/servicios/pages/ListadoIncidentes
 import RecordatorioPage from "../features/servicios/pages/RecordatorioPage";
 import HistorialRecordatoriosPage from "../features/servicios/pages/HistorialRecordatoriosPage";
 import ListadoRecordatoriosPage from "../features/servicios/pages/ListadoRecordatoriosPage";
+import MisRecordatoriosPage from "../features/servicios/pages/MisRecordatoriosPage";
 import UsuarioVehiculoPage from "../features/servicios/pages/UsuarioVehiculoPage";
 import HomePage from "../features/home/pages/HomePage";
 import UsuariosPage from "../features/usuarios/pages/UsuariosPage";
@@ -60,6 +61,7 @@ export const router = createBrowserRouter([
       { path: "/servicios/incidente", element: <ModuloProtectedRoute modulo="incidente"><IncidentePage /></ModuloProtectedRoute> },
       { path: "/servicios/incidente/listado", element: <ModuloProtectedRoute modulo="incidente"><ListadoIncidentesPage /></ModuloProtectedRoute> },
       { path: "/servicios/incidente/historial", element: <ModuloProtectedRoute modulo="incidente"><HistorialIncidentesPage /></ModuloProtectedRoute> },
+      { path: "/mis-recordatorios", element: <ProtectedRoute><MisRecordatoriosPage /></ProtectedRoute> },
       { path: "/servicios/recordatorio", element: <ProtectedRoute><RecordatorioPage /></ProtectedRoute> },
       { path: "/servicios/recordatorio/listado", element: <ProtectedRoute><ListadoRecordatoriosPage /></ProtectedRoute> },
       { path: "/servicios/recordatorio/historial", element: <ProtectedRoute><HistorialRecordatoriosPage /></ProtectedRoute> },
