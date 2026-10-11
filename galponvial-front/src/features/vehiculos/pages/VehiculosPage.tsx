@@ -26,7 +26,6 @@ export default function VehiculosPage() {
       {/* Page Title */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Vehículos</h1>
-        <p className="text-gray-600 mt-2">Administra y visualiza los vehículos municipales</p>
       </div>
 
       {/* Section Toggle Buttons */}
