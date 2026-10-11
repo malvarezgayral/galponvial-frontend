@@ -35,7 +35,7 @@ export default function VehiculosPage() {
           onClick={() => setActiveSection('administrar')}
           className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
             activeSection === 'administrar'
-              ? 'bg-[#80DD4B] text-gray-900'
+              ? 'bg-[#0062e3] text-white'
               : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
           }`}
         >
@@ -45,7 +45,7 @@ export default function VehiculosPage() {
           onClick={() => setActiveSection('visualizar')}
           className={`px-6 py-2 font-semibold rounded-lg transition-colors ${
             activeSection === 'visualizar'
-              ? 'bg-[#80DD4B] text-gray-900'
+              ? 'bg-[#0062e3] text-white'
               : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
           }`}
         >
