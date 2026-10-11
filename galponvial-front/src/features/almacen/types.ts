@@ -7,6 +7,8 @@ import type { MovimientoTipo } from "./enums";
 export interface Articulo {
   cod: number;
   cod_proveedor: string;
+  numero_parte?: string;
+  codigo_barras?: string;
   nombre: string;
   modelo: string;
   descripcion: string;
@@ -20,6 +22,8 @@ export interface Articulo {
 
 export interface CreateArticuloPayload {
   cod_proveedor: string;
+  numero_parte?: string;
+  codigo_barras?: string;
   nombre: string;
   modelo: string;
   descripcion: string;

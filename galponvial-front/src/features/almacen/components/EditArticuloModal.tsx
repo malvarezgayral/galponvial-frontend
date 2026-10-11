@@ -20,6 +20,8 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
   const { updateArticulo } = useAlmacenStore();
 
   const [codProveedor, setCodProveedor] = useState('');
+  const [numeroParte, setNumeroParte] = useState('');
+  const [codigoBarras, setCodigoBarras] = useState('');
   const [nombre, setNombre] = useState('');
   const [modelo, setModelo] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -51,6 +53,8 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
   useEffect(() => {
     if (isOpen && articulo) {
       setCodProveedor(articulo.cod_proveedor);
+      setNumeroParte(articulo.numero_parte || '');
+      setCodigoBarras(articulo.codigo_barras || '');
       setNombre(articulo.nombre);
       setModelo(articulo.modelo);
       setDescripcion(articulo.descripcion);
@@ -112,6 +116,8 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
         console.log('Tamaño:', file.size);
         const formData = new FormData();
         formData.append('cod_proveedor', codProveedor.trim());
+        formData.append('numero_parte', numeroParte.trim());
+        formData.append('codigo_barras', codigoBarras.trim());
         formData.append('nombre', nombre.trim());
         formData.append('modelo', modelo.trim());
         formData.append('descripcion', descripcion.trim());
@@ -128,6 +134,8 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
       } else {
         const payload = {
           cod_proveedor: codProveedor.trim(),
+          numero_parte: numeroParte.trim(),
+          codigo_barras: codigoBarras.trim(),
           nombre: nombre.trim(),
           modelo: modelo.trim(),
           descripcion: descripcion.trim(),
@@ -195,6 +203,16 @@ export const EditArticuloModal: React.FC<EditArticuloModalProps> = ({
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Código Proveedor *</label>
               <input type="text" value={codProveedor} onChange={(e) => setCodProveedor(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" disabled={loading} />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Número de Parte</label>
+              <input type="text" value={numeroParte} onChange={(e) => setNumeroParte(e.target.value)} className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" disabled={loading} />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Código de Barras</label>
+              <input type="text" value={codigoBarras} onChange={(e) => setCodigoBarras(e.target.value)} onKeyDown={(e) => { if (e.key === 'Enter') e.preventDefault(); }} autoComplete="off" className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" disabled={loading} />
             </div>
 
             <div>

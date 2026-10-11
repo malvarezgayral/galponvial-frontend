@@ -196,6 +196,22 @@ const ArticuloDetallesPage: React.FC = () => {
               </div>
               <div>
                 <span className="text-gray-500 text-xs uppercase tracking-wider block mb-1">
+                  Número de Parte
+                </span>
+                <span className="text-gray-900 font-semibold">
+                  {articulo.numero_parte || "-"}
+                </span>
+              </div>
+              <div>
+                <span className="text-gray-500 text-xs uppercase tracking-wider block mb-1">
+                  Código de Barras
+                </span>
+                <span className="text-gray-900 font-semibold">
+                  {articulo.codigo_barras || "-"}
+                </span>
+              </div>
+              <div>
+                <span className="text-gray-500 text-xs uppercase tracking-wider block mb-1">
                   Modelo
                 </span>
                 <span className="text-gray-900 font-semibold">
