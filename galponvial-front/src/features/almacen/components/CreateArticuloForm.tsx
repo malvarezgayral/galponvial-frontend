@@ -14,6 +14,8 @@ interface CreateArticuloFormProps {
 export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSuccess }) => {
   // Form state
   const [codProveedor, setCodProveedor] = useState('');
+  const [numeroParte, setNumeroParte] = useState('');
+  const [codigoBarras, setCodigoBarras] = useState('');
   const [nombre, setNombre] = useState('');
   const [modelo, setModelo] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -70,6 +72,8 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
 
   const handleClearForm = () => {
     setCodProveedor('');
+    setNumeroParte('');
+    setCodigoBarras('');
     setNombre('');
     setModelo('');
     setDescripcion('');
@@ -117,6 +121,8 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
       const formData = new FormData();
       
       formData.append('cod_proveedor', codProveedor.trim());
+      if (numeroParte.trim()) formData.append('numero_parte', numeroParte.trim());
+      if (codigoBarras.trim()) formData.append('codigo_barras', codigoBarras.trim());
       formData.append('nombre', nombre.trim());
       formData.append('modelo', modelo.trim());
       formData.append('descripcion', descripcion.trim());
@@ -139,6 +145,8 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
       // Clear form
       setTimeout(() => {
         setCodProveedor('');
+        setNumeroParte('');
+        setCodigoBarras('');
         setNombre('');
         setModelo('');
         setDescripcion('');
@@ -199,6 +207,42 @@ export const CreateArticuloForm: React.FC<CreateArticuloFormProps> = ({ onSucces
             value={codProveedor}
             onChange={(e) => setCodProveedor(e.target.value)}
             placeholder="Ej: ART-001"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={loading}
+          />
+        </div>
+
+        {/* Número de Parte */}
+        <div>
+          <label htmlFor="numeroParte" className="block text-sm font-medium text-gray-700 mb-2">
+            Número de Parte
+          </label>
+          <input
+            type="text"
+            id="numeroParte"
+            value={numeroParte}
+            onChange={(e) => setNumeroParte(e.target.value)}
+            placeholder="Ej: NP-4521"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            disabled={loading}
+          />
+        </div>
+
+        {/* Código de Barras (lector: el Enter no envía el formulario) */}
+        <div>
+          <label htmlFor="codigoBarras" className="block text-sm font-medium text-gray-700 mb-2">
+            Código de Barras
+          </label>
+          <input
+            type="text"
+            id="codigoBarras"
+            value={codigoBarras}
+            onChange={(e) => setCodigoBarras(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') e.preventDefault();
+            }}
+            placeholder="Escaneá el código con el lector"
+            autoComplete="off"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             disabled={loading}
           />
