@@ -303,7 +303,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                 Estado
               </label>
               <select
-                value={formData.status || ''}
+                value={formData.status === 'en_uso' ? 'disponible' : formData.status || ''}
                 onChange={(e) => handleInputChange('status', e.target.value)}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                   fieldErrors.status ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
@@ -311,11 +311,9 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                 disabled={loading}
               >
                 <option value="">Seleccionar estado</option>
-                {dropdownData?.estados.map((estado) => (
-                  <option key={estado.id} value={estado.value}>
-                    {estado.label}
-                  </option>
-                ))}
+                <option value="disponible">Activos</option>
+                <option value="fuera_de_servicio">Inactivos</option>
+                <option value="en_taller">En Reparación</option>
               </select>
               {fieldErrors.status && <p className="text-red-500 text-sm mt-1">{fieldErrors.status}</p>}
             </div>
