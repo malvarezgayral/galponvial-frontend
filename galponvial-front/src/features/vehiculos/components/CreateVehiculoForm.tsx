@@ -520,6 +520,38 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
               )}
             </div>
 
+            {/* Jurisdicción */}
+            <div>
+              <label
+                htmlFor="jurisdiccion"
+                className="block text-sm font-medium text-gray-700 mb-1"
+              >
+                Jurisdicción
+              </label>
+              <select
+                id="jurisdiccion"
+                value={formData.infoAdicional.jurisdiccion?.id_jurisdiccion || ""}
+                onChange={(e) => handleAdditionalInfoChange(e, "jurisdiccion")}
+                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white ${
+                  fieldErrors["infoAdicional.jurisdiccion"]
+                    ? "border-red-500 focus:ring-red-500"
+                    : "border-gray-300 focus:ring-blue-500"
+                }`}
+              >
+                <option value="">Selecciona una jurisdicción</option>
+                {dropdownData?.jurisdicciones.map((option) => (
+                  <option key={option.id} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              {fieldErrors["infoAdicional.jurisdiccion"] && (
+                <p className="text-red-500 text-sm mt-1">
+                  {fieldErrors["infoAdicional.jurisdiccion"]}
+                </p>
+              )}
+            </div>
+
             {/* Dependencia */}
             <div>
               <label
@@ -853,38 +885,6 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
               {fieldErrors["infoAdicional.licencia_vencimiento"] && (
                 <p className="text-red-500 text-sm mt-1">
                   {fieldErrors["infoAdicional.licencia_vencimiento"]}
-                </p>
-              )}
-            </div>
-
-            {/* Jurisdicción */}
-            <div>
-              <label
-                htmlFor="jurisdiccion"
-                className="block text-sm font-medium text-gray-700 mb-1"
-              >
-                Jurisdicción
-              </label>
-              <select
-                id="jurisdiccion"
-                value={formData.infoAdicional.jurisdiccion?.id_jurisdiccion || ""}
-                onChange={(e) => handleAdditionalInfoChange(e, "jurisdiccion")}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white ${
-                  fieldErrors["infoAdicional.jurisdiccion"]
-                    ? "border-red-500 focus:ring-red-500"
-                    : "border-gray-300 focus:ring-blue-500"
-                }`}
-              >
-                <option value="">Selecciona una jurisdicción</option>
-                {dropdownData?.jurisdicciones.map((option) => (
-                  <option key={option.id} value={option.value}>
-                    {option.label}
-                  </option>
-                ))}
-              </select>
-              {fieldErrors["infoAdicional.jurisdiccion"] && (
-                <p className="text-red-500 text-sm mt-1">
-                  {fieldErrors["infoAdicional.jurisdiccion"]}
                 </p>
               )}
             </div>
