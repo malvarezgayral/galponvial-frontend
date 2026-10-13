@@ -261,8 +261,8 @@ const VehiculoDetallesPage: React.FC = () => {
                   <span className="text-gray-900 font-semibold">{vehiculo.anio}</span>
                 </div>
                 <div className="flex justify-between items-start">
-                  <span className="text-gray-600 font-medium">Delegación:</span>
-                  <span className="text-gray-900 font-semibold">{vehiculo.delegacion || "Sin asignar"}</span>
+                  <span className="text-gray-600 font-medium">Dependencia:</span>
+                  <span className="text-gray-900 font-semibold">{vehiculo.dependencia || "Sin asignar"}</span>
                 </div>
               </div>
             </div>
@@ -416,9 +416,9 @@ const VehiculoDetallesPage: React.FC = () => {
           </div>
 
           <div>
-            <span className="text-gray-600 font-medium block mb-2">Sector de Pertenencia</span>
+            <span className="text-gray-600 font-medium block mb-2">Jurisdicción</span>
             <p className="text-gray-900 font-semibold">
-              {vehiculo.infoAdicional?.sector?.nombre || "Sin info"}
+              {vehiculo.infoAdicional?.jurisdiccion?.nombre || "Sin info"}
             </p>
           </div>
         </div>

@@ -208,35 +208,35 @@ export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos 
             </select>
           </div>
 
-          {/* Filter by sector */}
+          {/* Filter by jurisdiccion */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Sector de pertenencia
+              Jurisdicción
             </label>
             <select
-              value={filters.sector || ""}
-              onChange={(e) => setFilter("sector", e.target.value || null)}
+              value={filters.jurisdiccion || ""}
+              onChange={(e) => setFilter("jurisdiccion", e.target.value || null)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="">Todos los sectores</option>
-              {dropdownData?.sectoresPertenencia.map((sector) => (
-                <option key={sector.id} value={sector.value}>
-                  {sector.label}
+              <option value="">Todas las jurisdicciones</option>
+              {dropdownData?.jurisdicciones.map((jurisdiccion) => (
+                <option key={jurisdiccion.id} value={jurisdiccion.value}>
+                  {jurisdiccion.label}
                 </option>
               ))}
             </select>
           </div>
 
-          {/* Filter by delegacion */}
+          {/* Filter by dependencia */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Delegación
+              Dependencia
             </label>
             <input
               type="text"
-              placeholder="Filtrar por delegación..."
-              value={filters.delegacion || ""}
-              onChange={(e) => setFilter("delegacion", e.target.value || null)}
+              placeholder="Filtrar por dependencia..."
+              value={filters.dependencia || ""}
+              onChange={(e) => setFilter("dependencia", e.target.value || null)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>

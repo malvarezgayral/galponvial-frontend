@@ -42,7 +42,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
         anio: vehiculo.anio,
         tipo_vehiculo: vehiculo.tipo_vehiculo,
         status: vehiculo.status,
-        delegacion: vehiculo.delegacion,
+        dependencia: vehiculo.dependencia,
         infoAdicional: {
           numero_motor: vehiculo.infoAdicional.numero_motor ?? '',
             numero_chasis: vehiculo.infoAdicional.numero_chasis ?? '',
@@ -55,7 +55,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
           color: vehiculo.infoAdicional.color,
           seguro_empresa: vehiculo.infoAdicional.seguro_empresa,
           poliza: vehiculo.infoAdicional.poliza,
-          sector: vehiculo.infoAdicional.sector,
+          jurisdiccion: vehiculo.infoAdicional.jurisdiccion,
         },
       });
       setError(null);
@@ -71,8 +71,8 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
    */
   const validateForm = (): { isValid: boolean; errors: Record<string, string> } => {
     const errors: Record<string, string> = {};
-    const requiredFields = ['codigo', 'nombre', 'marca', 'modelo', 'tipo_vehiculo', 'status', 'delegacion'];
-    const requiredAdditionalFields = ['numero_motor', 'numero_chasis', 'tipo_combustible', 'patente', 'licencia_conductor', 'licencia_categoria', 'licencia_clase', 'licencia_vencimiento', 'color', 'seguro_empresa', 'poliza', 'sector'];
+    const requiredFields = ['codigo', 'nombre', 'marca', 'modelo', 'tipo_vehiculo', 'status', 'dependencia'];
+    const requiredAdditionalFields = ['numero_motor', 'numero_chasis', 'tipo_combustible', 'patente', 'licencia_conductor', 'licencia_categoria', 'licencia_clase', 'licencia_vencimiento', 'color', 'seguro_empresa', 'poliza', 'jurisdiccion'];
 
     for (const field of requiredFields) {
       const value = formData[field as keyof Vehiculo];
@@ -82,13 +82,13 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
     }
 
     for (const field of requiredAdditionalFields) {
-      if (field === 'sector') {
-        const sector = formData.infoAdicional?.sector as { id_sector: number; nombre: string } | undefined;
-        if (!sector || sector.id_sector === 0) {
+      if (field === 'jurisdiccion') {
+        const jurisdiccion = formData.infoAdicional?.jurisdiccion as { id_jurisdiccion: number; nombre: string } | undefined;
+        if (!jurisdiccion || jurisdiccion.id_jurisdiccion === 0) {
           errors[`infoAdicional.${field}`] = 'Este campo es requerido';
         }
       } else {
-        const value = formData.infoAdicional?.[field as keyof Omit<typeof formData.infoAdicional, 'sector'>];
+        const value = formData.infoAdicional?.[field as keyof Omit<typeof formData.infoAdicional, 'jurisdiccion'>];
         if (value === '' || value === 0) {
           errors[`infoAdicional.${field}`] = 'Este campo es requerido';
         }
@@ -158,10 +158,10 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
           color: prev.infoAdicional?.color ?? '',
           seguro_empresa: prev.infoAdicional?.seguro_empresa ?? '',
           poliza: prev.infoAdicional?.poliza ?? '',
-          sector: nestedField === 'sector' 
-            ? { id_sector: value, nombre: prev.infoAdicional?.sector?.nombre ?? '' }
-            : prev.infoAdicional?.sector ?? { id_sector: 0, nombre: '' },
-          ...(nestedField !== 'sector' && { [nestedField]: value }),
+          jurisdiccion: nestedField === 'jurisdiccion' 
+            ? { id_jurisdiccion: value, nombre: prev.infoAdicional?.jurisdiccion?.nombre ?? '' }
+            : prev.infoAdicional?.jurisdiccion ?? { id_jurisdiccion: 0, nombre: '' },
+          ...(nestedField !== 'jurisdiccion' && { [nestedField]: value }),
         } as any,
       }));
     } else {
@@ -319,22 +319,22 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
             </div>
           </div>
 
-          {/* Row 4: Delegación */}
+          {/* Row 4: Dependencia */}
           <div className="grid grid-cols-1 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Delegación
+                Dependencia
               </label>
               <input
                 type="text"
-                value={formData.delegacion || ''}
-                onChange={(e) => handleInputChange('delegacion', e.target.value)}
+                value={formData.dependencia || ''}
+                onChange={(e) => handleInputChange('dependencia', e.target.value)}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  fieldErrors.delegacion ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                  fieldErrors.dependencia ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
                 }`}
                 disabled={loading}
               />
-              {fieldErrors.delegacion && <p className="text-red-500 text-sm mt-1">{fieldErrors.delegacion}</p>}
+              {fieldErrors.dependencia && <p className="text-red-500 text-sm mt-1">{fieldErrors.dependencia}</p>}
             </div>
           </div>
 
@@ -546,31 +546,31 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Sector Pertenencia
+                    Jurisdicción
                   </label>
                   <select
-                    value={formData.infoAdicional?.sector?.id_sector || ''}
+                    value={formData.infoAdicional?.jurisdiccion?.id_jurisdiccion || ''}
                     onChange={(e) =>
                       handleInputChange(
-                        'sector',
+                        'jurisdiccion',
                         parseInt(e.target.value),
                         true,
-                        'sector'
+                        'jurisdiccion'
                       )
                     }
                     className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                      fieldErrors['infoAdicional.sector'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                      fieldErrors['infoAdicional.jurisdiccion'] ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
                     }`}
                     disabled={loading}
                   >
-                    <option value="">Seleccionar sector</option>
-                    {dropdownData?.sectoresPertenencia.map((sector) => (
-                      <option key={sector.id} value={sector.value}>
-                        {sector.label}
+                    <option value="">Seleccionar jurisdicción</option>
+                    {dropdownData?.jurisdicciones.map((jurisdiccion) => (
+                      <option key={jurisdiccion.id} value={jurisdiccion.value}>
+                        {jurisdiccion.label}
                       </option>
                     ))}
                   </select>
-                  {fieldErrors['infoAdicional.sector'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.sector']}</p>}
+                  {fieldErrors['infoAdicional.jurisdiccion'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.jurisdiccion']}</p>}
                 </div>
               </div>
             </div>

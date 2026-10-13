@@ -25,9 +25,9 @@ const mockVehiculos: Vehiculo[] = [
       color: 'blanco',
       seguro_empresa: 'Seguros SA',
       poliza: 'POL001',
-      sector: {
-        id_sector: 1,
-        nombre: 'Sector 1',
+      jurisdiccion: {
+        id_jurisdiccion: 1,
+        nombre: 'Jurisdicción 1',
       },
     },
   },
@@ -52,9 +52,9 @@ const mockVehiculos: Vehiculo[] = [
       color: 'rojo',
       seguro_empresa: 'Seguros SA',
       poliza: 'POL002',
-      sector: {
-        id_sector: 2,
-        nombre: 'Sector 2',
+      jurisdiccion: {
+        id_jurisdiccion: 2,
+        nombre: 'Jurisdicción 2',
       },
     },
   },

@@ -17,7 +17,7 @@ import type {
 
 /**
  * Transform CreateVehiculoPayload to backend format
- * Converts sector object to id_sector_pertenencia
+ * Converts jurisdiccion object to id_jurisdiccion
  */
 const transformVehiculoPayload = (
   vehiculo: CreateVehiculoPayload
@@ -32,7 +32,7 @@ const transformVehiculoPayload = (
     status: vehiculo.status,
     uso_combustible: vehiculo.uso_combustible,
     uso_km: vehiculo.uso_km,
-    delegacion: vehiculo.delegacion,
+    dependencia: vehiculo.dependencia,
     infoAdicional: {
       numero_motor: vehiculo.infoAdicional.numero_motor,
       numero_chasis: vehiculo.infoAdicional.numero_chasis,
@@ -45,14 +45,14 @@ const transformVehiculoPayload = (
       color: vehiculo.infoAdicional.color,
       seguro_empresa: vehiculo.infoAdicional.seguro_empresa,
       poliza: vehiculo.infoAdicional.poliza,
-      id_sector_pertenencia: vehiculo.infoAdicional.sector.id_sector,
+      id_jurisdiccion: vehiculo.infoAdicional.jurisdiccion.id_jurisdiccion,
     },
   };
 };
 
 /**
  * Transform Partial<Vehiculo> to backend format for updates
- * Converts sector object to id_sector_pertenencia if present
+ * Converts jurisdiccion object to id_jurisdiccion if present
  */
 const transformUpdatePayload = (vehiculo: Partial<Vehiculo>): Record<string, unknown> => {
   if (!vehiculo.infoAdicional) {
@@ -61,14 +61,14 @@ const transformUpdatePayload = (vehiculo: Partial<Vehiculo>): Record<string, unk
 
   return {
     ...vehiculo,
-    delegacion: vehiculo.delegacion,
+    dependencia: vehiculo.dependencia,
     infoAdicional: {
       ...vehiculo.infoAdicional,
-      id_sector_pertenencia: vehiculo.infoAdicional.sector
-        ? vehiculo.infoAdicional.sector.id_sector
+      id_jurisdiccion: vehiculo.infoAdicional.jurisdiccion
+        ? vehiculo.infoAdicional.jurisdiccion.id_jurisdiccion
         : undefined,
-      // Remove the sector object since backend expects id_sector_pertenencia
-      sector: undefined,
+      // Remove the jurisdiccion object since backend expects id_jurisdiccion
+      jurisdiccion: undefined,
     },
   };
 };
@@ -92,10 +92,10 @@ export const vehiculosService = {
         label: status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' '),
         value: status,
       })),
-      // Map sectoresPertenencia from Sector enum
-      sectoresPertenencia: enums.Sector.map((sector, index) => ({
+      // Map jurisdicciones from Jurisdiccion enum
+      jurisdicciones: enums.Jurisdiccion.map((jurisdiccion, index) => ({
         id: index + 1,
-        label: sector,
+        label: jurisdiccion,
         value: index + 1,
       })),
     };
@@ -161,7 +161,7 @@ export const vehiculosService = {
   /**
    * Fetch dropdown options for vehicle creation/editing
    * TODO: Replace with actual API endpoint when available
-   * @returns Object with dropdown options for tipos, estados, and sectores
+   * @returns Object with dropdown options for tipos, estados, and jurisdicciones
    */
   getDropdownOptions: async (): Promise<DropdownData> => {
     // Mock data - replace with actual API call when backend is ready
@@ -179,11 +179,11 @@ export const vehiculosService = {
         { id: 3, label: 'En uso', value: 'en_uso' },
         { id: 4, label: 'Retirado', value: 'retirado' },
       ],
-      sectoresPertenencia: [
-        { id: 1, label: 'Sector Centro', value: 1 },
-        { id: 2, label: 'Sector Puerto', value: 2 },
-        { id: 3, label: 'Sector Rural', value: 3 },
-        { id: 4, label: 'Sector Costa', value: 4 },
+      jurisdicciones: [
+        { id: 1, label: 'Jurisdicción Centro', value: 1 },
+        { id: 2, label: 'Jurisdicción Puerto', value: 2 },
+        { id: 3, label: 'Jurisdicción Rural', value: 3 },
+        { id: 4, label: 'Jurisdicción Costa', value: 4 },
       ],
     };
   },

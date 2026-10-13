@@ -71,7 +71,7 @@ export const VehiculoCard: React.FC<VehiculoCardProps> = ({
             <span className="text-gray-400">Modelo:</span> {vehiculo.modelo}
           </p>
           <p>
-            <span className="text-gray-400">Delegación:</span> {vehiculo.delegacion}
+            <span className="text-gray-400">Dependencia:</span> {vehiculo.dependencia}
           </p>
         </div>
       </div>

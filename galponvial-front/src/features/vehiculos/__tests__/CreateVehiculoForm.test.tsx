@@ -15,9 +15,9 @@ describe('CreateVehiculoForm', () => {
       { id: 1, label: 'Disponible', value: 'disponible' },
       { id: 2, label: 'Mantenimiento', value: 'mantenimiento' },
     ],
-    sectoresPertenencia: [
-      { id: 1, label: 'Sector Centro', value: 1 },
-      { id: 2, label: 'Sector Puerto', value: 2 },
+    jurisdicciones: [
+      { id: 1, label: 'Jurisdicción Centro', value: 1 },
+      { id: 2, label: 'Jurisdicción Puerto', value: 2 },
     ],
   };
 
@@ -65,8 +65,8 @@ describe('CreateVehiculoForm', () => {
     const tipoSelect = screen.getByLabelText(/Tipo de vehículo/i) as HTMLSelectElement;
     expect(tipoSelect.options.length).toBeGreaterThan(1);
 
-    const sectorSelect = screen.getByLabelText(/Sector de pertenencia/i) as HTMLSelectElement;
-    expect(sectorSelect.options.length).toBeGreaterThan(1);
+    const jurisdiccionSelect = screen.getByLabelText(/Jurisdicción/i) as HTMLSelectElement;
+    expect(jurisdiccionSelect.options.length).toBeGreaterThan(1);
   });
 
   it('should render Guardar and Cancelar buttons', () => {

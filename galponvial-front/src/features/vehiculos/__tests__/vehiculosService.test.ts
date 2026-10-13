@@ -28,9 +28,9 @@ describe('vehiculosService', () => {
       color: 'rojo',
       seguro_empresa: 'Seguros Pernada S.A',
       poliza: 'unapolizadealguntipo',
-      sector: {
-        id_sector: 2,
-        nombre: 'Sector 2',
+      jurisdiccion: {
+        id_jurisdiccion: 2,
+        nombre: 'Jurisdicción 2',
       },
     },
   };
@@ -91,9 +91,9 @@ describe('vehiculosService', () => {
           color: 'rojo',
           seguro_empresa: 'Seguros Pernada S.A',
           poliza: 'unapolizadealguntipo',
-          sector: {
-            id_sector: 2,
-            nombre: 'Sector 2',
+          jurisdiccion: {
+            id_jurisdiccion: 2,
+            nombre: 'Jurisdicción 2',
           },
         },
       };
@@ -102,12 +102,12 @@ describe('vehiculosService', () => {
       const result = await vehiculosService.create(newVehiculo);
 
       expect(result).toEqual(mockVehiculo);
-      // Verify that the payload was transformed to send id_sector_pertenencia
+      // Verify that the payload was transformed to send id_jurisdiccion
       expect(apiClient.post).toHaveBeenCalledWith(
         API_ENDPOINTS.VEHICULOS.CREATE,
         expect.objectContaining({
           infoAdicional: expect.objectContaining({
-            id_sector_pertenencia: 2,
+            id_jurisdiccion: 2,
           }),
         })
       );
@@ -128,7 +128,7 @@ describe('vehiculosService', () => {
       );
     });
 
-    it('should transform sector object to id_sector_pertenencia in update payload', async () => {
+    it('should transform jurisdiccion object to id_jurisdiccion in update payload', async () => {
       const updates: Partial<Vehiculo> = {
         infoAdicional: {
           numero_motor: 'MOT-TEST',
@@ -142,9 +142,9 @@ describe('vehiculosService', () => {
           color: 'azul',
           seguro_empresa: 'Seguros',
           poliza: 'POL123',
-          sector: {
-            id_sector: 3,
-            nombre: 'Sector 3',
+          jurisdiccion: {
+            id_jurisdiccion: 3,
+            nombre: 'Jurisdicción 3',
           },
         },
       };
@@ -157,7 +157,7 @@ describe('vehiculosService', () => {
         API_ENDPOINTS.VEHICULOS.UPDATE('1'),
         expect.objectContaining({
           infoAdicional: expect.objectContaining({
-            id_sector_pertenencia: 3,
+            id_jurisdiccion: 3,
           }),
         })
       );
@@ -180,11 +180,11 @@ describe('vehiculosService', () => {
 
       expect(result).toHaveProperty('tiposVehiculo');
       expect(result).toHaveProperty('estados');
-      expect(result).toHaveProperty('sectoresPertenencia');
+      expect(result).toHaveProperty('jurisdicciones');
 
       expect(Array.isArray(result.tiposVehiculo)).toBe(true);
       expect(Array.isArray(result.estados)).toBe(true);
-      expect(Array.isArray(result.sectoresPertenencia)).toBe(true);
+      expect(Array.isArray(result.jurisdicciones)).toBe(true);
 
       // Verify structure of options
       result.tiposVehiculo.forEach((option) => {
@@ -199,7 +199,7 @@ describe('vehiculosService', () => {
         expect(option).toHaveProperty('value');
       });
 
-      result.sectoresPertenencia.forEach((option) => {
+      result.jurisdicciones.forEach((option) => {
         expect(option).toHaveProperty('id');
         expect(option).toHaveProperty('label');
         expect(option).toHaveProperty('value');
@@ -211,7 +211,7 @@ describe('vehiculosService', () => {
 
       expect(result.tiposVehiculo.length).toBeGreaterThan(0);
       expect(result.estados.length).toBeGreaterThan(0);
-      expect(result.sectoresPertenencia.length).toBeGreaterThan(0);
+      expect(result.jurisdicciones.length).toBeGreaterThan(0);
     });
   });
 });

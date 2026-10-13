@@ -26,9 +26,9 @@ const mockVehiculo: Vehiculo = {
     color: 'blanco',
     seguro_empresa: 'Seguros SA',
     poliza: 'POL001',
-    sector: {
-      id_sector: 1,
-      nombre: 'Sector 1',
+    jurisdiccion: {
+      id_jurisdiccion: 1,
+      nombre: 'Jurisdicción 1',
     },
   },
 };
@@ -42,9 +42,9 @@ const mockDropdownData: DropdownData = {
     { id: 1, label: 'Disponible', value: 'disponible' },
     { id: 2, label: 'Mantenimiento', value: 'mantenimiento' },
   ],
-  sectoresPertenencia: [
-    { id: 1, label: 'Sector Centro', value: 1 },
-    { id: 2, label: 'Sector Puerto', value: 2 },
+  jurisdicciones: [
+    { id: 1, label: 'Jurisdicción Centro', value: 1 },
+    { id: 2, label: 'Jurisdicción Puerto', value: 2 },
   ],
 };
 

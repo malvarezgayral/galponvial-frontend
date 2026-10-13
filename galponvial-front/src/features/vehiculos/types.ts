@@ -13,8 +13,8 @@ export interface InfoAdicional {
   color: string;
   seguro_empresa: string;
   poliza: string;
-  sector: {
-    id_sector: number;
+  jurisdiccion: {
+    id_jurisdiccion: number;
     nombre: string;
   };
 }
@@ -29,7 +29,7 @@ export interface Vehiculo {
   tipo_vehiculo: string;
   status: 'disponible' | 'en_taller' | 'en_uso' | 'fuera_de_servicio';
   uso_combustible: number;
-  delegacion: string;
+  dependencia: string;
   infoAdicional: InfoAdicional;
   fechaCreacion?: string;
   ultimaModificacion?: string;
@@ -45,7 +45,7 @@ export interface CreateVehiculoPayload {
   status: 'disponible' | 'mantenimiento' | 'en_uso' | 'retirado';
   uso_combustible: number;
   uso_km: number;
-  delegacion: string;
+  dependencia: string;
   infoAdicional: InfoAdicional;
 }
 
@@ -59,7 +59,7 @@ export interface DropdownOption {
 export interface DropdownData {
   tiposVehiculo: DropdownOption[];
   estados: DropdownOption[];
-  sectoresPertenencia: DropdownOption[];
+  jurisdicciones: DropdownOption[];
 }
 
 // Recordatorios (Reminders)
@@ -164,7 +164,7 @@ export interface VehiculosEnums {
   FallaIncidente: string[];
   StatusIncidente: string[];
   TipoServicio: string[];
-  Sector: string[];
+  Jurisdiccion: string[];
 }
 
 export interface EnumsApiResponse {

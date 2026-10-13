@@ -26,9 +26,9 @@ const mockVehiculo: Vehiculo = {
     color: 'blanco',
     seguro_empresa: 'Seguros SA',
     poliza: 'POL001',
-    sector: {
-      id_sector: 1,
-      nombre: 'Sector 1',
+    jurisdiccion: {
+      id_jurisdiccion: 1,
+      nombre: 'Jurisdicción 1',
     },
   },
 };

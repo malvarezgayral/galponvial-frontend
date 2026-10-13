@@ -13,7 +13,7 @@ const INITIAL_FORM_STATE: CreateVehiculoPayload = {
   status: "disponible",
   uso_combustible: 0,
   uso_km: 0,
-  delegacion: "",
+  dependencia: "",
   infoAdicional: {
     numero_motor: "",
     numero_chasis: "",
@@ -26,8 +26,8 @@ const INITIAL_FORM_STATE: CreateVehiculoPayload = {
     color: "",
     seguro_empresa: "",
     poliza: "",
-    sector: {
-      id_sector: 0,
+    jurisdiccion: {
+      id_jurisdiccion: 0,
       nombre: "",
     },
   },
@@ -87,13 +87,13 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
     const { value } = e.target;
 
     setFormData((prev) => {
-      if (field === "sector") {
+      if (field === "jurisdiccion") {
         return {
           ...prev,
           infoAdicional: {
             ...prev.infoAdicional,
-            sector: {
-              id_sector: parseInt(value, 10),
+            jurisdiccion: {
+              id_jurisdiccion: parseInt(value, 10),
               nombre: "",
             },
           },
@@ -126,7 +126,7 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
       "status",
       "uso_combustible",
       "uso_km",
-      "delegacion",
+      "dependencia",
     ];
 
     const requiredAdditionalFields = [
@@ -141,7 +141,7 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
       "color",
       "seguro_empresa",
       "poliza",
-      "sector",
+      "jurisdiccion",
     ];
 
     for (const field of requiredFields) {
@@ -160,18 +160,18 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
     }
 
     for (const field of requiredAdditionalFields) {
-      if (field === "sector") {
-        const sector = formData.infoAdicional.sector as {
-          id_sector: number;
+      if (field === "jurisdiccion") {
+        const jurisdiccion = formData.infoAdicional.jurisdiccion as {
+          id_jurisdiccion: number;
           nombre: string;
         };
-        if (!sector || sector.id_sector === 0) {
+        if (!jurisdiccion || jurisdiccion.id_jurisdiccion === 0) {
           errors[`infoAdicional.${field}`] = "Este campo es requerido";
         }
       } else {
         const value =
           formData.infoAdicional[
-            field as keyof Omit<typeof formData.infoAdicional, "sector">
+            field as keyof Omit<typeof formData.infoAdicional, "jurisdiccion">
           ];
         if (value === "" || value === 0) {
           errors[`infoAdicional.${field}`] = "Este campo es requerido";
@@ -520,29 +520,29 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
               )}
             </div>
 
-            {/* Delegación */}
+            {/* Dependencia */}
             <div>
               <label
-                htmlFor="delegacion"
+                htmlFor="dependencia"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Delegación
+                Dependencia
               </label>
               <input
-                id="delegacion"
+                id="dependencia"
                 type="text"
-                placeholder="Ej: Delegación Centro"
-                value={formData.delegacion}
-                onChange={(e) => handleInputChange(e, "delegacion")}
+                placeholder="Ej: Dependencia Centro"
+                value={formData.dependencia}
+                onChange={(e) => handleInputChange(e, "dependencia")}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
-                  fieldErrors.delegacion
+                  fieldErrors.dependencia
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-blue-500"
                 }`}
               />
-              {fieldErrors.delegacion && (
+              {fieldErrors.dependencia && (
                 <p className="text-red-500 text-sm mt-1">
-                  {fieldErrors.delegacion}
+                  {fieldErrors.dependencia}
                 </p>
               )}
             </div>
@@ -857,34 +857,34 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
               )}
             </div>
 
-            {/* Sector de pertenencia */}
+            {/* Jurisdicción */}
             <div>
               <label
-                htmlFor="sector"
+                htmlFor="jurisdiccion"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Sector de pertenencia
+                Jurisdicción
               </label>
               <select
-                id="sector"
-                value={formData.infoAdicional.sector?.id_sector || ""}
-                onChange={(e) => handleAdditionalInfoChange(e, "sector")}
+                id="jurisdiccion"
+                value={formData.infoAdicional.jurisdiccion?.id_jurisdiccion || ""}
+                onChange={(e) => handleAdditionalInfoChange(e, "jurisdiccion")}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 bg-white ${
-                  fieldErrors["infoAdicional.sector"]
+                  fieldErrors["infoAdicional.jurisdiccion"]
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-blue-500"
                 }`}
               >
-                <option value="">Selecciona un sector</option>
-                {dropdownData?.sectoresPertenencia.map((option) => (
+                <option value="">Selecciona una jurisdicción</option>
+                {dropdownData?.jurisdicciones.map((option) => (
                   <option key={option.id} value={option.value}>
                     {option.label}
                   </option>
                 ))}
               </select>
-              {fieldErrors["infoAdicional.sector"] && (
+              {fieldErrors["infoAdicional.jurisdiccion"] && (
                 <p className="text-red-500 text-sm mt-1">
-                  {fieldErrors["infoAdicional.sector"]}
+                  {fieldErrors["infoAdicional.jurisdiccion"]}
                 </p>
               )}
             </div>

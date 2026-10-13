@@ -5,8 +5,8 @@ import type { CreateVehiculoPayload, DropdownData, Vehiculo, VehiculosEnums } fr
 interface VehiculosFilters {
   estado: string | null;
   tipo: string | null;
-  sector: string | null;
-  delegacion: string | null;
+  jurisdiccion: string | null;
+  dependencia: string | null;
   searchTerm: string;
 }
 
@@ -62,28 +62,28 @@ const applyFilters = (vehiculos: Vehiculo[], filters: VehiculosFilters): Vehicul
       return false;
     }
 
-    // Filter by sector
-    if (filters.sector) {
-      // 1. Usamos ?. para que no crashee si infoAdicional o sector son null/undefined
-      const sectorDelVehiculo = vehiculo.infoAdicional?.sector;
+    // Filter by jurisdiccion
+    if (filters.jurisdiccion) {
+      // 1. Usamos ?. para que no crashee si infoAdicional o jurisdiccion son null/undefined
+      const jurisdiccionDelVehiculo = vehiculo.infoAdicional?.jurisdiccion;
       
-      // Si el filtro está activo pero el vehículo no tiene sector, lo descartamos
-      if (!sectorDelVehiculo) return false;
+      // Si el filtro está activo pero el vehículo no tiene jurisdiccion, lo descartamos
+      if (!jurisdiccionDelVehiculo) return false;
 
       // 2. Comparamos de forma segura (soporta si el filtro es el ID o el Nombre)
-      const filtroComoNumero = Number(filters.sector);
+      const filtroComoNumero = Number(filters.jurisdiccion);
       
       if (!isNaN(filtroComoNumero)) {
         // Si el filtro es un número (ID)
-        if (sectorDelVehiculo.id_sector !== filtroComoNumero) return false;
+        if (jurisdiccionDelVehiculo.id_jurisdiccion !== filtroComoNumero) return false;
       } else {
-        // Si el filtro es texto (Nombre del sector)
-        if (sectorDelVehiculo.nombre !== filters.sector) return false;
+        // Si el filtro es texto (Nombre del jurisdiccion)
+        if (jurisdiccionDelVehiculo.nombre !== filters.jurisdiccion) return false;
       }
     }
 
-    // Filter by delegacion
-    if (filters.delegacion && vehiculo.delegacion !== filters.delegacion) {
+    // Filter by dependencia
+    if (filters.dependencia && vehiculo.dependencia !== filters.dependencia) {
       return false;
     }
 
@@ -124,8 +124,8 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
   filters: {
     estado: null,
     tipo: null,
-    sector: null,
-    delegacion: null,
+    jurisdiccion: null,
+    dependencia: null,
     searchTerm: '',
   },
 
@@ -223,8 +223,8 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
     const resetFilters: VehiculosFilters = {
       estado: null,
       tipo: null,
-      sector: null,
-      delegacion: null,
+      jurisdiccion: null,
+      dependencia: null,
       searchTerm: '',
     };
     const filtered = applyFilters(get().vehiculos, resetFilters);
