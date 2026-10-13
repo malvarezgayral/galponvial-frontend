@@ -3,7 +3,7 @@ import { useVehiculosStore } from '../store';
 import { CreateVehiculoForm } from '../components/CreateVehiculoForm';
 import { VehiculosView } from '../components/VehiculosView';
 
-type VehiculosSection = 'administrar' | 'visualizar';
+type VehiculosSection = 'administrar' | 'visualizar' | 'activos' | 'inactivos' | 'en-reparacion';
 
 /**
  * Main page for vehicle management
@@ -50,6 +50,36 @@ export default function VehiculosPage() {
         >
           Visualizar vehículos
         </button>
+        <button
+          onClick={() => setActiveSection('activos')}
+          className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
+            activeSection === 'activos'
+              ? 'bg-[#0062e3] text-white'
+              : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+          }`}
+        >
+          Activos
+        </button>
+        <button
+          onClick={() => setActiveSection('inactivos')}
+          className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
+            activeSection === 'inactivos'
+              ? 'bg-[#0062e3] text-white'
+              : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+          }`}
+        >
+          Inactivos
+        </button>
+        <button
+          onClick={() => setActiveSection('en-reparacion')}
+          className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
+            activeSection === 'en-reparacion'
+              ? 'bg-[#0062e3] text-white'
+              : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+          }`}
+        >
+          En Reparación
+        </button>
       </div>
 
       {/* Content Sections */}
@@ -66,6 +96,16 @@ export default function VehiculosPage() {
       )}
 
       {activeSection === 'visualizar' && <VehiculosView />}
+
+      {activeSection === 'activos' && (
+        <div className="text-center py-8 text-gray-600">Vehículos activos — en construcción.</div>
+      )}
+      {activeSection === 'inactivos' && (
+        <div className="text-center py-8 text-gray-600">Vehículos inactivos — en construcción.</div>
+      )}
+      {activeSection === 'en-reparacion' && (
+        <div className="text-center py-8 text-gray-600">Vehículos en reparación — en construcción.</div>
+      )}
     </div>
   );
 }
