@@ -13,7 +13,12 @@ const VEHICLES_PER_PAGE = 9;
 /**
  * View component for displaying and filtering vehicles
  */
-export const VehiculosView: React.FC = () => {
+interface VehiculosViewProps {
+  /** Si se pasa, solo se muestran vehículos con alguno de estos status */
+  estadosPermitidos?: string[];
+}
+
+export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos }) => {
   const navigate = useNavigate();
   const {
     vehiculos,
@@ -47,7 +52,11 @@ export const VehiculosView: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
 
   // Sort filteredVehiculos alphabetically before paginating
-  const sortedVehiculos = [...filteredVehiculos].sort((a, b) =>
+  const vehiculosBase = estadosPermitidos
+    ? filteredVehiculos.filter((v) => estadosPermitidos.includes(v.status))
+    : filteredVehiculos;
+
+  const sortedVehiculos = [...vehiculosBase].sort((a, b) =>
     a.nombre.localeCompare(b.nombre, "es", { sensitivity: "base" })
   );
 
@@ -170,7 +179,9 @@ export const VehiculosView: React.FC = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todos los estados</option>
-              {dropdownData?.estados.map((estado) => (
+              {dropdownData?.estados
+                .filter((estado) => !estadosPermitidos || estadosPermitidos.includes(String(estado.value)))
+                .map((estado) => (
                 <option key={estado.id} value={estado.value}>
                   {estado.label}
                 </option>
@@ -255,7 +266,7 @@ export const VehiculosView: React.FC = () => {
       )}
 
       {/* Empty state */}
-      {!listLoading && filteredVehiculos.length === 0 && (
+      {!listLoading && vehiculosBase.length === 0 && (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
             {vehiculos.length === 0

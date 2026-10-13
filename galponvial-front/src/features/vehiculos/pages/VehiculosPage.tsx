@@ -5,6 +5,10 @@ import { VehiculosView } from '../components/VehiculosView';
 
 type VehiculosSection = 'administrar' | 'visualizar' | 'activos' | 'inactivos' | 'en-reparacion';
 
+const ESTADOS_ACTIVOS = ['disponible', 'en_uso'];
+const ESTADOS_INACTIVOS = ['fuera_de_servicio'];
+const ESTADOS_EN_REPARACION = ['en_taller'];
+
 /**
  * Main page for vehicle management
  * Accessible to any logged-in user
@@ -97,15 +101,9 @@ export default function VehiculosPage() {
 
       {activeSection === 'visualizar' && <VehiculosView />}
 
-      {activeSection === 'activos' && (
-        <div className="text-center py-8 text-gray-600">Vehículos activos — en construcción.</div>
-      )}
-      {activeSection === 'inactivos' && (
-        <div className="text-center py-8 text-gray-600">Vehículos inactivos — en construcción.</div>
-      )}
-      {activeSection === 'en-reparacion' && (
-        <div className="text-center py-8 text-gray-600">Vehículos en reparación — en construcción.</div>
-      )}
+      {activeSection === 'activos' && <VehiculosView estadosPermitidos={ESTADOS_ACTIVOS} />}
+      {activeSection === 'inactivos' && <VehiculosView estadosPermitidos={ESTADOS_INACTIVOS} />}
+      {activeSection === 'en-reparacion' && <VehiculosView estadosPermitidos={ESTADOS_EN_REPARACION} />}
     </div>
   );
 }
