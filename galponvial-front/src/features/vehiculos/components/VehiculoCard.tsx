@@ -55,7 +55,7 @@ export const VehiculoCard: React.FC<VehiculoCardProps> = ({
       {/* Vehicle info */}
       <div className="mb-4">
         <h3 className="text-lg font-bold text-white mb-2">
-          Vehículo {vehiculo.nombre}
+          {vehiculo.nombre}
         </h3>
         <div className="space-y-2 text-sm text-gray-300">
           <p>
