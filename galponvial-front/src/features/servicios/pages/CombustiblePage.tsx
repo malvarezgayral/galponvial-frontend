@@ -20,7 +20,7 @@ const CombustiblePage = () => {
       try {
         setLoading(true);
         const data = await vehiculosService.getAll();
-        const vehiculosDisponibles = data.filter(v => v.status !== 'fuera_de_servicio');
+        const vehiculosDisponibles = data.filter(v => v.status !== 'inactivo');
         setVehiculos(vehiculosDisponibles);
 
         if (vehiculosDisponibles.length > 0) {
@@ -48,7 +48,7 @@ const CombustiblePage = () => {
 
   // DEV MOCK: si no hay vehículos en la BD local, usamos uno de prueba
   const vehiculosConMock: Vehiculo[] = vehiculos.length === 0 && !error
-    ? [{ id_vehiculo: 1, codigo: 'V001', nombre: 'Vehículo de prueba', marca: 'Ford', modelo: 'Ranger', status: 'disponible' } as unknown as Vehiculo]
+    ? [{ id_vehiculo: 1, codigo: 'V001', nombre: 'Vehículo de prueba', marca: 'Ford', modelo: 'Ranger', status: 'activo' } as unknown as Vehiculo]
     : vehiculos;
 
   // Preseleccionar el mock si no hay ninguno seleccionado

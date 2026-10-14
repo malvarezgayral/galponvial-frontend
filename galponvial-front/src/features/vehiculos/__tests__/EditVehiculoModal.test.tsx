@@ -13,7 +13,7 @@ const mockVehiculo: Vehiculo = {
   modelo: 'Hilux',
   anio: 2020,
   tipo_vehiculo: 'camioneta',
-  status: 'disponible',
+  status: 'activo',
   infoAdicional: {
     numero_motor: 'MOT-TEST',
     numero_chasis: 'CHA-TEST',
@@ -39,7 +39,7 @@ const mockDropdownData: DropdownData = {
     { id: 2, label: 'Auto', value: 'auto' },
   ],
   estados: [
-    { id: 1, label: 'Disponible', value: 'disponible' },
+    { id: 1, label: 'Activos', value: 'activo' },
     { id: 2, label: 'Mantenimiento', value: 'mantenimiento' },
   ],
   jurisdicciones: [

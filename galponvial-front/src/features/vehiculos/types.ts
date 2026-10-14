@@ -27,7 +27,7 @@ export interface Vehiculo {
   modelo: string;
   anio: number;
   tipo_vehiculo: string;
-  status: 'disponible' | 'en_taller' | 'en_uso' | 'fuera_de_servicio';
+  status: 'activo' | 'inactivo' | 'en_reparacion';
   uso_combustible: number;
   dependencia: string;
   infoAdicional: InfoAdicional;
@@ -42,7 +42,7 @@ export interface CreateVehiculoPayload {
   modelo: string;
   anio: number;
   tipo_vehiculo: string;
-  status: 'disponible' | 'mantenimiento' | 'en_uso' | 'retirado';
+  status: 'activo' | 'inactivo' | 'en_reparacion';
   uso_combustible: number;
   uso_km: number;
   dependencia: string;

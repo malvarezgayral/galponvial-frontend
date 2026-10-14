@@ -10,7 +10,7 @@ const INITIAL_FORM_STATE: CreateVehiculoPayload = {
   modelo: "",
   anio: new Date().getFullYear(),
   tipo_vehiculo: "",
-  status: "disponible",
+  status: "activo",
   uso_combustible: 0,
   uso_km: 0,
   dependencia: "",

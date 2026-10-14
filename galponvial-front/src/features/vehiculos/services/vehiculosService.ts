@@ -174,10 +174,9 @@ export const vehiculosService = {
         { id: 5, label: 'Utilitario', value: 'utilitario' },
       ],
       estados: [
-        { id: 1, label: 'Disponible', value: 'disponible' },
-        { id: 2, label: 'Mantenimiento', value: 'mantenimiento' },
-        { id: 3, label: 'En uso', value: 'en_uso' },
-        { id: 4, label: 'Retirado', value: 'retirado' },
+        { id: 1, label: 'Activos', value: 'activo' },
+        { id: 2, label: 'Inactivos', value: 'inactivo' },
+        { id: 3, label: 'En Reparación', value: 'en_reparacion' },
       ],
       jurisdicciones: [
         { id: 1, label: 'Jurisdicción Centro', value: 1 },

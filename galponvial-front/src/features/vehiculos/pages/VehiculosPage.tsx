@@ -5,9 +5,9 @@ import { VehiculosView } from '../components/VehiculosView';
 
 type VehiculosSection = 'administrar' | 'visualizar' | 'activos' | 'inactivos' | 'en-reparacion';
 
-const ESTADOS_ACTIVOS = ['disponible', 'en_uso'];
-const ESTADOS_INACTIVOS = ['fuera_de_servicio'];
-const ESTADOS_EN_REPARACION = ['en_taller'];
+const ESTADOS_ACTIVOS = ['activo'];
+const ESTADOS_INACTIVOS = ['inactivo'];
+const ESTADOS_EN_REPARACION = ['en_reparacion'];
 
 /**
  * Main page for vehicle management

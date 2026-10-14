@@ -12,7 +12,7 @@ const mockVehiculos: Vehiculo[] = [
     modelo: 'Hilux',
     anio: 2020,
     tipo_vehiculo: 'camioneta',
-    status: 'disponible',
+    status: 'activo',
     infoAdicional: {
       numero_motor: 'MOT-TEST',
       numero_chasis: 'CHA-TEST',
@@ -39,7 +39,7 @@ const mockVehiculos: Vehiculo[] = [
     modelo: 'Focus',
     anio: 2021,
     tipo_vehiculo: 'auto',
-    status: 'en_uso',
+    status: 'activo',
     infoAdicional: {
       numero_motor: 'MOT-TEST',
       numero_chasis: 'CHA-TEST',

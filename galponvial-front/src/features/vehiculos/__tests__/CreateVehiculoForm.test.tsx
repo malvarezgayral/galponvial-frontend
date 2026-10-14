@@ -12,7 +12,7 @@ describe('CreateVehiculoForm', () => {
       { id: 2, label: 'Auto', value: 'auto' },
     ],
     estados: [
-      { id: 1, label: 'Disponible', value: 'disponible' },
+      { id: 1, label: 'Activos', value: 'activo' },
       { id: 2, label: 'Mantenimiento', value: 'mantenimiento' },
     ],
     jurisdicciones: [

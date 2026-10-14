@@ -39,19 +39,16 @@ export const VehiculoCard: React.FC<VehiculoCardProps> = ({
         {/* Status badge */}
         <div
           className={`px-3 py-1 rounded-full text-xs font-semibold ${
-            vehiculo.status === "disponible"
+            vehiculo.status === "activo"
               ? "bg-[#80DD4B] text-gray-900"
-              : vehiculo.status === "fuera_de_servicio"
+              : vehiculo.status === "en_reparacion"
                 ? "bg-yellow-500 text-gray-900"
-                : vehiculo.status === "en_uso"
-                  ? "bg-blue-500 text-white"
-                  : "bg-red-500 text-white"
+                : "bg-red-500 text-white"
           }`}
         >
-          {vehiculo.status === "disponible" && "✓"}
-          {vehiculo.status === "en_taller" && "⚙"}
-          {vehiculo.status === "en_uso" && "→"}
-          {vehiculo.status === "fuera_de_servicio" && "✕"}
+          {vehiculo.status === "activo" && "✓"}
+          {vehiculo.status === "en_reparacion" && "⚙"}
+          {vehiculo.status === "inactivo" && "✕"}
         </div>
       </div>
 

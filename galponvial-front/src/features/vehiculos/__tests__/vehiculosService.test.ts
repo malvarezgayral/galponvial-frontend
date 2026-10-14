@@ -15,7 +15,7 @@ describe('vehiculosService', () => {
     marca: 'Toyota',
     anio: 2000,
     tipo_vehiculo: 'camioneta',
-    status: 'disponible',
+    status: 'activo',
     infoAdicional: {
       numero_motor: 'MOT-TEST',
       numero_chasis: 'CHA-TEST',
@@ -78,7 +78,7 @@ describe('vehiculosService', () => {
         modelo: 'D-max',
         anio: 2000,
         tipo_vehiculo: 'camioneta',
-        status: 'disponible',
+        status: 'activo',
         infoAdicional: {
           numero_motor: 'MOT-TEST',
           numero_chasis: 'CHA-TEST',

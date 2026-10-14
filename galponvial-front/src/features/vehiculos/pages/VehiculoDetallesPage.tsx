@@ -94,13 +94,11 @@ const VehiculoDetallesPage: React.FC = () => {
   // Status color mapping
   const getStatusColor = (status: string) => {
     switch (status) {
-      case 'disponible':
+      case 'activo':
         return 'bg-green-100 text-green-800';
-      case 'en_uso':
-        return 'bg-blue-100 text-blue-800';
-      case 'en_taller':
+      case 'en_reparacion':
         return 'bg-yellow-100 text-yellow-800';
-      case 'fuera_de_servicio':
+      case 'inactivo':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -110,14 +108,12 @@ const VehiculoDetallesPage: React.FC = () => {
   // Status label mapping
   const getStatusLabel = (status: string) => {
     switch (status) {
-      case 'disponible':
-        return 'Disponible';
-      case 'en_uso':
-        return 'En Uso';
-      case 'en_taller':
-        return 'En Taller';
-      case 'fuera_de_servicio':
-        return 'Fuera de Servicio';
+      case 'activo':
+        return 'Activo';
+      case 'en_reparacion':
+        return 'En Reparación';
+      case 'inactivo':
+        return 'Inactivo';
       default:
         return status;
     }
@@ -583,8 +579,8 @@ const VehiculoDetallesPage: React.FC = () => {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Cargas de Combustible</h2>
               
-              {/* Renderizado condicional: solo muestra el botón si el vehículo NO está fuera de servicio */}
-              {vehiculo.status !== 'fuera_de_servicio' && (
+              {/* Renderizado condicional: solo muestra el botón si el vehículo NO está inactivo */}
+              {vehiculo.status !== 'inactivo' && (
                 <Button
                   variant="primary"
                   size="md"

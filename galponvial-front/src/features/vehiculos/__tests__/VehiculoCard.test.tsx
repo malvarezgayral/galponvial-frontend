@@ -13,7 +13,7 @@ const mockVehiculo: Vehiculo = {
   modelo: 'Hilux',
   anio: 2020,
   tipo_vehiculo: 'camioneta',
-  status: 'disponible',
+  status: 'activo',
   infoAdicional: {
     numero_motor: 'MOT-TEST',
     numero_chasis: 'CHA-TEST',

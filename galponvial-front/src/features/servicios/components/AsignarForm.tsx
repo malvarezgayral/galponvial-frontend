@@ -58,7 +58,7 @@ export const AsignarForm: React.FC<AsignarFormProps> = ({ onAsignarClick }) => {
 
   // --- FILTROS DE DATOS ---
   const usuariosActivos = usuarios.filter((u) => u.isActive);
-  const vehiculosDisponibles = vehiculos.filter((v) => v.status !== 'fuera_de_servicio' && v.status !== 'en_taller');
+  const vehiculosDisponibles = vehiculos.filter((v) => v.status !== 'inactivo' && v.status !== 'en_reparacion');
 
   return (
     <div className="bg-white rounded-lg shadow p-6">
