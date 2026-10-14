@@ -551,7 +551,8 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
               )}
             </div>
 
-            {/* Dependencia */}
+            {/* Dependencia (debajo de Jurisdicción) */}
+            <div className="hidden md:block" aria-hidden="true" />
             <div>
               <label
                 htmlFor="dependencia"
