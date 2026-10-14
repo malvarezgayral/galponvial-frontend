@@ -126,7 +126,6 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
       "status",
       "uso_combustible",
       "uso_km",
-      "dependencia",
     ];
 
     const requiredAdditionalFields = [
@@ -560,10 +559,8 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
               >
                 Dependencia
               </label>
-              <input
+              <select
                 id="dependencia"
-                type="text"
-                placeholder="Ej: Dependencia Centro"
                 value={formData.dependencia}
                 onChange={(e) => handleInputChange(e, "dependencia")}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
@@ -571,7 +568,9 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-blue-500"
                 }`}
-              />
+              >
+                <option value="">Sin opciones disponibles</option>
+              </select>
               {fieldErrors.dependencia && (
                 <p className="text-red-500 text-sm mt-1">
                   {fieldErrors.dependencia}
