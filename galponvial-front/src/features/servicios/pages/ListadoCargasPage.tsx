@@ -1,3 +1,4 @@
+import { ESTACIONES_SERVICIO } from '../estacionesServicio';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { vehiculosService } from '@/features/vehiculos/services/vehiculosService';
@@ -179,12 +180,22 @@ const ListadoCargasPage = () => {
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap">
                         {editando ? (
-                          <input
-                            type="text"
+                          <select
                             value={fila.estacion_servicio}
                             onChange={(e) => updateBorrador('estacion_servicio', e.target.value)}
                             className={inputClass}
-                          />
+                          >
+                            <option value="">Seleccionar estación...</option>
+                            {fila.estacion_servicio &&
+                              !ESTACIONES_SERVICIO.includes(fila.estacion_servicio) && (
+                                <option value={fila.estacion_servicio}>{fila.estacion_servicio}</option>
+                              )}
+                            {ESTACIONES_SERVICIO.map((estacion) => (
+                              <option key={estacion} value={estacion}>
+                                {estacion}
+                              </option>
+                            ))}
+                          </select>
                         ) : (
                           c.estacion_servicio
                         )}

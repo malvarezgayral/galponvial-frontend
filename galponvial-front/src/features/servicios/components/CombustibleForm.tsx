@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { ESTACIONES_SERVICIO } from '../estacionesServicio';
 import React, { useState } from 'react';
 import { combustibleService } from '../services/combustibleService';
 import { CombustibleSuccessModal } from './CombustibleSuccessModal';
@@ -225,14 +226,19 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
             <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
               Estación de servicio *
             </label>
-            <input
-              type="text"
+            <select
               name="estacion_servicio"
               value={formData.estacion_servicio || ''}
               onChange={handleChange}
-              placeholder="Nombre de la estación de servicio"
               className={inputClass('estacion_servicio')}
-            />
+            >
+              <option value="">Seleccionar estación...</option>
+              {ESTACIONES_SERVICIO.map((estacion) => (
+                <option key={estacion} value={estacion}>
+                  {estacion}
+                </option>
+              ))}
+            </select>
             {errors.estacion_servicio && (
               <p className="text-red-500 text-sm mt-1">{errors.estacion_servicio}</p>
             )}
