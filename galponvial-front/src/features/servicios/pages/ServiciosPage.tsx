@@ -60,6 +60,7 @@ const ServiciosPage = () => {
   const navigate = useNavigate();
 
   const handleCombustible = () => navigate('/servicios/combustible');
+  const handleCombustibleCarro = () => navigate('/servicios/combustible-carro');
   const handleIncidente = () => navigate('/servicios/incidente');
   const handleRecordatorio = () => navigate('/servicios/recordatorio');
   const handleProveedores = () => navigate('/proveedores');
@@ -89,6 +90,14 @@ const ServiciosPage = () => {
               description="Registra una nueva carga de combustible para un vehículo"
               icon={<FuelIcon />}
               onClick={handleCombustible}
+            />
+          )}
+          {canReadModulo('combustible') && (
+            <ServicioCard
+              title="Carga de Combustible (Carro)"
+              description="Registra una nueva carga de combustible para un carro"
+              icon={<FuelIcon />}
+              onClick={handleCombustibleCarro}
             />
           )}
           {canReadModulo('incidente') && (
