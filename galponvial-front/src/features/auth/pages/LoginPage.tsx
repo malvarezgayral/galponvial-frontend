@@ -66,7 +66,7 @@ const LoginPage: React.FC = () => {
         {/* Card Container */}
         <div className="bg-white rounded-lg shadow-lg p-8">
           {/* Form Title */}
-          <h1 className="text-center text-2xl font-bold text-[#1E1E1E] mb-8">Galpon Vial</h1>
+          <h1 className="text-center text-2xl font-bold text-[#1E1E1E] mb-8">Galpón Vial</h1>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
