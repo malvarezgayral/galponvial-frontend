@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import { useAppStore } from '@/app/stores/appStore';
 import { ServicioCard } from '../components/ServicioCard';
 import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
 
@@ -18,12 +17,6 @@ const IncidentIcon = () => (
 const ReminderIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
     <path strokeLinecap="round" strokeLinejoin="round" d="M9.143 17h10.714a2.25 2.25 0 002.25-2.25V5.25a2.25 2.25 0 00-2.25-2.25H9.143c-1.355 0-2.573.681-3.322 1.708m0 0H3.75m0 0V21m0-13.5h3.75" />
-  </svg>
-);
-
-const UserVehicleIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-10 h-10">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
   </svg>
 );
 
@@ -65,15 +58,10 @@ const DepositoIcon = () => (
 
 const ServiciosPage = () => {
   const navigate = useNavigate();
-  const { user } = useAppStore();
-
-  const isAdmin =
-    user && (user.rol === 'admin' || user.rol === 'superadmin');
 
   const handleCombustible = () => navigate('/servicios/combustible');
   const handleIncidente = () => navigate('/servicios/incidente');
   const handleRecordatorio = () => navigate('/servicios/recordatorio');
-  const handleUsuarioVehiculo = () => navigate('/servicios/usuario-vehiculo');
   const handleProveedores = () => navigate('/proveedores');
   const handleService = () => navigate('/service');
   const handleReparacion = () => navigate('/reparacion');
@@ -163,14 +151,6 @@ const ServiciosPage = () => {
               description="Gestioná la documentación asociada al personal"
               icon={<DocumentacionIcon />}
               onClick={handleDocumentacionPersonal}
-            />
-          )}
-          {isAdmin && (
-            <ServicioCard
-              title="Relaciones Usuario-Vehículo"
-              description="Administra las asignaciones de vehículos a usuarios"
-              icon={<UserVehicleIcon />}
-              onClick={handleUsuarioVehiculo}
             />
           )}
         </div>

@@ -2,8 +2,10 @@ import { useState, useEffect } from 'react';
 import { useVehiculosStore } from '../store';
 import { CreateVehiculoForm } from '../components/CreateVehiculoForm';
 import { VehiculosView } from '../components/VehiculosView';
+import UsuarioVehiculoPage from '@/features/servicios/pages/UsuarioVehiculoPage';
+import { useAppStore } from '@/app/stores/appStore';
 
-type VehiculosSection = 'administrar' | 'visualizar' | 'activos' | 'inactivos' | 'en-reparacion';
+type VehiculosSection = 'administrar' | 'visualizar' | 'activos' | 'inactivos' | 'en-reparacion' | 'relaciones';
 
 const ESTADOS_ACTIVOS = ['activo'];
 const ESTADOS_INACTIVOS = ['inactivo'];
@@ -15,6 +17,8 @@ const ESTADOS_EN_REPARACION = ['en_reparacion'];
  */
 export default function VehiculosPage() {
   const [activeSection, setActiveSection] = useState<VehiculosSection>('administrar');
+  const { user } = useAppStore();
+  const isAdmin = !!user && (user.rol === 'admin' || user.rol === 'superadmin');
   const { dropdownData, dropdownLoading, fetchDropdownOptions, fetchEnums } = useVehiculosStore();
 
   /**
@@ -84,6 +88,18 @@ export default function VehiculosPage() {
         >
           En Reparación
         </button>
+        {isAdmin && (
+          <button
+            onClick={() => setActiveSection('relaciones')}
+            className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
+              activeSection === 'relaciones'
+                ? 'bg-[#0062e3] text-white'
+                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+            }`}
+          >
+            Relaciones Usuario-Vehículo
+          </button>
+        )}
       </div>
 
       {/* Content Sections */}
@@ -104,6 +120,7 @@ export default function VehiculosPage() {
       {activeSection === 'activos' && <VehiculosView estadosPermitidos={ESTADOS_ACTIVOS} />}
       {activeSection === 'inactivos' && <VehiculosView estadosPermitidos={ESTADOS_INACTIVOS} />}
       {activeSection === 'en-reparacion' && <VehiculosView estadosPermitidos={ESTADOS_EN_REPARACION} />}
+      {activeSection === 'relaciones' && isAdmin && <UsuarioVehiculoPage />}
     </div>
   );
 }

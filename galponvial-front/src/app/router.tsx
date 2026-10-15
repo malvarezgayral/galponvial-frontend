@@ -30,12 +30,10 @@ import RecordatorioPage from "../features/servicios/pages/RecordatorioPage";
 import HistorialRecordatoriosPage from "../features/servicios/pages/HistorialRecordatoriosPage";
 import ListadoRecordatoriosPage from "../features/servicios/pages/ListadoRecordatoriosPage";
 import MisRecordatoriosPage from "../features/servicios/pages/MisRecordatoriosPage";
-import UsuarioVehiculoPage from "../features/servicios/pages/UsuarioVehiculoPage";
 import HomePage from "../features/home/pages/HomePage";
 import UsuariosPage from "../features/usuarios/pages/UsuariosPage";
 import LoginPage from "../features/auth/pages/LoginPage";
 import GrupoDetallesPage from "@/features/almacen/pages/GrupoDetallesPage";
-import SuperUserProtectedRoute from "./components/SuperUserProtectedRoute";
 import ArticulosEliminadosPage from "@/features/almacen/pages/ArticulosEliminadosPage";
 
 const AuditoriaPage = () => <h1 className="text-3xl font-bold">Auditoría</h1>;
@@ -65,7 +63,6 @@ export const router = createBrowserRouter([
       { path: "/servicios/recordatorio", element: <ProtectedRoute><RecordatorioPage /></ProtectedRoute> },
       { path: "/servicios/recordatorio/listado", element: <ProtectedRoute><ListadoRecordatoriosPage /></ProtectedRoute> },
       { path: "/servicios/recordatorio/historial", element: <ProtectedRoute><HistorialRecordatoriosPage /></ProtectedRoute> },
-      { path: "/servicios/usuario-vehiculo", element: <SuperUserProtectedRoute><UsuarioVehiculoPage /></SuperUserProtectedRoute> },
       { path: ROUTES.usuarios, element: <UsuariosProtectedRoute><UsuariosPage /></UsuariosProtectedRoute> },
       { path: "/almacen/grupos/:id", element: <ModuloProtectedRoute modulo="almacen"><GrupoDetallesPage /></ModuloProtectedRoute> },
       { path: ROUTES.auditoria, element: <AuditoriaPage /> },

@@ -191,18 +191,8 @@ const UsuarioVehiculoPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--color-bg-secondary)] py-8 px-4">
+    <div>
       <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-[var(--color-text-primary)] mb-2">
-            Relaciones Usuario-Vehículo
-          </h1>
-          <p className="text-lg text-[var(--color-text-secondary)]">
-            Administra las asignaciones de vehículos a usuarios
-          </p>
-        </div>
-
         {/* Error message */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
