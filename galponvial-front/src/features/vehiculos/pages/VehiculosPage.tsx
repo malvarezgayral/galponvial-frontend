@@ -19,7 +19,12 @@ export default function VehiculosPage() {
   const [activeSection, setActiveSection] = useState<VehiculosSection>('administrar');
   const { user } = useAppStore();
   const isAdmin = !!user && (user.rol === 'admin' || user.rol === 'superadmin');
-  const { dropdownData, dropdownLoading, fetchDropdownOptions, fetchEnums } = useVehiculosStore();
+  const { dropdownData, dropdownLoading, fetchDropdownOptions, fetchEnums, resetFilters } = useVehiculosStore();
+
+  const cambiarSeccion = (seccion: VehiculosSection) => {
+    resetFilters();
+    setActiveSection(seccion);
+  };
 
   /**
    * Fetch dropdown options on component mount
@@ -39,7 +44,7 @@ export default function VehiculosPage() {
       {/* Section Toggle Buttons */}
       <div className="flex gap-4 mb-8">
         <button
-          onClick={() => setActiveSection('administrar')}
+          onClick={() => cambiarSeccion('administrar')}
           className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
             activeSection === 'administrar'
               ? 'bg-[#0062e3] text-white'
@@ -49,7 +54,7 @@ export default function VehiculosPage() {
           Administrar vehículos
         </button>
         <button
-          onClick={() => setActiveSection('visualizar')}
+          onClick={() => cambiarSeccion('visualizar')}
           className={`px-6 py-2 font-semibold rounded-lg transition-colors ${
             activeSection === 'visualizar'
               ? 'bg-[#0062e3] text-white'
@@ -59,7 +64,7 @@ export default function VehiculosPage() {
           Visualizar vehículos
         </button>
         <button
-          onClick={() => setActiveSection('activos')}
+          onClick={() => cambiarSeccion('activos')}
           className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
             activeSection === 'activos'
               ? 'bg-[#0062e3] text-white'
@@ -69,7 +74,7 @@ export default function VehiculosPage() {
           Activos
         </button>
         <button
-          onClick={() => setActiveSection('inactivos')}
+          onClick={() => cambiarSeccion('inactivos')}
           className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
             activeSection === 'inactivos'
               ? 'bg-[#0062e3] text-white'
@@ -79,7 +84,7 @@ export default function VehiculosPage() {
           Inactivos
         </button>
         <button
-          onClick={() => setActiveSection('en-reparacion')}
+          onClick={() => cambiarSeccion('en-reparacion')}
           className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
             activeSection === 'en-reparacion'
               ? 'bg-[#0062e3] text-white'
@@ -90,7 +95,7 @@ export default function VehiculosPage() {
         </button>
         {isAdmin && (
           <button
-            onClick={() => setActiveSection('relaciones')}
+            onClick={() => cambiarSeccion('relaciones')}
             className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
               activeSection === 'relaciones'
                 ? 'bg-[#0062e3] text-white'
