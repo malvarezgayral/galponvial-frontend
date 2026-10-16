@@ -95,13 +95,13 @@ const HistorialCombustiblePage = () => {
     }
     if (
       filtrosAplicados.km_actual?.min !== undefined &&
-      c.km_actual < filtrosAplicados.km_actual.min
+      (c.km_actual == null || c.km_actual < filtrosAplicados.km_actual.min)
     ) {
       return false;
     }
     if (
       filtrosAplicados.km_actual?.max !== undefined &&
-      c.km_actual > filtrosAplicados.km_actual.max
+      (c.km_actual == null || c.km_actual > filtrosAplicados.km_actual.max)
     ) {
       return false;
     }
@@ -211,7 +211,7 @@ const HistorialCombustiblePage = () => {
                     <td className="px-3 py-2 whitespace-nowrap">{c.despachante || '—'}</td>
                     <td className="px-3 py-2 whitespace-nowrap">{c.tipo_combustible || '—'}</td>
                     <td className="px-3 py-2 whitespace-nowrap">{c.Galpón_Vial || '—'}</td>
-                    <td className="px-3 py-2 whitespace-nowrap">{c.km_actual}</td>
+                    <td className="px-3 py-2 whitespace-nowrap">{c.km_actual ?? '—'}</td>
                     <td className="px-3 py-2 whitespace-nowrap">{c.cant_combustible_despachado}</td>
                     <td className="px-3 py-2 whitespace-nowrap">{c.litros_entrada}</td>
                     <td className="px-3 py-2 whitespace-nowrap">{c.litros_salida}</td>

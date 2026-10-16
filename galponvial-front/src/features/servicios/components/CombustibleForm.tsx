@@ -52,10 +52,6 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       newErrors.tipo_combustible = 'El tipo de combustible es obligatorio';
     }
 
-    if (!formData.km_actual || formData.km_actual <= 0) {
-      newErrors.km_actual = 'Los km actuales son obligatorios y deben ser mayor a 0';
-    }
-
     if (!formData.cant_combustible_despachado || formData.cant_combustible_despachado <= 0) {
       newErrors.cant_combustible_despachado = 'La cantidad de combustible es obligatoria y debe ser mayor a 0';
     }
@@ -112,7 +108,9 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
     setLoading(true);
 
     try {
-      const response = await combustibleService.crearCarga(vehiculoId, formData);
+      const { km_actual, ...resto } = formData;
+      const payload = km_actual && km_actual > 0 ? { ...resto, km_actual } : resto;
+      const response = await combustibleService.crearCarga(vehiculoId, payload);
       setSuccessData(response);
       setShowSuccessModal(true);
 
@@ -305,7 +303,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
           {/* KM actuales */}
           <div>
             <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
-              KM actuales *
+              KM actuales
             </label>
             <input
               type="number"

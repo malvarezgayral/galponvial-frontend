@@ -305,7 +305,7 @@ export const vehiculosService = {
     payload: {
       fecha_carga: string;
       despachante: string;
-      km_actual: number;
+      km_actual?: number | null;
       cant_combustible_despachado: number;
     }
   ): Promise<CargaCombustible> => {

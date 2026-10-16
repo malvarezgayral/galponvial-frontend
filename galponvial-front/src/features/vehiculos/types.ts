@@ -132,7 +132,7 @@ export interface CargaCombustible {
   id_carga: number;
   fecha_carga: string;
   despachante: string;
-  km_actual: number;
+  km_actual?: number | null;
   cant_combustible_despachado: number;
   vehiculo: Vehiculo;
 }

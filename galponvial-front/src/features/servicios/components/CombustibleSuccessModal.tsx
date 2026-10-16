@@ -95,7 +95,7 @@ export const CombustibleSuccessModal: React.FC<CombustibleSuccessModalProps> = (
               <div className="flex justify-between">
                 <span className="text-[var(--color-text-secondary)]">KM Actuales:</span>
                 <span className="font-medium text-[var(--color-text-primary)]">
-                  {data.km_actual.toLocaleString('es-ES')}
+                  {data.km_actual != null ? data.km_actual.toLocaleString('es-ES') : '—'}
                 </span>
               </div>
               {data.despachante && (

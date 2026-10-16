@@ -625,7 +625,7 @@ const VehiculoDetallesPage: React.FC = () => {
                         <td className="px-4 py-3 text-sm text-gray-700">{item.fecha_carga}</td>
                         <td className="px-4 py-3 text-sm text-gray-700">{item.despachante}</td>
                         <td className="px-4 py-3 text-sm text-gray-700">{item.tipo_combustible}</td>
-                        <td className="px-4 py-3 text-sm text-gray-700">{item.km_actual}</td>
+                        <td className="px-4 py-3 text-sm text-gray-700">{item.km_actual ?? '—'}</td>
                         <td className="px-4 py-3 text-sm text-gray-700">{item.cant_combustible_despachado}</td>
                       </tr>
                     ))}

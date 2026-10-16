@@ -240,12 +240,12 @@ const ListadoCargasPage = () => {
                         {editando ? (
                           <input
                             type="number"
-                            value={fila.km_actual}
-                            onChange={(e) => updateBorrador('km_actual', parseFloat(e.target.value))}
+                            value={fila.km_actual ?? ''}
+                            onChange={(e) => updateBorrador('km_actual', e.target.value === '' ? null : parseFloat(e.target.value))}
                             className={inputClass}
                           />
                         ) : (
-                          c.km_actual
+                          c.km_actual ?? '—'
                         )}
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap">
