@@ -279,7 +279,6 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
               <option value="Nafta Súper">Nafta Súper</option>
               <option value="Nafta Premium">Nafta Premium</option>
               <option value="GNC">GNC</option>
-              <option value="GLP">GLP</option>
               <option value="Otro">Otro</option>
             </select>
             {errors.tipo_combustible && (
