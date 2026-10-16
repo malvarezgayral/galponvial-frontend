@@ -52,10 +52,6 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       newErrors.tipo_combustible = 'El tipo de combustible es obligatorio';
     }
 
-    if (!formData.Galpón_Vial || formData.Galpón_Vial.trim() === '') {
-      newErrors.Galpón_Vial = 'El campo Galpón Vial es obligatorio';
-    }
-
     if (!formData.km_actual || formData.km_actual <= 0) {
       newErrors.km_actual = 'Los km actuales son obligatorios y deben ser mayor a 0';
     }
@@ -289,7 +285,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
           {/* Galpón Vial */}
           <div>
             <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
-              Galpón Vial *
+              Galpón Vial
             </label>
             <select
               name="Galpón_Vial"
