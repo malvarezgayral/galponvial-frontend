@@ -283,7 +283,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
           {/* Galpón Vial */}
           <div>
             <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
-              Galpón Vial
+              Galpón Vial <span className="text-xs font-normal text-[var(--color-text-secondary)]">(Opcional)</span>
             </label>
             <select
               name="Galpón_Vial"
@@ -303,7 +303,7 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
           {/* KM actuales */}
           <div>
             <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
-              KM actuales
+              KM actuales <span className="text-xs font-normal text-[var(--color-text-secondary)]">(Opcional)</span>
             </label>
             <input
               type="number"
