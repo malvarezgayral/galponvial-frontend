@@ -140,12 +140,6 @@ const CombustiblePage = () => {
             Carga de Combustible
           </button>
           <button
-            onClick={() => navigate('/servicios/combustible-carro')}
-            className="px-7 py-3 rounded-lg bg-gray-200 text-gray-700 text-base font-semibold hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
-          >
-            Carga de Combustible (Carro)
-          </button>
-          <button
             onClick={() => navigate('/servicios/combustible/listado')}
             className="px-7 py-3 rounded-lg bg-gray-200 text-gray-700 text-base font-semibold hover:bg-gray-300 transition-colors duration-200 cursor-pointer"
           >
