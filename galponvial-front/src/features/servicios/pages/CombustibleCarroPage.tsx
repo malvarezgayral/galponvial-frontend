@@ -128,9 +128,6 @@ const CombustibleCarroPage: React.FC = () => {
       <div className="max-w-4xl mx-auto">
         {/* Botones de navegación */}
         <div className="flex flex-nowrap justify-center gap-3 mb-6 overflow-x-auto pb-1">
-          <button onClick={() => navigate('/servicios/combustible')} className={navInactive}>
-            Carga de Combustible
-          </button>
           <button onClick={() => navigate('/servicios/combustible-carro')} className={navActive}>
             Carga de Combustible (Carro)
           </button>
