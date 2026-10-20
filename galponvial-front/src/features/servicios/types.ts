@@ -27,9 +27,6 @@ export interface CombustibleCargaRequest {
   cant_combustible_despachado: number;
   chofer: string;
   estacion_servicio: string;
-  litros_entrada: number;
-  litros_salida: number;
-  estado_parcial: string;
 }
 
 export interface VehiculoInfo {
@@ -54,9 +51,6 @@ export interface CombustibleCargaResponse {
   cant_combustible_despachado: number;
   chofer: string;
   estacion_servicio: string;
-  litros_entrada: number;
-  litros_salida: number;
-  estado_parcial: string;
   vehiculo: VehiculoInfo;
   id_carga: number;
 }
@@ -204,9 +198,6 @@ export interface CombustibleHistorialFiltros {
   Galpón_Vial?: string;
   km_actual?: RangoNumerico;
   cant_combustible_despachado?: RangoNumerico;
-  litros_entrada?: RangoNumerico;
-  litros_salida?: RangoNumerico;
-  estado_parcial?: string;
 }
 
 

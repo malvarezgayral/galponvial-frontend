@@ -25,9 +25,6 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
     cant_combustible_despachado: 0,
     chofer: '',
     estacion_servicio: '',
-    litros_entrada: 0,
-    litros_salida: 0,
-    estado_parcial: '',
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -62,18 +59,6 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
 
     if (!formData.estacion_servicio || formData.estacion_servicio.trim() === '') {
       newErrors.estacion_servicio = 'La estación de servicio es obligatoria';
-    }
-
-    if (!formData.litros_entrada || formData.litros_entrada <= 0) {
-      newErrors.litros_entrada = 'Los litros de entrada son obligatorios y deben ser mayor a 0';
-    }
-
-    if (!formData.litros_salida || formData.litros_salida <= 0) {
-      newErrors.litros_salida = 'Los litros de salida son obligatorios y deben ser mayor a 0';
-    }
-
-    if (!formData.estado_parcial || formData.estado_parcial.trim() === '') {
-      newErrors.estado_parcial = 'El estado parcial es obligatorio';
     }
 
     setErrors(newErrors);
@@ -144,9 +129,6 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
       cant_combustible_despachado: 0,
       chofer: '',
       estacion_servicio: '',
-      litros_entrada: 0,
-      litros_salida: 0,
-      estado_parcial: '',
     });
     setErrors({});
     setGeneralError(null);
@@ -337,64 +319,6 @@ export const CombustibleForm: React.FC<CombustibleFormProps> = ({
             />
             {errors.cant_combustible_despachado && (
               <p className="text-red-500 text-sm mt-1">{errors.cant_combustible_despachado}</p>
-            )}
-          </div>
-
-          {/* Litros de entrada */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
-              Litros de entrada *
-            </label>
-            <input
-              type="number"
-              name="litros_entrada"
-              value={formData.litros_entrada || ''}
-              onChange={handleChange}
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-              className={inputClass('litros_entrada')}
-            />
-            {errors.litros_entrada && (
-              <p className="text-red-500 text-sm mt-1">{errors.litros_entrada}</p>
-            )}
-          </div>
-
-          {/* Litros de salida */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
-              Litros de salida *
-            </label>
-            <input
-              type="number"
-              name="litros_salida"
-              value={formData.litros_salida || ''}
-              onChange={handleChange}
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-              className={inputClass('litros_salida')}
-            />
-            {errors.litros_salida && (
-              <p className="text-red-500 text-sm mt-1">{errors.litros_salida}</p>
-            )}
-          </div>
-
-          {/* Estado parcial */}
-          <div>
-            <label className="block text-sm font-medium text-[var(--color-text-primary)] mb-2">
-              Estado parcial *
-            </label>
-            <input
-              type="text"
-              name="estado_parcial"
-              value={formData.estado_parcial || ''}
-              onChange={handleChange}
-              placeholder="Descripción del estado parcial"
-              className={inputClass('estado_parcial')}
-            />
-            {errors.estado_parcial && (
-              <p className="text-red-500 text-sm mt-1">{errors.estado_parcial}</p>
             )}
           </div>
 

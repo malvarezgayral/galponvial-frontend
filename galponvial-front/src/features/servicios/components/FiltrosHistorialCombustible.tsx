@@ -15,9 +15,6 @@ const filtrosVacios: CombustibleHistorialFiltros = {
   Galpón_Vial: '',
   km_actual: {},
   cant_combustible_despachado: {},
-  litros_entrada: {},
-  litros_salida: {},
-  estado_parcial: '',
 };
 
 const TIPOS_COMBUSTIBLE = [
@@ -34,7 +31,6 @@ const DESPACHANTES = ['Pablo Altuna', 'Juan Torres'];
 
 const GALPON_VIAL_OPCIONES = ['Depósito', 'Tanque'];
 
-const ESTADOS_PARCIALES = ['Completo', 'Parcial'];
 
 const FiltrosHistorialCombustible = ({ onBuscar }: FiltrosHistorialCombustibleProps) => {
   const [filtros, setFiltros] = useState<CombustibleHistorialFiltros>(filtrosVacios);
@@ -222,68 +218,6 @@ const FiltrosHistorialCombustible = ({ onBuscar }: FiltrosHistorialCombustiblePr
               className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm"
             />
           </div>
-        </div>
-
-        <div>
-          <label className="block text-sm text-[var(--color-text-secondary)] mb-1">
-            Litros de entrada
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              placeholder="Mín"
-              value={filtros.litros_entrada?.min ?? ''}
-              onChange={(e) => handleRangoChange('litros_entrada', 'min', e.target.value)}
-              className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm"
-            />
-            <input
-              type="number"
-              placeholder="Máx"
-              value={filtros.litros_entrada?.max ?? ''}
-              onChange={(e) => handleRangoChange('litros_entrada', 'max', e.target.value)}
-              className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm text-[var(--color-text-secondary)] mb-1">
-            Litros de salida
-          </label>
-          <div className="flex gap-2">
-            <input
-              type="number"
-              placeholder="Mín"
-              value={filtros.litros_salida?.min ?? ''}
-              onChange={(e) => handleRangoChange('litros_salida', 'min', e.target.value)}
-              className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm"
-            />
-            <input
-              type="number"
-              placeholder="Máx"
-              value={filtros.litros_salida?.max ?? ''}
-              onChange={(e) => handleRangoChange('litros_salida', 'max', e.target.value)}
-              className="w-1/2 border border-gray-300 rounded-md px-3 py-2 text-sm"
-            />
-          </div>
-        </div>
-
-        <div>
-          <label className="block text-sm text-[var(--color-text-secondary)] mb-1">
-            Estado parcial
-          </label>
-          <select
-            value={filtros.estado_parcial}
-            onChange={(e) => handleTextChange('estado_parcial', e.target.value)}
-            className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
-          >
-            <option value="">Seleccione un estado...</option>
-            {ESTADOS_PARCIALES.map((e) => (
-              <option key={e} value={e}>
-                {e}
-              </option>
-            ))}
-          </select>
         </div>
       </div>
 

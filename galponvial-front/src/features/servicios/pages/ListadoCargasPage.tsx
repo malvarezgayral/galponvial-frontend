@@ -135,9 +135,6 @@ const ListadoCargasPage = () => {
                   <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Galpón Vial</th>
                   <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">KM actual</th>
                   <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Cant. despachada</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Litros entrada</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Litros salida</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Estado parcial</th>
                   <th className="text-right px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Acciones</th>
                 </tr>
               </thead>
@@ -260,42 +257,6 @@ const ListadoCargasPage = () => {
                           />
                         ) : (
                           c.cant_combustible_despachado
-                        )}
-                      </td>
-                      <td className="px-3 py-2 whitespace-nowrap">
-                        {editando ? (
-                          <input
-                            type="number"
-                            value={fila.litros_entrada}
-                            onChange={(e) => updateBorrador('litros_entrada', parseFloat(e.target.value))}
-                            className={inputClass}
-                          />
-                        ) : (
-                          c.litros_entrada
-                        )}
-                      </td>
-                      <td className="px-3 py-2 whitespace-nowrap">
-                        {editando ? (
-                          <input
-                            type="number"
-                            value={fila.litros_salida}
-                            onChange={(e) => updateBorrador('litros_salida', parseFloat(e.target.value))}
-                            className={inputClass}
-                          />
-                        ) : (
-                          c.litros_salida
-                        )}
-                      </td>
-                      <td className="px-3 py-2 whitespace-nowrap">
-                        {editando ? (
-                          <input
-                            type="text"
-                            value={fila.estado_parcial}
-                            onChange={(e) => updateBorrador('estado_parcial', e.target.value)}
-                            className={inputClass}
-                          />
-                        ) : (
-                          c.estado_parcial
                         )}
                       </td>
                       <td className="px-3 py-2 whitespace-nowrap text-right">
