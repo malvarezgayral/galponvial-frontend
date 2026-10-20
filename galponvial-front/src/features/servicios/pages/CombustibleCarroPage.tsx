@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ESTACIONES_SERVICIO } from '../estacionesServicio';
 import { TIPOS_COMBUSTIBLE } from '../tiposCombustible';
 import { CHOFERES } from '../choferes';
+import { combustibleCarroService } from '../services/combustibleCarroService';
 
 /**
  * Carga de Combustible (Carro)
@@ -54,6 +55,8 @@ const CombustibleCarroPage: React.FC = () => {
   const [formData, setFormData] = useState<CarroFormData>(buildEmptyForm());
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
   const inputClass = (field: string) => `
     w-full px-4 py-2 border rounded-lg bg-white
@@ -101,15 +104,35 @@ const CombustibleCarroPage: React.FC = () => {
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
   };
 
-  const handleSubmit = (ev: React.FormEvent) => {
+  const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     setSuccess(false);
+    setGeneralError(null);
     if (!validateForm()) return;
 
-    // TODO backend: enviar { ...formData, litros_entrada: Number(...), litros_salida: Number(...) }
-    setSuccess(true);
-    setFormData(buildEmptyForm());
-    setErrors({});
+    setLoading(true);
+    try {
+      await combustibleCarroService.crear({
+        fecha_carga: formData.fecha_carga,
+        chofer: formData.chofer,
+        estacion_servicio: formData.estacion_servicio,
+        despachante: formData.despachante.trim(),
+        tipo_combustible: formData.tipo_combustible,
+        ...(formData.Galpón_Vial ? { galpon_vial: formData.Galpón_Vial } : {}),
+        litros_entrada: Number(formData.litros_entrada),
+        litros_salida: Number(formData.litros_salida),
+        estado_parcial: formData.estado_parcial.trim(),
+      });
+      setSuccess(true);
+      setFormData(buildEmptyForm());
+      setErrors({});
+    } catch (error) {
+      const err = error as { response?: { data?: { message?: string | string[] } }; message?: string };
+      const msg = err.response?.data?.message;
+      setGeneralError(Array.isArray(msg) ? msg.join(', ') : msg || err.message || 'Error al registrar la carga');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleReset = () => {
@@ -144,10 +167,16 @@ const CombustibleCarroPage: React.FC = () => {
             Registrar Carga de Combustible (Carro)
           </h2>
 
+          {generalError && (
+            <div className="mb-6 p-4 bg-red-100 border border-red-400 rounded-lg">
+              <p className="text-red-700 font-medium">{generalError}</p>
+            </div>
+          )}
+
           {success && (
             <div className="mb-6 p-4 bg-green-100 border border-green-400 rounded-lg">
               <p className="text-green-700 font-medium">
-                Carga validada correctamente. Todavía no se guarda en el servidor.
+                Carga registrada correctamente.
               </p>
             </div>
           )}
@@ -318,9 +347,10 @@ const CombustibleCarroPage: React.FC = () => {
             <div className="flex gap-4 pt-6">
               <button
                 type="submit"
-                className="flex-1 px-6 py-3 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors duration-200 cursor-pointer"
+                disabled={loading}
+                className="flex-1 px-6 py-3 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Registrar Carga
+                {loading ? 'Registrando...' : 'Registrar Carga'}
               </button>
               <button
                 type="button"
