@@ -3,7 +3,7 @@ import { useVehiculosStore } from '../store';
 import { CreateVehiculoForm } from '../components/CreateVehiculoForm';
 import { VehiculosView } from '../components/VehiculosView';
 import UsuarioVehiculoPage from '@/features/servicios/pages/UsuarioVehiculoPage';
-import { useAppStore } from '@/app/stores/appStore';
+import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
 
 type VehiculosSection = 'administrar' | 'visualizar' | 'activos' | 'inactivos' | 'en-reparacion' | 'relaciones';
 
@@ -16,9 +16,9 @@ const ESTADOS_EN_REPARACION = ['en_reparacion'];
  * Accessible to any logged-in user
  */
 export default function VehiculosPage() {
-  const [activeSection, setActiveSection] = useState<VehiculosSection>('administrar');
-  const { user } = useAppStore();
-  const isAdmin = !!user && (user.rol === 'admin' || user.rol === 'superadmin');
+  const { isSuperAdmin, canWriteModulo } = useAdminPermissions();
+  const canWrite = isSuperAdmin() || canWriteModulo('vehiculos');
+  const [activeSection, setActiveSection] = useState<VehiculosSection>(canWrite ? 'administrar' : 'visualizar');
   const { dropdownData, dropdownLoading, fetchDropdownOptions, fetchEnums, resetFilters } = useVehiculosStore();
 
   const cambiarSeccion = (seccion: VehiculosSection) => {
@@ -43,6 +43,7 @@ export default function VehiculosPage() {
 
       {/* Section Toggle Buttons */}
       <div className="flex gap-4 mb-8">
+        {canWrite && (
         <button
           onClick={() => cambiarSeccion('administrar')}
           className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
@@ -53,6 +54,7 @@ export default function VehiculosPage() {
         >
           Administrar vehículos
         </button>
+        )}
         <button
           onClick={() => cambiarSeccion('visualizar')}
           className={`px-6 py-2 font-semibold rounded-lg transition-colors ${
@@ -93,7 +95,7 @@ export default function VehiculosPage() {
         >
           En Reparación
         </button>
-        {isAdmin && (
+        {canWrite && (
           <button
             onClick={() => cambiarSeccion('relaciones')}
             className={`px-6 py-2 font-semibold rounded-lg transition-colors cursor-pointer ${
@@ -125,7 +127,7 @@ export default function VehiculosPage() {
       {activeSection === 'activos' && <VehiculosView estadosPermitidos={ESTADOS_ACTIVOS} />}
       {activeSection === 'inactivos' && <VehiculosView estadosPermitidos={ESTADOS_INACTIVOS} />}
       {activeSection === 'en-reparacion' && <VehiculosView estadosPermitidos={ESTADOS_EN_REPARACION} />}
-      {activeSection === 'relaciones' && isAdmin && <UsuarioVehiculoPage />}
+      {activeSection === 'relaciones' && canWrite && <UsuarioVehiculoPage />}
     </div>
   );
 }

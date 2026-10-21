@@ -33,7 +33,7 @@ const Navbar = () => {
     { name: "Almacén", href: ROUTES.almacen, modulo: "almacen" },
     { name: "Vehículos", href: ROUTES.vehiculos, modulo: "vehiculos", roles: ["admin", "superadmin"] },
     { name: "Servicios", href: ROUTES.servicios, modulo: "servicios", roles: ["admin", "superadmin"] },
-    { name: "Lubricentro", href: ROUTES.depoCombustible, roles: ["admin", "superadmin"], onlyScoped: true },
+    { name: "Lubricentro", href: ROUTES.depoCombustible, modulo: "lubricentro", roles: ["admin", "superadmin"], onlyScoped: true },
     { name: "Mis Recordatorios", href: "/mis-recordatorios" },
     { name: "Notificaciones", href: ROUTES.notificaciones, roles: ["admin", "superadmin"] },
     { name: "Usuarios", href: ROUTES.usuarios, roles: ["admin", "superadmin"], requiresUsuariosAccess: true },
