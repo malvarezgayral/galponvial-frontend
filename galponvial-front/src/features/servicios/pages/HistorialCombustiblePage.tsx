@@ -20,9 +20,6 @@ const filtrosVacios: CombustibleHistorialFiltros = {
   Galpón_Vial: '',
   km_actual: {},
   cant_combustible_despachado: {},
-  litros_entrada: {},
-  litros_salida: {},
-  estado_parcial: '',
 };
 
 const HistorialCombustiblePage = () => {
@@ -90,9 +87,6 @@ const HistorialCombustiblePage = () => {
     if (filtrosAplicados.Galpón_Vial && c.Galpón_Vial !== filtrosAplicados.Galpón_Vial) {
       return false;
     }
-    if (filtrosAplicados.estado_parcial && c.estado_parcial !== filtrosAplicados.estado_parcial) {
-      return false;
-    }
     if (
       filtrosAplicados.km_actual?.min !== undefined &&
       (c.km_actual == null || c.km_actual < filtrosAplicados.km_actual.min)
@@ -114,30 +108,6 @@ const HistorialCombustiblePage = () => {
     if (
       filtrosAplicados.cant_combustible_despachado?.max !== undefined &&
       c.cant_combustible_despachado > filtrosAplicados.cant_combustible_despachado.max
-    ) {
-      return false;
-    }
-    if (
-      filtrosAplicados.litros_entrada?.min !== undefined &&
-      c.litros_entrada < filtrosAplicados.litros_entrada.min
-    ) {
-      return false;
-    }
-    if (
-      filtrosAplicados.litros_entrada?.max !== undefined &&
-      c.litros_entrada > filtrosAplicados.litros_entrada.max
-    ) {
-      return false;
-    }
-    if (
-      filtrosAplicados.litros_salida?.min !== undefined &&
-      c.litros_salida < filtrosAplicados.litros_salida.min
-    ) {
-      return false;
-    }
-    if (
-      filtrosAplicados.litros_salida?.max !== undefined &&
-      c.litros_salida > filtrosAplicados.litros_salida.max
     ) {
       return false;
     }
@@ -194,9 +164,6 @@ const HistorialCombustiblePage = () => {
                   <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Galpón Vial</th>
                   <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">KM actual</th>
                   <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Cant. despachada</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Litros entrada</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Litros salida</th>
-                  <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Estado parcial</th>
                 </tr>
               </thead>
               <tbody>
@@ -213,14 +180,11 @@ const HistorialCombustiblePage = () => {
                     <td className="px-3 py-2 whitespace-nowrap">{c.Galpón_Vial || '—'}</td>
                     <td className="px-3 py-2 whitespace-nowrap">{c.km_actual ?? '—'}</td>
                     <td className="px-3 py-2 whitespace-nowrap">{c.cant_combustible_despachado}</td>
-                    <td className="px-3 py-2 whitespace-nowrap">{c.litros_entrada}</td>
-                    <td className="px-3 py-2 whitespace-nowrap">{c.litros_salida}</td>
-                    <td className="px-3 py-2 whitespace-nowrap">{c.estado_parcial}</td>
                   </tr>
                 ))}
                 {cargasFiltradas.length === 0 && (
                   <tr>
-                    <td colSpan={12} className="px-3 py-6 text-center text-gray-400">
+                    <td colSpan={9} className="px-3 py-6 text-center text-gray-400">
                       No se encontraron cargas de combustible con los filtros aplicados.
                     </td>
                   </tr>
