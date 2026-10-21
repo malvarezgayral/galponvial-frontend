@@ -38,7 +38,7 @@ const filaNuevaVacia = (id: number): FilaNueva => ({
 type Vista = "registro" | "listado" | "historial";
 
 export default function ReparacionPage() {
-  const { isAdmin, isSuperAdmin } = useAdminPermissions();
+  const { isSuperAdmin, canWriteModulo } = useAdminPermissions();
 
   const [vista, setVista] = useState<Vista>("registro");
   const [vehiculos, setVehiculos] = useState<Vehiculo[]>([]);
@@ -492,7 +492,7 @@ export default function ReparacionPage() {
                           </>
                         ) : (
                           <>
-                            {isAdmin() && (
+                            {(isSuperAdmin() || canWriteModulo('reparacion')) && (
                               <button
                                 onClick={() => iniciarEdicion(r)}
                                 className="text-blue-600 hover:text-blue-800 text-sm font-medium border border-blue-200 rounded px-3 py-1 hover:bg-blue-50 transition-colors"

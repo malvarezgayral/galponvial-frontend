@@ -22,7 +22,7 @@ const TABS: { key: Tab; label: string }[] = [
 ];
 
 // Tabs visibles para un admin acotado a Almacén (sin acceso global all:read/all:write)
-const TABS_ALMACEN: Tab[] = ["almacen", "personal", "recordatorio", "privada"];
+const TABS_ALMACEN: Tab[] = ["almacen", "personal", "recordatorio", "privada", "reparacion", "incidentes"];
 
 export default function NotificacionesPage() {
   const { hasFullAccess, hasPermission, isSuperAdmin } = useAdminPermissions();
@@ -62,8 +62,10 @@ export default function NotificacionesPage() {
             hasPermission("almacen-comun:write")
           );
         case "reparacion":
-        case "compras":
+          return acceso || hasPermission("reparacion:write");
         case "incidentes":
+          return acceso || hasPermission("incidente:write");
+        case "compras":
         case "proveedores":
           return acceso;
         case "recordatorio":

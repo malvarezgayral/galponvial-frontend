@@ -1,6 +1,7 @@
 import type { Vehiculo } from "../types";
 import { Button } from "@/shared/ui/Button";
 import { useAppStore } from "@/app/stores/appStore";
+import { useAdminPermissions } from "@/features/usuarios/hooks/useAdminPermissions";
 
 interface VehiculoCardProps {
   vehiculo: Vehiculo;
@@ -20,11 +21,12 @@ export const VehiculoCard: React.FC<VehiculoCardProps> = ({
   onViewDetails,
 }) => {
   const { user } = useAppStore();
+  const { canWriteModulo } = useAdminPermissions();
   // Check if user can edit (admin or superadmin)
   const canEdit =
     user &&
     "rol" in user &&
-    (user.rol === "superadmin" || user.rol === "admin");
+    (user.rol === "superadmin" || canWriteModulo("vehiculos"));
 
   // Check if user can delete (admin or superadmin)
   const canDelete =
