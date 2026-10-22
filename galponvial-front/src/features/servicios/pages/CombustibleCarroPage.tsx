@@ -4,6 +4,7 @@ import { ESTACIONES_SERVICIO } from '../estacionesServicio';
 import { TIPOS_COMBUSTIBLE } from '../tiposCombustible';
 import { CHOFERES } from '../choferes';
 import { combustibleCarroService } from '../services/combustibleCarroService';
+import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
 
 /**
  * Carga de Combustible (Carro)
@@ -50,6 +51,7 @@ const labelClass = 'block text-sm font-medium text-[var(--color-text-primary)] m
 
 const CombustibleCarroPage: React.FC = () => {
   const navigate = useNavigate();
+  const { canReadModulo } = useAdminPermissions();
   const todayString = getToday();
 
   const [formData, setFormData] = useState<CarroFormData>(buildEmptyForm());
@@ -154,12 +156,16 @@ const CombustibleCarroPage: React.FC = () => {
           <button onClick={() => navigate('/servicios/combustible-carro')} className={navActive}>
             Carga de Combustible (Carro)
           </button>
+          {canReadModulo('combustible') && (
+          <>
           <button onClick={() => navigate('/servicios/combustible/listado')} className={navInactive}>
             Listado Cargas
           </button>
           <button onClick={() => navigate('/servicios/combustible/historial')} className={navInactive}>
             Historial de carga de combustible
           </button>
+          </>
+          )}
         </div>
 
         <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
