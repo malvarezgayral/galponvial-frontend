@@ -92,7 +92,7 @@ const ServiciosPage = () => {
               onClick={handleCombustible}
             />
           )}
-          {canReadModulo('combustible') && (
+          {canReadModulo('combustible-carro') && (
             <ServicioCard
               title="Carga de Combustible (Carro)"
               description="Registra una nueva carga de combustible para un carro"
