@@ -17,12 +17,13 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "combustible", label: "Combustible" },
   { key: "proveedores", label: "Proveedores" },
   { key: "lubricentro", label: "Lubricentro" },
+  { key: "combustible-carro", label: "Carro de Combustible" },
   { key: "privada", label: "Privado" },
   { key: "almacen", label: "Almacén" },
 ];
 
 // Tabs visibles para un admin acotado a Almacén (sin acceso global all:read/all:write)
-const TABS_ALMACEN: Tab[] = ["almacen", "personal", "recordatorio", "privada", "reparacion", "incidentes"];
+const TABS_ALMACEN: Tab[] = ["almacen", "personal", "recordatorio", "privada", "reparacion", "incidentes", "combustible-carro"];
 
 export default function NotificacionesPage() {
   const { hasFullAccess, hasPermission, isSuperAdmin } = useAdminPermissions();
@@ -51,6 +52,8 @@ export default function NotificacionesPage() {
           return acceso || hasPermission("service:read") || hasPermission("service:write");
         case "lubricentro":
           return acceso || hasPermission("lubricentro:read") || hasPermission("lubricentro:write");
+        case "combustible-carro":
+          return hasPermission("combustible-carro:write");
         case "combustible":
           return acceso || hasPermission("combustible:write");
         case "almacen":
