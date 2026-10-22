@@ -8,6 +8,7 @@ export type Tab =
   | "combustible"
   | "proveedores"
   | "lubricentro"
+  | "combustible-carro"
   | "privada"
   | "almacen";
 

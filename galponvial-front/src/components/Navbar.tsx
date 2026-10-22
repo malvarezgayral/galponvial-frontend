@@ -24,7 +24,7 @@ const Navbar = () => {
   const esAdmin = user?.rol === 'admin' || user?.rol === 'superadmin';
   const { conteo } = useNoLeidas(esAdmin);
   // Un admin acotado a Almacén solo cuenta los tipos que ve en las pestañas
-  const TIPOS_ALMACEN = ['almacen', 'recordatorio', 'privada'];
+  const TIPOS_ALMACEN = ['almacen', 'recordatorio', 'privada', 'combustible-carro'];
   const noLeidas = Object.entries(conteo)
     .filter(([tipo]) => hasFullAccess() || TIPOS_ALMACEN.includes(tipo))
     .reduce((suma, [, n]) => suma + n, 0);
