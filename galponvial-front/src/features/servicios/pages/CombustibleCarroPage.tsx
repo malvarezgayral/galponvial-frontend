@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ESTACIONES_SERVICIO } from '../estacionesServicio';
 import { TIPOS_COMBUSTIBLE } from '../tiposCombustible';
 import { CHOFERES } from '../choferes';
-import { combustibleCarroService } from '../services/combustibleCarroService';
-import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
+import {
+  combustibleCarroService,
+  type CombustibleCarroResponse,
+} from '../services/combustibleCarroService';
 
 /**
  * Carga de Combustible (Carro)
- * Por ahora solo frontend: valida y guarda en estado local.
+ * Total combustible y Estado parcial se calculan (vista previa en pantalla;
+ * el valor guardado lo calcula el backend).
  */
 
 interface CarroFormData {
+  maquina: string;
   fecha_carga: string;
   chofer: string;
   estacion_servicio: string;
@@ -20,7 +24,8 @@ interface CarroFormData {
   Galpón_Vial: string;
   litros_entrada: string;
   litros_salida: string;
-  estado_parcial: string;
+  total_inicial: string;
+  estado_parcial_inicial: string;
 }
 
 // "Depósito" siempre disponible + las estaciones de estacionesServicio.ts
@@ -36,6 +41,7 @@ const getToday = () => {
 };
 
 const buildEmptyForm = (): CarroFormData => ({
+  maquina: '',
   fecha_carga: getToday(),
   chofer: '',
   estacion_servicio: '',
@@ -44,14 +50,16 @@ const buildEmptyForm = (): CarroFormData => ({
   Galpón_Vial: '',
   litros_entrada: '',
   litros_salida: '',
-  estado_parcial: '',
+  total_inicial: '',
+  estado_parcial_inicial: '',
 });
+
+const redondear = (n: number): number => Math.round(n * 100) / 100;
 
 const labelClass = 'block text-sm font-medium text-[var(--color-text-primary)] mb-2';
 
 const CombustibleCarroPage: React.FC = () => {
   const navigate = useNavigate();
-  const { canReadModulo } = useAdminPermissions();
   const todayString = getToday();
 
   const [formData, setFormData] = useState<CarroFormData>(buildEmptyForm());
@@ -60,14 +68,57 @@ const CombustibleCarroPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
 
+  // Última carga registrada (base del cálculo). undefined = todavía cargando.
+  const [ultima, setUltima] = useState<CombustibleCarroResponse | null | undefined>(undefined);
+  const [errorBase, setErrorBase] = useState<string | null>(null);
+
+  const cargarUltima = async () => {
+    try {
+      const todas = await combustibleCarroService.listar();
+      // El backend devuelve ordenado por id_carro descendente: la primera es la última.
+      setUltima(todas.length > 0 ? todas[0] : null);
+      setErrorBase(null);
+    } catch {
+      setErrorBase('No se pudo consultar la última carga. Recargá la página antes de registrar.');
+    }
+  };
+
+  useEffect(() => {
+    cargarUltima();
+  }, []);
+
+  const esPrimeraCarga = ultima === null;
+
   const inputClass = (field: string) => `
     w-full px-4 py-2 border rounded-lg bg-white
     focus:outline-none focus:ring-2 focus:ring-[#378AFE]
     ${errors[field] ? 'border-red-500' : 'border-[var(--color-border-light)]'}
   `;
 
-  const validateLitros = (value: string, mensajeVacio: string): string => {
-    if (value.trim() === '') return mensajeVacio;
+  const readOnlyClass =
+    'w-full px-4 py-2 border border-[var(--color-border-light)] rounded-lg bg-gray-100 text-gray-700';
+
+  const numOrZero = (v: string): number => {
+    const n = Number(v);
+    return v.trim() === '' || Number.isNaN(n) ? 0 : n;
+  };
+
+  // Vista previa del cálculo (mismas fórmulas que el backend)
+  const entradaNum = numOrZero(formData.litros_entrada);
+  const salidaNum = numOrZero(formData.litros_salida);
+  let totalBase: number | null = null;
+  let parcialBase: number | null = null;
+  if (ultima) {
+    totalBase = ultima.total_combustible;
+    parcialBase = ultima.estado_parcial;
+  } else if (ultima === null) {
+    if (formData.total_inicial.trim() !== '') totalBase = numOrZero(formData.total_inicial);
+    if (formData.estado_parcial_inicial.trim() !== '') parcialBase = numOrZero(formData.estado_parcial_inicial);
+  }
+  const totalPreview = totalBase === null ? '' : String(redondear(totalBase + entradaNum - salidaNum));
+  const parcialPreview = parcialBase === null ? '' : String(redondear(parcialBase + salidaNum));
+
+  const validateNumero = (value: string): string => {
     const n = Number(value);
     if (Number.isNaN(n) || n < 0) return 'Debe ser un número igual o mayor a 0';
     return '';
@@ -75,6 +126,8 @@ const CombustibleCarroPage: React.FC = () => {
 
   const validateForm = (): boolean => {
     const e: Record<string, string> = {};
+
+    if (!formData.maquina.trim()) e.maquina = 'La máquina es obligatoria';
 
     if (!formData.fecha_carga) {
       e.fecha_carga = 'La fecha de carga es obligatoria';
@@ -86,12 +139,37 @@ const CombustibleCarroPage: React.FC = () => {
     if (!formData.despachante.trim()) e.despachante = 'El despachante es obligatorio';
     if (!formData.tipo_combustible) e.tipo_combustible = 'El tipo de combustible es obligatorio';
 
-    const errEntrada = validateLitros(formData.litros_entrada, 'Los litros de entrada son obligatorios');
-    if (errEntrada) e.litros_entrada = errEntrada;
-    const errSalida = validateLitros(formData.litros_salida, 'Los litros de salida son obligatorios');
-    if (errSalida) e.litros_salida = errSalida;
+    const tieneEntrada = formData.litros_entrada.trim() !== '' && Number(formData.litros_entrada) > 0;
+    const tieneSalida = formData.litros_salida.trim() !== '' && Number(formData.litros_salida) > 0;
 
-    if (!formData.estado_parcial.trim()) e.estado_parcial = 'El estado parcial es obligatorio';
+    if (formData.litros_entrada.trim() !== '') {
+      const err = validateNumero(formData.litros_entrada);
+      if (err) e.litros_entrada = err;
+    }
+    if (formData.litros_salida.trim() !== '') {
+      const err = validateNumero(formData.litros_salida);
+      if (err) e.litros_salida = err;
+    }
+    if (!e.litros_entrada && !e.litros_salida && tieneEntrada === tieneSalida) {
+      const msg = 'Completá litros de entrada o litros de salida (uno solo, mayor a 0). No se pueden cargar los dos juntos ni ninguno.';
+      e.litros_entrada = msg;
+      e.litros_salida = msg;
+    }
+
+    if (esPrimeraCarga) {
+      if (formData.total_inicial.trim() === '') {
+        e.total_inicial = 'El total de combustible inicial es obligatorio en la primera carga';
+      } else {
+        const err = validateNumero(formData.total_inicial);
+        if (err) e.total_inicial = err;
+      }
+      if (formData.estado_parcial_inicial.trim() === '') {
+        e.estado_parcial_inicial = 'El estado parcial inicial es obligatorio en la primera carga';
+      } else {
+        const err = validateNumero(formData.estado_parcial_inicial);
+        if (err) e.estado_parcial_inicial = err;
+      }
+    }
 
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -104,30 +182,41 @@ const CombustibleCarroPage: React.FC = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
     setSuccess(false);
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
+    if (name === 'litros_entrada' || name === 'litros_salida') {
+      setErrors((prev) => ({ ...prev, litros_entrada: '', litros_salida: '' }));
+    }
   };
 
   const handleSubmit = async (ev: React.FormEvent) => {
     ev.preventDefault();
     setSuccess(false);
     setGeneralError(null);
+    if (ultima === undefined || errorBase) return;
     if (!validateForm()) return;
 
     setLoading(true);
     try {
       await combustibleCarroService.crear({
+        maquina: formData.maquina.trim(),
         fecha_carga: formData.fecha_carga,
         chofer: formData.chofer,
         estacion_servicio: formData.estacion_servicio,
         despachante: formData.despachante.trim(),
         tipo_combustible: formData.tipo_combustible,
         ...(formData.Galpón_Vial ? { galpon_vial: formData.Galpón_Vial } : {}),
-        litros_entrada: Number(formData.litros_entrada),
-        litros_salida: Number(formData.litros_salida),
-        estado_parcial: formData.estado_parcial.trim(),
+        ...(entradaNum > 0 ? { litros_entrada: entradaNum } : {}),
+        ...(salidaNum > 0 ? { litros_salida: salidaNum } : {}),
+        ...(esPrimeraCarga
+          ? {
+              total_inicial: Number(formData.total_inicial),
+              estado_parcial_inicial: Number(formData.estado_parcial_inicial),
+            }
+          : {}),
       });
       setSuccess(true);
       setFormData(buildEmptyForm());
       setErrors({});
+      await cargarUltima();
     } catch (error) {
       const err = error as { response?: { data?: { message?: string | string[] } }; message?: string };
       const msg = err.response?.data?.message;
@@ -156,22 +245,24 @@ const CombustibleCarroPage: React.FC = () => {
           <button onClick={() => navigate('/servicios/combustible-carro')} className={navActive}>
             Carga de Combustible (Carro)
           </button>
-          {canReadModulo('combustible') && (
-          <>
-          <button onClick={() => navigate('/servicios/combustible/listado')} className={navInactive}>
+          <button onClick={() => navigate('/servicios/combustible-carro/listado')} className={navInactive}>
             Listado Cargas
           </button>
-          <button onClick={() => navigate('/servicios/combustible/historial')} className={navInactive}>
+          <button onClick={() => navigate('/servicios/combustible-carro/historial')} className={navInactive}>
             Historial de carga de combustible
           </button>
-          </>
-          )}
         </div>
 
         <div className="w-full max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8">
           <h2 className="text-3xl font-bold text-[var(--color-text-primary)] mb-6">
             Registrar Carga de Combustible (Carro)
           </h2>
+
+          {errorBase && (
+            <div className="mb-6 p-4 bg-red-100 border border-red-400 rounded-lg">
+              <p className="text-red-700 font-medium">{errorBase}</p>
+            </div>
+          )}
 
           {generalError && (
             <div className="mb-6 p-4 bg-red-100 border border-red-400 rounded-lg">
@@ -188,6 +279,20 @@ const CombustibleCarroPage: React.FC = () => {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+            {/* Máquina */}
+            <div>
+              <label className={labelClass}>Máquina *</label>
+              <input
+                type="text"
+                name="maquina"
+                value={formData.maquina}
+                onChange={handleChange}
+                placeholder="Nombre o código de la máquina"
+                className={inputClass('maquina')}
+              />
+              {errors.maquina && <p className="text-red-500 text-sm mt-1">{errors.maquina}</p>}
+            </div>
+
             {/* Fecha de carga */}
             <div>
               <label className={labelClass}>Fecha de carga *</label>
@@ -303,9 +408,48 @@ const CombustibleCarroPage: React.FC = () => {
               </select>
             </div>
 
+            {/* Valores iniciales: solo en la primera carga */}
+            {esPrimeraCarga && (
+              <div className="p-4 border border-blue-200 bg-blue-50 rounded-lg space-y-6">
+                <p className="text-sm text-[var(--color-text-primary)]">
+                  Es la primera carga: completá los valores de partida. Se piden una sola vez.
+                </p>
+                <div>
+                  <label className={labelClass}>Total de combustible inicial *</label>
+                  <input
+                    type="number"
+                    name="total_inicial"
+                    value={formData.total_inicial}
+                    onChange={handleChange}
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                    className={inputClass('total_inicial')}
+                  />
+                  {errors.total_inicial && <p className="text-red-500 text-sm mt-1">{errors.total_inicial}</p>}
+                </div>
+                <div>
+                  <label className={labelClass}>Estado parcial inicial *</label>
+                  <input
+                    type="number"
+                    name="estado_parcial_inicial"
+                    value={formData.estado_parcial_inicial}
+                    onChange={handleChange}
+                    placeholder="0.00"
+                    min="0"
+                    step="0.01"
+                    className={inputClass('estado_parcial_inicial')}
+                  />
+                  {errors.estado_parcial_inicial && (
+                    <p className="text-red-500 text-sm mt-1">{errors.estado_parcial_inicial}</p>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Litros de entrada */}
             <div>
-              <label className={labelClass}>Litros de entrada *</label>
+              <label className={labelClass}>Litros de entrada</label>
               <input
                 type="number"
                 name="litros_entrada"
@@ -321,7 +465,7 @@ const CombustibleCarroPage: React.FC = () => {
 
             {/* Litros de salida */}
             <div>
-              <label className={labelClass}>Litros de salida *</label>
+              <label className={labelClass}>Litros de salida</label>
               <input
                 type="number"
                 name="litros_salida"
@@ -333,27 +477,31 @@ const CombustibleCarroPage: React.FC = () => {
                 className={inputClass('litros_salida')}
               />
               {errors.litros_salida && <p className="text-red-500 text-sm mt-1">{errors.litros_salida}</p>}
+              <p className="text-xs mt-1 text-[var(--color-text-secondary)]">
+                Completá solo uno: entrada o salida.
+              </p>
             </div>
 
-            {/* Estado parcial */}
+            {/* Total combustible (calculado) */}
             <div>
-              <label className={labelClass}>Estado parcial *</label>
-              <input
-                type="text"
-                name="estado_parcial"
-                value={formData.estado_parcial}
-                onChange={handleChange}
-                placeholder="Descripción del estado parcial"
-                className={inputClass('estado_parcial')}
-              />
-              {errors.estado_parcial && <p className="text-red-500 text-sm mt-1">{errors.estado_parcial}</p>}
+              <label className={labelClass}>Total combustible (calculado)</label>
+              <input type="text" readOnly value={totalPreview} placeholder="Se calcula solo" className={readOnlyClass} />
+            </div>
+
+            {/* Estado parcial (calculado) */}
+            <div>
+              <label className={labelClass}>Estado parcial (calculado)</label>
+              <input type="text" readOnly value={parcialPreview} placeholder="Se calcula solo" className={readOnlyClass} />
+              <p className="text-xs mt-1 text-[var(--color-text-secondary)]">
+                Vista previa. El valor que queda registrado lo calcula el sistema al guardar.
+              </p>
             </div>
 
             {/* Botones */}
             <div className="flex gap-4 pt-6">
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || ultima === undefined || !!errorBase}
                 className="flex-1 px-6 py-3 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Registrando...' : 'Registrar Carga'}
