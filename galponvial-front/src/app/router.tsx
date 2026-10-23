@@ -22,6 +22,8 @@ import VehiculoDetallesPage from "../features/vehiculos/pages/VehiculoDetallesPa
 import ServiciosPage from "../features/servicios/pages/ServiciosPage";
 import CombustiblePage from "../features/servicios/pages/CombustiblePage";
 import CombustibleCarroPage from "../features/servicios/pages/CombustibleCarroPage";
+import CarroListadoPage from "../features/servicios/pages/CarroListadoPage";
+import CarroHistorialPage from "../features/servicios/pages/CarroHistorialPage";
 import HistorialCombustiblePage from "../features/servicios/pages/HistorialCombustiblePage";
 import ListadoCargasPage from "../features/servicios/pages/ListadoCargasPage";
 import IncidentePage from "../features/servicios/pages/IncidentePage";
@@ -56,6 +58,8 @@ export const router = createBrowserRouter([
       { path: ROUTES.servicios, element: <ModuloProtectedRoute modulo="servicios"><ServiciosPage /></ModuloProtectedRoute> },
       { path: "/servicios/combustible", element: <ModuloProtectedRoute modulo="combustible"><CombustiblePage /></ModuloProtectedRoute> },
       { path: "/servicios/combustible-carro", element: <ModuloProtectedRoute modulo="combustible-carro"><CombustibleCarroPage /></ModuloProtectedRoute> },
+      { path: "/servicios/combustible-carro/listado", element: <ModuloProtectedRoute modulo="combustible-carro"><CarroListadoPage /></ModuloProtectedRoute> },
+      { path: "/servicios/combustible-carro/historial", element: <ModuloProtectedRoute modulo="combustible-carro"><CarroHistorialPage /></ModuloProtectedRoute> },
       { path: "/servicios/combustible/listado", element: <ModuloProtectedRoute modulo="combustible"><ListadoCargasPage /></ModuloProtectedRoute> },
       { path: "/servicios/combustible/historial", element: <ModuloProtectedRoute modulo="combustible"><HistorialCombustiblePage /></ModuloProtectedRoute> },
       { path: "/servicios/incidente", element: <ModuloProtectedRoute modulo="incidente"><IncidentePage /></ModuloProtectedRoute> },
