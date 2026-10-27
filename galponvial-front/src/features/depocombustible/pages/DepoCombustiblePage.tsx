@@ -34,7 +34,7 @@ const filaNuevaVacia = (id: number): FilaNueva => ({
   observaciones: "",
 });
 
-type Vista = "lubricantes" | "listado-lubricantes" | "historial-lubricantes" | "stock";
+type Vista = "lubricantes" | "listado-lubricantes" | "historial-lubricantes" | "agregar-lubricante" | "stock";
 
 export default function DepoCombustiblePage() {
   const { user } = useAppStore();
@@ -275,6 +275,16 @@ export default function DepoCombustiblePage() {
           >
             Historial de Lubricantes
           </button>
+          {puedeEscribir && (
+            <button
+              onClick={() => setVista("agregar-lubricante")}
+              className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+                vista === "agregar-lubricante" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+              }`}
+            >
+              Agregar Lubricante
+            </button>
+          )}
           <button
             onClick={() => setVista("stock")}
             className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
@@ -293,6 +303,10 @@ export default function DepoCombustiblePage() {
       </div>
 
       {vista === "stock" && (
+        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 min-h-[200px]" />
+      )}
+
+      {vista === "agregar-lubricante" && puedeEscribir && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6 min-h-[200px]" />
       )}
 
