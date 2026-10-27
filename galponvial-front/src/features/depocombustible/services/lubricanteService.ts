@@ -12,6 +12,7 @@ export interface Lubricante {
   ordenRetiro?: string;
   cantidad: number;
   tipo: string;
+  lubricante?: string;
   observaciones?: string;
   created_at?: string;
 }
@@ -22,6 +23,7 @@ export interface CreateLubricantePayload {
   ordenRetiro?: string;
   cantidad: number;
   tipo: string;
+  lubricante?: string;
   observaciones?: string;
 }
 
