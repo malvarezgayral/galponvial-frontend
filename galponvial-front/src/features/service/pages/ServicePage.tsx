@@ -43,7 +43,7 @@ const SI_NO = ["SI", "NO"];
 const LISTA_FILTROS: string[] = [];
 const STOCK_OPCIONES = ["Stock", "Sin stock"];
 
-type Vista = "registro" | "listado" | "historial" | "filtros";
+type Vista = "registro" | "listado" | "historial" | "filtros" | "agregar-filtro";
 
 export default function ServicePage() {
   const { isAdmin, isSuperAdmin } = useAdminPermissions();
@@ -366,6 +366,15 @@ export default function ServicePage() {
             }`}
           >
             Historial de Service
+          </button>
+
+          <button
+            onClick={() => setVista("agregar-filtro")}
+            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              vista === "agregar-filtro" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+            }`}
+          >
+            Agregar Filtro
           </button>
 
           <button
@@ -933,6 +942,10 @@ export default function ServicePage() {
             </div>
           )}
         </>
+      )}
+
+      {vista === "agregar-filtro" && (
+        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 min-h-[200px]" />
       )}
 
       {vista === "filtros" && (
