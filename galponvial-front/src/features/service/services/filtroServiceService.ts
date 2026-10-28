@@ -29,4 +29,13 @@ export const filtroServiceService = {
     const { data } = await apiClient.get<FiltroServiceRegistro[]>('/filtro-service');
     return data;
   },
+
+  actualizar: async (id: number, payload: FiltroServiceItemPayload): Promise<FiltroServiceRegistro> => {
+    const { data } = await apiClient.put<FiltroServiceRegistro>(`/filtro-service/${id}`, payload);
+    return data;
+  },
+
+  eliminar: async (id: number): Promise<void> => {
+    await apiClient.delete(`/filtro-service/${id}`);
+  },
 };
