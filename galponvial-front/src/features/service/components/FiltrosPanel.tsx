@@ -12,7 +12,6 @@ export default function FiltrosPanel({ vehiculos }: { vehiculos: Vehiculo[] }) {
   const [unidad, setUnidad] = useState("");
   const [lista, setLista] = useState("");
   const [aplicados, setAplicados] = useState({ unidad: "", lista: "" });
-  const [busquedaRealizada, setBusquedaRealizada] = useState(false);
 
   useEffect(() => {
     filtroServiceService
@@ -27,14 +26,12 @@ export default function FiltrosPanel({ vehiculos }: { vehiculos: Vehiculo[] }) {
 
   const buscar = () => {
     setAplicados({ unidad, lista });
-    setBusquedaRealizada(true);
   };
 
   const limpiar = () => {
     setUnidad("");
     setLista("");
     setAplicados({ unidad: "", lista: "" });
-    setBusquedaRealizada(false);
   };
 
   const resultados = registros.filter(
@@ -94,7 +91,6 @@ export default function FiltrosPanel({ vehiculos }: { vehiculos: Vehiculo[] }) {
         </div>
       </div>
 
-      {busquedaRealizada && (
         <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
           <table className="min-w-full text-sm">
             <thead>
@@ -126,7 +122,6 @@ export default function FiltrosPanel({ vehiculos }: { vehiculos: Vehiculo[] }) {
             </tbody>
           </table>
         </div>
-      )}
     </div>
   );
 }
