@@ -42,7 +42,6 @@ const fromApi = (f: FilaService): FilaServiceLocal => ({
 });
 
 const SI_NO = ["SI", "NO"];
-const LISTA_FILTROS: string[] = [];
 const STOCK_OPCIONES = ["Stock", "Sin stock"];
 
 type Vista = "registro" | "listado" | "historial" | "filtros" | "agregar-filtro";
@@ -81,9 +80,6 @@ export default function ServicePage() {
   // NO elimina ni modifica ningún registro de la base de datos.
   const [busquedaRealizada, setBusquedaRealizada] = useState(false);
 
-  // Filtros de la vista "Filtros".
-  const [unidadFiltros, setUnidadFiltros] = useState("");
-  const [listaFiltros, setListaFiltros] = useState("");
 
   useEffect(() => {
     const cargarDatos = async () => {
