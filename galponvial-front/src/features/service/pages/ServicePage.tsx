@@ -391,7 +391,7 @@ export default function ServicePage() {
               vista === "filtros" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
-            Filtros
+            Historial de Filtros
           </button>
         </div>
       </div>
