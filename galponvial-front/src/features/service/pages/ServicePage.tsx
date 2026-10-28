@@ -6,6 +6,7 @@ import type { Vehiculo } from "../../vehiculos/types";
 import { useAdminPermissions } from "../../usuarios/hooks/useAdminPermissions";
 import AgregarFiltroPanel from "../components/AgregarFiltroPanel";
 import FiltrosPanel from "../components/FiltrosPanel";
+import ListadoFiltrosPanel from "../components/ListadoFiltrosPanel";
 
 type FilaServiceLocal = FilaService & { idVehiculoSeleccionado: number };
 
@@ -44,7 +45,7 @@ const fromApi = (f: FilaService): FilaServiceLocal => ({
 const SI_NO = ["SI", "NO"];
 const STOCK_OPCIONES = ["Stock", "Sin stock"];
 
-type Vista = "registro" | "listado" | "historial" | "filtros" | "agregar-filtro";
+type Vista = "registro" | "listado" | "historial" | "filtros" | "agregar-filtro" | "listado-filtros";
 
 export default function ServicePage() {
   const { isAdmin, isSuperAdmin } = useAdminPermissions();
@@ -373,6 +374,15 @@ export default function ServicePage() {
             }`}
           >
             Agregar Filtro
+          </button>
+
+          <button
+            onClick={() => setVista("listado-filtros")}
+            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              vista === "listado-filtros" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+            }`}
+          >
+            Listado de Filtros
           </button>
 
           <button
@@ -943,6 +953,8 @@ export default function ServicePage() {
       )}
 
       {vista === "agregar-filtro" && <AgregarFiltroPanel vehiculos={vehiculos} />}
+
+      {vista === "listado-filtros" && <ListadoFiltrosPanel vehiculos={vehiculos} />}
 
       {vista === "filtros" && <FiltrosPanel vehiculos={vehiculos} />}
     </div>
