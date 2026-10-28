@@ -4,6 +4,8 @@ import type { FilaService, CreateServicePayload } from "../services/serviceServi
 import { vehiculosService } from "../../vehiculos/services/vehiculosService";
 import type { Vehiculo } from "../../vehiculos/types";
 import { useAdminPermissions } from "../../usuarios/hooks/useAdminPermissions";
+import AgregarFiltroPanel from "../components/AgregarFiltroPanel";
+import FiltrosPanel from "../components/FiltrosPanel";
 
 type FilaServiceLocal = FilaService & { idVehiculoSeleccionado: number };
 
@@ -944,46 +946,9 @@ export default function ServicePage() {
         </>
       )}
 
-      {vista === "agregar-filtro" && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 min-h-[200px]" />
-      )}
+      {vista === "agregar-filtro" && <AgregarFiltroPanel vehiculos={vehiculos} />}
 
-      {vista === "filtros" && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6">
-          <div className="flex flex-wrap gap-4 items-end">
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Unidad</label>
-              <select
-                value={unidadFiltros}
-                onChange={(e) => setUnidadFiltros(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
-              >
-                <option value="">— Seleccionar unidad —</option>
-                {vehiculos.map((v) => (
-                  <option key={v.id_vehiculo} value={String(v.id_vehiculo)}>
-                    {v.nombre} {v.codigo ? `(${v.codigo})` : ""}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="flex flex-col gap-1">
-              <label className="text-xs font-medium text-gray-500">Lista de filtros</label>
-              <select
-                value={listaFiltros}
-                onChange={(e) => setListaFiltros(e.target.value)}
-                className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 text-gray-500"
-              >
-                <option value="">— Seleccionar —</option>
-                {LISTA_FILTROS.map((f) => (
-                  <option key={f} value={f}>
-                    {f}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </div>
-      )}
+      {vista === "filtros" && <FiltrosPanel vehiculos={vehiculos} />}
     </div>
   );
 }
