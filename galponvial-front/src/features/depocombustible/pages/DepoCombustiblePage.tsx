@@ -8,6 +8,7 @@ import {
   type Lubricante,
   type CreateLubricantePayload,
 } from "../services/lubricanteService";
+import { CHOFERES } from "../../servicios/choferes";
 
 // Opciones del desplegable "Lubricante". Completar cuando se definan.
 const OPCIONES_LUBRICANTE: string[] = [];
@@ -319,7 +320,7 @@ export default function DepoCombustiblePage() {
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">N° Orden de Retiro</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Unidad</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Cantidad</th>
-                <th className="px-3 py-3 text-left font-semibold text-gray-600">Tipo</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600">Chofer</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Lubricante</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Observaciones</th>
                 <th className="px-3 py-3 text-right font-semibold text-gray-600"></th>
@@ -369,13 +370,18 @@ export default function DepoCombustiblePage() {
                     />
                   </td>
                   <td className="px-3 py-2">
-                    <input
-                      type="text"
-                      placeholder="Tipo de lubricante"
+                    <select
                       value={fila.tipo}
                       onChange={(e) => actualizarFila(fila.id, "tipo", e.target.value)}
                       className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
-                    />
+                    >
+                      <option value="">Seleccionar chofer...</option>
+                      {CHOFERES.map((chofer) => (
+                        <option key={chofer} value={chofer}>
+                          {chofer}
+                        </option>
+                      ))}
+                    </select>
                   </td>
                   <td className="px-3 py-2">
                     <select
@@ -439,7 +445,7 @@ export default function DepoCombustiblePage() {
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">N° Orden de Retiro</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Unidad</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Cantidad</th>
-                <th className="px-3 py-3 text-left font-semibold text-gray-600">Tipo</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600">Chofer</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Lubricante</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Observaciones</th>
                 <th className="px-3 py-3 text-right font-semibold text-gray-600">Acciones</th>
@@ -509,12 +515,18 @@ export default function DepoCombustiblePage() {
                     </td>
                     <td className="px-3 py-2">
                       {editando ? (
-                        <input
-                          type="text"
+                        <select
                           value={mostrado.tipo}
                           onChange={(e) => updateBorrador("tipo", e.target.value)}
                           className="border border-blue-300 rounded-md px-2 py-1.5 text-sm w-40"
-                        />
+                        >
+                          <option value="">Seleccionar chofer...</option>
+                          {CHOFERES.map((chofer) => (
+                            <option key={chofer} value={chofer}>
+                              {chofer}
+                            </option>
+                          ))}
+                        </select>
                       ) : (
                         mostrado.tipo || "-"
                       )}
@@ -649,14 +661,19 @@ export default function DepoCombustiblePage() {
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-gray-500">Tipo</label>
-                <input
-                  type="text"
-                  placeholder="Tipo de lubricante"
+                <label className="text-xs font-medium text-gray-500">Chofer</label>
+                <select
                   value={filtroTipo}
                   onChange={(e) => setFiltroTipo(e.target.value)}
                   className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
-                />
+                >
+                  <option value="">— Seleccionar —</option>
+                  {CHOFERES.map((chofer) => (
+                    <option key={chofer} value={chofer}>
+                      {chofer}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-gray-500">Lubricante</label>
@@ -696,7 +713,7 @@ export default function DepoCombustiblePage() {
                   <th className="px-3 py-3 text-left font-semibold text-gray-600">N° Orden de Retiro</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600">Unidad</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600">Cantidad</th>
-                  <th className="px-3 py-3 text-left font-semibold text-gray-600">Tipo</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600">Chofer</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600">Lubricante</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600">Observaciones</th>
                 </tr>
