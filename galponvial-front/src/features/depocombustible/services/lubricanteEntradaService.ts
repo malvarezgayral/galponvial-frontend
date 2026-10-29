@@ -12,4 +12,9 @@ export const lubricanteEntradaService = {
     const { data } = await apiClient.post('/lubricante-entrada', { registros });
     return data;
   },
+
+  obtenerTipos: async (): Promise<string[]> => {
+    const { data } = await apiClient.get<string[]>('/lubricante-entrada/tipos');
+    return Array.isArray(data) ? data : [];
+  },
 };
