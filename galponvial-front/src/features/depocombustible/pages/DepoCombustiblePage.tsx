@@ -9,6 +9,7 @@ import {
   type CreateLubricantePayload,
 } from "../services/lubricanteService";
 import { CHOFERES } from "../../servicios/choferes";
+import AgregarLubricantePanel from "../components/AgregarLubricantePanel";
 
 // Opciones del desplegable "Lubricante". Completar cuando se definan.
 const OPCIONES_LUBRICANTE: string[] = [];
@@ -321,7 +322,7 @@ export default function DepoCombustiblePage() {
       )}
 
       {vista === "agregar-lubricante" && puedeEscribir && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 min-h-[200px]" />
+        <AgregarLubricantePanel />
       )}
 
       {vista === "lubricantes" && puedeEscribir && (
