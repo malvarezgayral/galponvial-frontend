@@ -12,6 +12,7 @@ export default function FiltrosPanel({ vehiculos }: { vehiculos: Vehiculo[] }) {
   const [unidad, setUnidad] = useState("");
   const [lista, setLista] = useState("");
   const [aplicados, setAplicados] = useState({ unidad: "", lista: "" });
+  const [buscado, setBuscado] = useState(false);
 
   useEffect(() => {
     filtroServiceService
@@ -26,15 +27,17 @@ export default function FiltrosPanel({ vehiculos }: { vehiculos: Vehiculo[] }) {
 
   const buscar = () => {
     setAplicados({ unidad, lista });
+    setBuscado(true);
   };
 
   const limpiar = () => {
     setUnidad("");
     setLista("");
     setAplicados({ unidad: "", lista: "" });
+    setBuscado(false);
   };
 
-  const resultados = registros.filter(
+  const resultados = !buscado ? [] : registros.filter(
     (r) =>
       (!aplicados.unidad || String(r.idVehiculo ?? "") === aplicados.unidad) &&
       (!aplicados.lista || r.tipoFiltro.trim() === aplicados.lista)
@@ -115,7 +118,7 @@ export default function FiltrosPanel({ vehiculos }: { vehiculos: Vehiculo[] }) {
             {resultados.length === 0 && (
               <tr>
                 <td colSpan={5} className="px-3 py-6 text-center text-gray-500">
-                  No se encontraron filtros con los criterios elegidos.
+                  {buscado ? "No se encontraron filtros con los criterios elegidos." : "Elegí una unidad o un filtro y apretá Buscar."}
                 </td>
               </tr>
             )}
