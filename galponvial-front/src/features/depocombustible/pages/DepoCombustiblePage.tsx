@@ -13,6 +13,9 @@ import { CHOFERES } from "../../servicios/choferes";
 // Opciones del desplegable "Lubricante". Completar cuando se definan.
 const OPCIONES_LUBRICANTE: string[] = [];
 
+// Opciones del desplegable "Dirección". Completar cuando se definan.
+const OPCIONES_DIRECCION: string[] = [];
+
 interface FilaNueva {
   id: number;
   id_vehiculo: number;
@@ -20,6 +23,7 @@ interface FilaNueva {
   ordenRetiro: string;
   cantidad: number;
   tipo: string;
+  direccion: string;
   lubricante: string;
   observaciones: string;
 }
@@ -31,6 +35,7 @@ const filaNuevaVacia = (id: number): FilaNueva => ({
   ordenRetiro: "",
   cantidad: 0,
   tipo: "",
+  direccion: "",
   lubricante: "",
   observaciones: "",
 });
@@ -62,6 +67,7 @@ export default function DepoCombustiblePage() {
   const [filtroUnidad, setFiltroUnidad] = useState("");
   const [filtroCantidad, setFiltroCantidad] = useState("");
   const [filtroTipo, setFiltroTipo] = useState("");
+  const [filtroDireccion, setFiltroDireccion] = useState("");
   const [filtroLubricante, setFiltroLubricante] = useState("");
   const [filtrosAplicados, setFiltrosAplicados] = useState({
     desde: "",
@@ -70,6 +76,7 @@ export default function DepoCombustiblePage() {
     unidad: "",
     cantidad: "",
     tipo: "",
+    direccion: "",
     lubricante: "",
   });
 
@@ -123,7 +130,7 @@ export default function DepoCombustiblePage() {
     if (!puedeEscribir) return;
     const filasAGuardar = filas.filter(filaCompleta);
     if (filasAGuardar.length === 0) {
-      alert("Completá al menos una fila con Unidad, Fecha, Cantidad y Tipo antes de guardar.");
+      alert("Completá al menos una fila con Unidad, Fecha, Cantidad y Chofer antes de guardar.");
       return;
     }
     try {
@@ -135,6 +142,7 @@ export default function DepoCombustiblePage() {
           ordenRetiro: f.ordenRetiro || undefined,
           cantidad: f.cantidad,
           tipo: f.tipo,
+          direccion: f.direccion || undefined,
           lubricante: f.lubricante || undefined,
           observaciones: f.observaciones || undefined,
         };
@@ -176,6 +184,7 @@ export default function DepoCombustiblePage() {
         ordenRetiro: borrador.ordenRetiro || undefined,
         cantidad: borrador.cantidad,
         tipo: borrador.tipo,
+        direccion: borrador.direccion || undefined,
         lubricante: borrador.lubricante || undefined,
         observaciones: borrador.observaciones || undefined,
       });
@@ -207,6 +216,7 @@ export default function DepoCombustiblePage() {
       unidad: filtroUnidad,
       cantidad: filtroCantidad,
       tipo: filtroTipo,
+      direccion: filtroDireccion,
       lubricante: filtroLubricante,
     });
   };
@@ -218,8 +228,9 @@ export default function DepoCombustiblePage() {
     setFiltroUnidad("");
     setFiltroCantidad("");
     setFiltroTipo("");
+    setFiltroDireccion("");
     setFiltroLubricante("");
-    setFiltrosAplicados({ desde: "", hasta: "", orden: "", unidad: "", cantidad: "", tipo: "", lubricante: "" });
+    setFiltrosAplicados({ desde: "", hasta: "", orden: "", unidad: "", cantidad: "", tipo: "", direccion: "", lubricante: "" });
   };
 
   const historialFiltrado = lubricantes.filter((l) => {
@@ -238,6 +249,8 @@ export default function DepoCombustiblePage() {
     if (filtrosAplicados.cantidad !== "" && l.cantidad !== Number(filtrosAplicados.cantidad))
       return false;
     if (filtrosAplicados.tipo && !l.tipo.toLowerCase().includes(filtrosAplicados.tipo.toLowerCase()))
+      return false;
+    if (filtrosAplicados.direccion && (l.direccion || "") !== filtrosAplicados.direccion)
       return false;
     if (filtrosAplicados.lubricante && (l.lubricante || "") !== filtrosAplicados.lubricante)
       return false;
@@ -321,6 +334,7 @@ export default function DepoCombustiblePage() {
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Unidad</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Cantidad</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Chofer</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600">Dirección</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Lubricante</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Observaciones</th>
                 <th className="px-3 py-3 text-right font-semibold text-gray-600"></th>
@@ -379,6 +393,20 @@ export default function DepoCombustiblePage() {
                       {CHOFERES.map((chofer) => (
                         <option key={chofer} value={chofer}>
                           {chofer}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
+                  <td className="px-3 py-2">
+                    <select
+                      value={fila.direccion}
+                      onChange={(e) => actualizarFila(fila.id, "direccion", e.target.value)}
+                      className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
+                    >
+                      <option value="">Seleccionar dirección...</option>
+                      {OPCIONES_DIRECCION.map((o) => (
+                        <option key={o} value={o}>
+                          {o}
                         </option>
                       ))}
                     </select>
@@ -446,6 +474,7 @@ export default function DepoCombustiblePage() {
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Unidad</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Cantidad</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Chofer</th>
+                <th className="px-3 py-3 text-left font-semibold text-gray-600">Dirección</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Lubricante</th>
                 <th className="px-3 py-3 text-left font-semibold text-gray-600">Observaciones</th>
                 <th className="px-3 py-3 text-right font-semibold text-gray-600">Acciones</th>
@@ -529,6 +558,24 @@ export default function DepoCombustiblePage() {
                         </select>
                       ) : (
                         mostrado.tipo || "-"
+                      )}
+                    </td>
+                    <td className="px-3 py-2">
+                      {editando ? (
+                        <select
+                          value={mostrado.direccion || ""}
+                          onChange={(e) => updateBorrador("direccion", e.target.value)}
+                          className="border border-blue-300 rounded-md px-2 py-1.5 text-sm w-40"
+                        >
+                          <option value="">Seleccionar dirección...</option>
+                          {OPCIONES_DIRECCION.map((o) => (
+                            <option key={o} value={o}>
+                              {o}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        mostrado.direccion || "-"
                       )}
                     </td>
                     <td className="px-3 py-2">
@@ -676,6 +723,21 @@ export default function DepoCombustiblePage() {
                 </select>
               </div>
               <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-gray-500">Dirección</label>
+                <select
+                  value={filtroDireccion}
+                  onChange={(e) => setFiltroDireccion(e.target.value)}
+                  className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
+                >
+                  <option value="">— Seleccionar —</option>
+                  {OPCIONES_DIRECCION.map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-gray-500">Lubricante</label>
                 <select
                   value={filtroLubricante}
@@ -714,6 +776,7 @@ export default function DepoCombustiblePage() {
                   <th className="px-3 py-3 text-left font-semibold text-gray-600">Unidad</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600">Cantidad</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600">Chofer</th>
+                  <th className="px-3 py-3 text-left font-semibold text-gray-600">Dirección</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600">Lubricante</th>
                   <th className="px-3 py-3 text-left font-semibold text-gray-600">Observaciones</th>
                 </tr>
@@ -726,6 +789,7 @@ export default function DepoCombustiblePage() {
                     <td className="px-3 py-2">{nombreVehiculo(l)}</td>
                     <td className="px-3 py-2">{l.cantidad}</td>
                     <td className="px-3 py-2">{l.tipo || "-"}</td>
+                    <td className="px-3 py-2">{l.direccion || "-"}</td>
                     <td className="px-3 py-2">{l.lubricante || "-"}</td>
                     <td className="px-3 py-2">{l.observaciones || "-"}</td>
                   </tr>
