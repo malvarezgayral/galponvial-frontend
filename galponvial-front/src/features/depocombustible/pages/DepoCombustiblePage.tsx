@@ -10,9 +10,7 @@ import {
 } from "../services/lubricanteService";
 import { CHOFERES } from "../../servicios/choferes";
 import AgregarLubricantePanel from "../components/AgregarLubricantePanel";
-
-// Opciones del desplegable "Lubricante". Completar cuando se definan.
-const OPCIONES_LUBRICANTE: string[] = [];
+import { lubricanteEntradaService } from "../services/lubricanteEntradaService";
 
 // Opciones del desplegable "Dirección". Completar cuando se definan.
 const OPCIONES_DIRECCION: string[] = [];
@@ -100,6 +98,15 @@ export default function DepoCombustiblePage() {
   useEffect(() => {
     cargarDatos();
   }, []);
+
+  const [opcionesLubricante, setOpcionesLubricante] = useState<string[]>([]);
+
+  useEffect(() => {
+    lubricanteEntradaService
+      .obtenerTipos()
+      .then(setOpcionesLubricante)
+      .catch((err) => console.error("Error al cargar los tipos de lubricante:", err));
+  }, [vista]);
 
   const nombreVehiculo = (l: Lubricante) =>
     l.vehiculo?.nombre || l.vehiculo?.codigo || `Vehículo #${l.vehiculo?.id_vehiculo}`;
@@ -419,7 +426,7 @@ export default function DepoCombustiblePage() {
                       className="border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-40"
                     >
                       <option value="">— Seleccionar —</option>
-                      {OPCIONES_LUBRICANTE.map((o) => (
+                      {opcionesLubricante.map((o) => (
                         <option key={o} value={o}>{o}</option>
                       ))}
                     </select>
@@ -587,7 +594,7 @@ export default function DepoCombustiblePage() {
                           className="border border-blue-300 rounded-md px-2 py-1.5 text-sm w-40"
                         >
                           <option value="">— Seleccionar —</option>
-                          {OPCIONES_LUBRICANTE.map((o) => (
+                          {opcionesLubricante.map((o) => (
                             <option key={o} value={o}>{o}</option>
                           ))}
                         </select>
@@ -746,7 +753,7 @@ export default function DepoCombustiblePage() {
                   className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-44"
                 >
                   <option value="">Todos</option>
-                  {OPCIONES_LUBRICANTE.map((o) => (
+                  {opcionesLubricante.map((o) => (
                     <option key={o} value={o}>{o}</option>
                   ))}
                 </select>
