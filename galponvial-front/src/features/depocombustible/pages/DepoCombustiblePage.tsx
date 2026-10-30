@@ -272,11 +272,11 @@ export default function DepoCombustiblePage() {
       <div className="mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Lubricentro</h1>
 
-        <div className="flex flex-wrap gap-3 mt-4">
+        <div className="flex flex-nowrap gap-2 overflow-x-auto mt-4">
           {puedeEscribir && (
             <button
               onClick={() => setVista("lubricantes")}
-              className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
                 vista === "lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
               }`}
             >
@@ -285,7 +285,7 @@ export default function DepoCombustiblePage() {
           )}
           <button
             onClick={() => setVista("listado-lubricantes")}
-            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+            className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
               vista === "listado-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
@@ -293,7 +293,7 @@ export default function DepoCombustiblePage() {
           </button>
           <button
             onClick={() => setVista("historial-lubricantes")}
-            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+            className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
               vista === "historial-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
@@ -302,7 +302,7 @@ export default function DepoCombustiblePage() {
           {puedeEscribir && (
             <button
               onClick={() => setVista("agregar-lubricante")}
-              className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
                 vista === "agregar-lubricante" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
               }`}
             >
@@ -311,7 +311,7 @@ export default function DepoCombustiblePage() {
           )}
           <button
             onClick={() => setVista("listado-stock")}
-            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+            className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
               vista === "listado-stock" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
@@ -319,7 +319,7 @@ export default function DepoCombustiblePage() {
           </button>
           <button
             onClick={() => setVista("stock")}
-            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+            className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
               vista === "stock" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
