@@ -253,7 +253,7 @@ export default function DepoCombustiblePage() {
       return false;
     if (
       filtrosAplicados.unidad &&
-      nombreVehiculo(l) !== filtrosAplicados.unidad
+      l.vehiculo?.id_vehiculo !== Number(filtrosAplicados.unidad)
     )
       return false;
     if (filtrosAplicados.cantidad !== "" && l.cantidad !== Number(filtrosAplicados.cantidad))
@@ -715,13 +715,11 @@ export default function DepoCombustiblePage() {
                   className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
                 >
                   <option value="">— Seleccionar —</option>
-                  {Array.from(new Set(lubricantes.map((l) => nombreVehiculo(l))))
-                    .sort((a, b) => a.localeCompare(b))
-                    .map((u) => (
-                      <option key={u} value={u}>
-                        {u}
-                      </option>
-                    ))}
+                  {vehiculos.map((v) => (
+                    <option key={v.id_vehiculo} value={v.id_vehiculo}>
+                      {v.nombre} {v.codigo ? `(${v.codigo})` : ""}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div className="flex flex-col gap-1">
