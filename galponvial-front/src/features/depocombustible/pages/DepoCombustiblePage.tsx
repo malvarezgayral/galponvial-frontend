@@ -253,7 +253,7 @@ export default function DepoCombustiblePage() {
       return false;
     if (
       filtrosAplicados.unidad &&
-      !nombreVehiculo(l).toLowerCase().includes(filtrosAplicados.unidad.toLowerCase())
+      nombreVehiculo(l) !== filtrosAplicados.unidad
     )
       return false;
     if (filtrosAplicados.cantidad !== "" && l.cantidad !== Number(filtrosAplicados.cantidad))
@@ -709,13 +709,20 @@ export default function DepoCombustiblePage() {
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-gray-500">Unidad</label>
-                <input
-                  type="text"
-                  placeholder="Buscar por unidad"
+                <select
                   value={filtroUnidad}
                   onChange={(e) => setFiltroUnidad(e.target.value)}
                   className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-48"
-                />
+                >
+                  <option value="">— Seleccionar —</option>
+                  {Array.from(new Set(lubricantes.map((l) => nombreVehiculo(l))))
+                    .sort((a, b) => a.localeCompare(b))
+                    .map((u) => (
+                      <option key={u} value={u}>
+                        {u}
+                      </option>
+                    ))}
+                </select>
               </div>
               <div className="flex flex-col gap-1">
                 <label className="text-xs font-medium text-gray-500">Cantidad</label>
