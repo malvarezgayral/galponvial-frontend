@@ -289,7 +289,7 @@ export default function DepoCombustiblePage() {
               vista === "listado-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
-            Listado de Lubricantes
+            Control de Lubricantes
           </button>
           <button
             onClick={() => setVista("historial-lubricantes")}
