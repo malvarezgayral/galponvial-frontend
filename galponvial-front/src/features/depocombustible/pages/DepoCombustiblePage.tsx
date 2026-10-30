@@ -10,6 +10,8 @@ import {
 } from "../services/lubricanteService";
 import { CHOFERES } from "../../servicios/choferes";
 import AgregarLubricantePanel from "../components/AgregarLubricantePanel";
+import StockLubricantePanel from "../components/StockLubricantePanel";
+import ListadoStockLubricantePanel from "../components/ListadoStockLubricantePanel";
 import { lubricanteEntradaService } from "../services/lubricanteEntradaService";
 
 // Opciones del desplegable "Dirección". Completar cuando se definan.
@@ -39,7 +41,7 @@ const filaNuevaVacia = (id: number): FilaNueva => ({
   observaciones: "",
 });
 
-type Vista = "lubricantes" | "listado-lubricantes" | "historial-lubricantes" | "agregar-lubricante" | "stock";
+type Vista = "lubricantes" | "listado-lubricantes" | "historial-lubricantes" | "agregar-lubricante" | "stock" | "listado-stock";
 
 export default function DepoCombustiblePage() {
   const { user } = useAppStore();
@@ -308,6 +310,14 @@ export default function DepoCombustiblePage() {
             </button>
           )}
           <button
+            onClick={() => setVista("listado-stock")}
+            className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
+              vista === "listado-stock" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+            }`}
+          >
+            Listado Stock de Lubricante
+          </button>
+          <button
             onClick={() => setVista("stock")}
             className={`px-5 py-2 rounded-lg text-white font-medium transition-colors ${
               vista === "stock" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
@@ -325,8 +335,10 @@ export default function DepoCombustiblePage() {
       </div>
 
       {vista === "stock" && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6 min-h-[200px]" />
+        <StockLubricantePanel puedeEscribir={puedeEscribir} />
       )}
+
+      {vista === "listado-stock" && <ListadoStockLubricantePanel />}
 
       {vista === "agregar-lubricante" && puedeEscribir && (
         <AgregarLubricantePanel />
