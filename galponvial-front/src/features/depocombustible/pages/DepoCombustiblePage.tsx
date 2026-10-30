@@ -323,7 +323,7 @@ export default function DepoCombustiblePage() {
               vista === "stock" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
-            Stock Lubricantes
+            Stock Lubricantes (Consumo)
           </button>
         </div>
 
