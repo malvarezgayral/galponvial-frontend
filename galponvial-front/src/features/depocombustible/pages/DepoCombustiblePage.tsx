@@ -315,7 +315,7 @@ export default function DepoCombustiblePage() {
               vista === "listado-stock" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
-            Listado Stock de Lubricante
+            Listado Stock de Lubricantes
           </button>
           <button
             onClick={() => setVista("stock")}
@@ -323,7 +323,7 @@ export default function DepoCombustiblePage() {
               vista === "stock" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
             }`}
           >
-            Stock Lubricentro
+            Stock Lubricantes
           </button>
         </div>
 
