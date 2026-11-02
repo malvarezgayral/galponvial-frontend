@@ -235,6 +235,12 @@ const unwrap = <T>(data: unknown): T =>
 const list = <T>(data: unknown): T[] =>
   Array.isArray(data) ? (data as T[]) : ((data as { data?: T[] })?.data ?? []);
 
+export interface ChoferDto {
+  nombre: string;
+  apellido: string;
+  numeroDni: string;
+}
+
 export const documentacionService = {
   getAll: async (): Promise<DocumentacionPersonalDto[]> => {
     const { data } = await apiClient.get(API_ENDPOINTS.PERSONAL_DOCUMENTACION.LIST);
@@ -270,6 +276,10 @@ export const registroService = {
   getAll: async (): Promise<RegistroAdministrativoDto[]> => {
     const { data } = await apiClient.get(API_ENDPOINTS.PERSONAL_REGISTRO.LIST);
     return list<RegistroAdministrativoDto>(data);
+  },
+  getChoferes: async (): Promise<ChoferDto[]> => {
+    const { data } = await apiClient.get(API_ENDPOINTS.PERSONAL_CHOFERES);
+    return list<ChoferDto>(data);
   },
   getById: async (id: number | string): Promise<RegistroAdministrativoDto> => {
     const { data } = await apiClient.get(API_ENDPOINTS.PERSONAL_REGISTRO.DETAIL(id));

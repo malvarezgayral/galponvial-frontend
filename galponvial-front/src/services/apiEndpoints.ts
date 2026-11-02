@@ -89,6 +89,7 @@ export const API_ENDPOINTS = {
     UPDATE: (id: number | string) => `/personal/registro/${id}`,
     DELETE: (id: number | string) => `/personal/registro/${id}`,
   },
+  PERSONAL_CHOFERES: '/personal/choferes',
   AUDITORIA: {
     LIST: '/auditoria',
     DETAIL: (id: string) => `/auditoria/${id}`,
