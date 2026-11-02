@@ -56,6 +56,9 @@ export const lubricanteEntradaService = {
     return data;
   },
 
+  eliminarHistorial: async (id: number): Promise<void> => {
+    await apiClient.delete(`/lubricante-entrada/historial/${id}`);
+  },
   obtenerHistorial: async (): Promise<LubricanteHistorialItem[]> => {
     const { data } = await apiClient.get<LubricanteHistorialItem[]>('/lubricante-entrada/historial');
     return Array.isArray(data) ? data : [];
