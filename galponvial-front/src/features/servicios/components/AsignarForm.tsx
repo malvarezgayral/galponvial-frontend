@@ -4,6 +4,7 @@ import { useUsuariosStore } from '@/features/usuarios/store';
 import { Button } from '@/shared/ui/Button';
 import type { User } from '@/features/usuarios/types';
 import type { Vehiculo } from '@/features/vehiculos/types';
+import { registroService } from '@/features/documentacionpersonal/services/personalService';
 
 interface AsignarFormProps {
   onAsignarClick: (vehiculo: Vehiculo, usuario: User) => Promise<void> | void;
@@ -27,11 +28,28 @@ export const AsignarForm: React.FC<AsignarFormProps> = ({ onAsignarClick }) => {
   // Get users from store
   const { usuarios, isLoading: loadingUsuarios, fetchUsuarios } = useUsuariosStore();
 
+    // Choferes cargados en Personal (Tipo de cargo "Chofer"), vinculados al usuario por DNI
+    const [dnisChoferes, setDnisChoferes] = useState<Set<string>>(new Set());
+    const [loadingChoferes, setLoadingChoferes] = useState(true);
+    const [errorChoferes, setErrorChoferes] = useState<string | null>(null);
+
   // Fetch data on mount
   React.useEffect(() => {
     fetchAllVehiculos();
     fetchUsuarios();
   }, [fetchAllVehiculos, fetchUsuarios]);
+
+    React.useEffect(() => {
+      registroService
+        .getChoferes()
+        .then((choferes) => {
+          setDnisChoferes(new Set(choferes.map((c) => String(c.numeroDni).replace(/\D/g, ''))));
+        })
+        .catch(() => {
+          setErrorChoferes('No se pudo cargar la lista de choferes.');
+        })
+        .finally(() => setLoadingChoferes(false));
+    }, []);
 
   const handleAsignar = async () => {
     if (vehiculoSeleccionado && usuarioSeleccionado) {
@@ -58,6 +76,7 @@ export const AsignarForm: React.FC<AsignarFormProps> = ({ onAsignarClick }) => {
 
   // --- FILTROS DE DATOS ---
   const usuariosActivos = usuarios.filter((u) => u.isActive);
+    const usuariosChoferes = usuariosActivos.filter((u) => dnisChoferes.has(String(u.dni)));
   const vehiculosDisponibles = vehiculos.filter((v) => v.status !== 'inactivo' && v.status !== 'en_reparacion');
 
   return (
@@ -115,29 +134,35 @@ export const AsignarForm: React.FC<AsignarFormProps> = ({ onAsignarClick }) => {
         {/* Usuarios Dropdown */}
         <div>
           <label className="block text-sm font-semibold text-[var(--color-text-primary)] mb-3">
-            Seleccionar Usuario
+            Seleccionar Chofer
           </label>
           <div className="relative">
             <select
               value={usuarioSeleccionado?.dni || ''}
               onChange={(e) => {
-                const usuario = usuariosActivos.find((u) => String(u.dni) === e.target.value);
+                const usuario = usuariosChoferes.find((u) => String(u.dni) === e.target.value);
                 setUsuarioSeleccionado(usuario || null);
                 setErrorMensaje(null); 
               }}
-              disabled={loadingUsuarios || isSubmitting}
+              disabled={loadingUsuarios || loadingChoferes || isSubmitting}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[var(--color-navbar-bg)]"
             >
               <option value="">
-                {loadingUsuarios ? 'Cargando usuarios...' : 'Elige un usuario'}
+                {(loadingUsuarios || loadingChoferes) ? 'Cargando choferes...' : 'Elige un chofer'}
               </option>
-              {usuariosActivos.map((u) => (
+              {usuariosChoferes.map((u) => (
                 <option key={u.dni} value={u.dni}>
                   {u.nombre} {u.apellido} ({u.dni})
                 </option>
               ))}
             </select>
           </div>
+            {!loadingChoferes && !loadingUsuarios && usuariosChoferes.length === 0 && (
+              <p className="mt-2 text-xs text-gray-500">
+                {errorChoferes ??
+                  'No hay choferes con usuario. Cargá el cargo "Chofer" en Personal y creá su usuario con el mismo DNI.'}
+              </p>
+            )}
 
           {/* Usuario Selected Badge */}
           {usuarioSeleccionado && (

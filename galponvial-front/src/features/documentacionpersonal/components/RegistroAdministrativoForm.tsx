@@ -10,7 +10,7 @@ const TIPO_DNI_OPTIONS = ["DNI", "LC", "LE"];
 
 const SECRETARIA_OPTIONS: string[] = [];
 const DIRECCION_OPTIONS: string[] = [];
-const TIPO_CARGO_OPTIONS: string[] = [];
+export const TIPO_CARGO_OPTIONS: string[] = ["Chofer"];
 const AREA_ESPECIFICA_OPTIONS: string[] = [];
 
 interface HistorialAcademicoSalud {

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FileInput, type RegistroAdministrativoFormData } from './RegistroAdministrativoForm';
+import { FileInput, TIPO_CARGO_OPTIONS, type RegistroAdministrativoFormData } from './RegistroAdministrativoForm';
 import { useAdminPermissions } from '../../usuarios/hooks/useAdminPermissions';
 
 interface ListadoRegistroAdministrativoProps {
@@ -326,12 +326,18 @@ export default function ListadoRegistroAdministrativo({
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   {editando ? (
-                    <input
-                      type="text"
+                    <select
                       value={fila.tipoCargo}
                       onChange={(e) => updateBorrador('tipoCargo', e.target.value)}
                       className={inputClass}
-                    />
+                    >
+                      <option value="">Seleccionar...</option>
+                      {TIPO_CARGO_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                    </select>
                   ) : (
                     r.tipoCargo || '—'
                   )}
