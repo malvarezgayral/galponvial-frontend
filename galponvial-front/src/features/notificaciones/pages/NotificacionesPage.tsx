@@ -110,7 +110,7 @@ export default function NotificacionesPage() {
   const handleEliminar = (n: Notificacion) => {
     if (
       !window.confirm(
-        "¿Seguro que querés eliminar esta notificación? Se borra para todos y no se puede deshacer.",
+        "¿Seguro que querés eliminar esta notificación? Se quita solo de tu lista (al resto le sigue apareciendo) y no se puede deshacer.",
       )
     ) {
       return;
