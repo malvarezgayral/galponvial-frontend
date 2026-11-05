@@ -7,6 +7,7 @@ import ReparacionPage from "../features/reparacion/pages/ReparacionPage";
 import ComprasPage from "../features/compras/pages/ComprasPage";
 import DocumentacionPersonalPage from "../features/documentacionpersonal/pages/DocumentacionPersonalPage";
 import NotificacionesPage from "../features/notificaciones/pages/NotificacionesPage";
+import PrivadoPage from "../features/privado/pages/PrivadoPage";
 import { createBrowserRouter } from "react-router-dom";
 import { ROUTES } from "./routes";
 import UsuariosProtectedRoute from "./components/UsuariosProtectedRoute";
@@ -80,6 +81,7 @@ export const router = createBrowserRouter([
       { path: ROUTES.compras, element: <ModuloProtectedRoute modulo="compras"><ComprasPage /></ModuloProtectedRoute> },
       { path: ROUTES.documentacionPersonal, element: <PersonalProtectedRoute><DocumentacionPersonalPage /></PersonalProtectedRoute> },
      { path: ROUTES.notificaciones, element: <AdminProtectedRoute><NotificacionesPage /></AdminProtectedRoute> },
+      { path: ROUTES.privado, element: <AdminProtectedRoute><PrivadoPage /></AdminProtectedRoute> },
     ],
   },
 ]);

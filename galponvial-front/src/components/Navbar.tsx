@@ -36,6 +36,7 @@ const Navbar = () => {
     { name: "Lubricentro", href: ROUTES.depoCombustible, modulo: "lubricentro", roles: ["admin", "superadmin"], onlyScoped: true },
     { name: "Mis Recordatorios", href: "/mis-recordatorios" },
     { name: "Notificaciones", href: ROUTES.notificaciones, roles: ["admin", "superadmin"] },
+    { name: "Privado", href: ROUTES.privado, roles: ["admin", "superadmin"] },
     { name: "Usuarios", href: ROUTES.usuarios, roles: ["admin", "superadmin"], requiresUsuariosAccess: true },
   ];
 

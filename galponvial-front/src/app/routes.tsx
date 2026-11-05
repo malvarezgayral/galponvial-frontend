@@ -20,5 +20,6 @@ export const ROUTES = {
    compras: "/compras",
   documentacionPersonal: "/documentacion-personal",
   notificaciones: "/notificaciones",
+  privado: "/privado",
   
 } as const;
