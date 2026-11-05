@@ -102,3 +102,22 @@ export async function marcarMensajeLeido(id: number): Promise<void> {
 export async function eliminarMensaje(id: number): Promise<void> {
   await apiClient.delete(`/mensajes-privados/${id}`);
 }
+
+// ---------- Chat grupal "Grupo Galpon Vial" ----------
+
+export async function getChatGrupo(): Promise<ChatMensaje[]> {
+  const { data } = await apiClient.get<ChatMensaje[]>("/mensajes-privados/chat/grupo");
+  return data;
+}
+
+// Solo superadmin
+export async function enviarChatGrupo(texto: string): Promise<ChatMensaje> {
+  const { data } = await apiClient.post<ChatMensaje>("/mensajes-privados/chat/grupo", { texto });
+  return data;
+}
+
+// Total sin leer y, para el admin, cuantos son del grupo
+export async function getChatNoLeidosDetalle(): Promise<{ noLeidos: number; grupo?: number }> {
+  const { data } = await apiClient.get<{ noLeidos: number; grupo?: number }>("/mensajes-privados/chat/no-leidos");
+  return data;
+}
