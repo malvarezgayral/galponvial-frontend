@@ -18,7 +18,8 @@ const TABS: { key: Tab; label: string }[] = [
   { key: "proveedores", label: "Proveedores" },
   { key: "lubricentro", label: "Lubricentro" },
   { key: "combustible-carro", label: "Carro de Combustible" },
-  { key: "privada", label: "Privado" },
+  { key: "privada", label: "Mensajes Privados" },
+  { key: "chats", label: "Chats" },
   { key: "almacen", label: "Almacén" },
 ];
 
@@ -74,7 +75,8 @@ export default function NotificacionesPage() {
         case "recordatorio":
           return true;
         case "privada":
-          // Mensajes privados: solo el superadmin (ya devolvio true arriba)
+        case "chats":
+          // Mensajes privados y chats: solo el superadmin (ya devolvio true arriba)
           return false;
         case "personal":
           return hasPermission("personal:read") || hasPermission("personal:write");
