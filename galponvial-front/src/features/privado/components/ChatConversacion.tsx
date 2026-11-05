@@ -11,6 +11,8 @@ interface Props {
   cargando: boolean;
   error: string | null;
   onEnviar: (texto: string) => Promise<void>;
+  // Si viene, no se puede escribir y se muestra este aviso
+  soloLectura?: string;
 }
 
 const MAX_TEXTO = 2000;
@@ -26,6 +28,7 @@ export default function ChatConversacion({
   cargando,
   error,
   onEnviar,
+  soloLectura,
 }: Props) {
   const [texto, setTexto] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -100,6 +103,9 @@ export default function ChatConversacion({
         )}
       </div>
 
+      {soloLectura ? (
+        <p className="border-t border-gray-200 px-5 py-3 text-sm text-gray-600 bg-gray-50">{soloLectura}</p>
+      ) : (
       <form onSubmit={handleSubmit} className="border-t border-gray-200 px-5 py-3 flex gap-3 items-end">
         <div className="flex-1 flex flex-col gap-1">
           <label htmlFor="chat-texto" className="sr-only">
@@ -125,6 +131,7 @@ export default function ChatConversacion({
           {enviando ? "Enviando…" : "Enviar"}
         </button>
       </form>
+      )}
     </div>
   );
 }

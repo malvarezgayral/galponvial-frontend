@@ -3,8 +3,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import ChatConversacion from "./ChatConversacion";
 import {
   enviarChatAAdmin,
+  enviarChatGrupo,
   getChatAdmins,
   getChatConAdmin,
+  getChatGrupo,
   type ChatAdmin,
   type ChatMensaje,
 } from "../services/privadoService";
@@ -13,17 +15,20 @@ import { REFRESCAR_CHAT_NO_LEIDOS } from "../hooks/useChatNoLeidos";
 const formatearFecha = (iso: string) =>
   new Date(iso).toLocaleString("es-AR", { dateStyle: "short", timeStyle: "short" });
 
-// Vista del superadmin: elige un admin y chatea con el
+// "grupo" = Grupo Galpón Vial; si no, el DNI del admin elegido
+type Clave = "grupo" | number;
+
+// Vista del superadmin: elige un admin (o el grupo) y chatea
 export default function ChatSuperadmin() {
   const [admins, setAdmins] = useState<ChatAdmin[]>([]);
   const [cargandoAdmins, setCargandoAdmins] = useState(true);
   const [errorAdmins, setErrorAdmins] = useState<string | null>(null);
-  const [seleccionado, setSeleccionado] = useState<ChatAdmin | null>(null);
+  const [clave, setClave] = useState<Clave | null>(null);
   const [mensajes, setMensajes] = useState<ChatMensaje[]>([]);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // Evita que una respuesta vieja pise la conversacion de otro admin
-  const dniActual = useRef<number | null>(null);
+  // Evita que una respuesta vieja pise la conversacion elegida
+  const claveActual = useRef<Clave | null>(null);
 
   const cargarAdmins = useCallback(() => {
     getChatAdmins()
@@ -42,43 +47,49 @@ export default function ChatSuperadmin() {
   }, [cargarAdmins]);
 
   const cargarChat = useCallback(
-    (dni: number, silencioso: boolean) => {
+    (c: Clave, silencioso: boolean) => {
       if (!silencioso) setCargando(true);
-      getChatConAdmin(dni)
+      const pedido = c === "grupo" ? getChatGrupo() : getChatConAdmin(c);
+      pedido
         .then((data) => {
-          if (dniActual.current !== dni) return;
+          if (claveActual.current !== c) return;
           setMensajes(data);
           setError(null);
           window.dispatchEvent(new Event(REFRESCAR_CHAT_NO_LEIDOS));
           cargarAdmins();
         })
         .catch(() => {
-          if (dniActual.current === dni && !silencioso) setError("No se pudo cargar la conversación.");
+          if (claveActual.current === c && !silencioso) setError("No se pudo cargar la conversación.");
         })
         .finally(() => {
-          if (dniActual.current === dni && !silencioso) setCargando(false);
+          if (claveActual.current === c && !silencioso) setCargando(false);
         });
     },
     [cargarAdmins],
   );
 
-  const dniSeleccionado = seleccionado?.dni ?? null;
-
   useEffect(() => {
-    dniActual.current = dniSeleccionado;
-    if (dniSeleccionado === null) return;
+    claveActual.current = clave;
+    if (clave === null) return;
     setMensajes([]);
-    cargarChat(dniSeleccionado, false);
-    const id = window.setInterval(() => cargarChat(dniSeleccionado, true), 15000);
+    cargarChat(clave, false);
+    const id = window.setInterval(() => cargarChat(clave, true), 15000);
     return () => window.clearInterval(id);
-  }, [dniSeleccionado, cargarChat]);
+  }, [clave, cargarChat]);
+
+  const adminElegido = typeof clave === "number" ? admins.find((a) => a.dni === clave) ?? null : null;
 
   const handleEnviar = async (texto: string) => {
-    if (!seleccionado) return;
-    const nuevo = await enviarChatAAdmin(seleccionado.dni, texto);
+    if (clave === null) return;
+    const nuevo = clave === "grupo" ? await enviarChatGrupo(texto) : await enviarChatAAdmin(clave, texto);
     setMensajes((prev) => [...prev, nuevo]);
     cargarAdmins();
   };
+
+  const estiloItem = (activo: boolean) =>
+    `w-full text-left px-3 py-2 rounded-lg flex items-center justify-between gap-2 transition-colors ${
+      activo ? "bg-blue-50 border border-[#0062e3]" : "hover:bg-gray-50 border border-transparent"
+    }`;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-[280px_minmax(0,1fr)] gap-4 items-start">
@@ -94,13 +105,7 @@ export default function ChatSuperadmin() {
           <ul className="space-y-1">
             {admins.map((a) => (
               <li key={a.dni}>
-                <button
-                  type="button"
-                  onClick={() => setSeleccionado(a)}
-                  className={`w-full text-left px-3 py-2 rounded-lg flex items-center justify-between gap-2 transition-colors ${
-                    seleccionado?.dni === a.dni ? "bg-blue-50 border border-[#0062e3]" : "hover:bg-gray-50 border border-transparent"
-                  }`}
-                >
+                <button type="button" onClick={() => setClave(a.dni)} className={estiloItem(clave === a.dni)}>
                   <span className="min-w-0">
                     <span className="block font-medium text-gray-900 truncate">
                       {a.nombre} {a.apellido}
@@ -119,13 +124,31 @@ export default function ChatSuperadmin() {
             ))}
           </ul>
         )}
+        <div className="border-t border-gray-200 mt-3 pt-3">
+          <button type="button" onClick={() => setClave("grupo")} className={estiloItem(clave === "grupo")}>
+            <span className="min-w-0">
+              <span className="block font-medium text-gray-900 truncate">Grupo Galpón Vial</span>
+              <span className="block text-xs text-gray-500">Todos los admin · solo vos escribís</span>
+            </span>
+          </button>
+        </div>
       </div>
 
-      {seleccionado ? (
+      {clave === "grupo" ? (
         <ChatConversacion
-          titulo={`Chat con ${seleccionado.nombre} ${seleccionado.apellido}`}
+          titulo="Grupo Galpón Vial"
+          subtitulo="Lo ven todos los admin. Ellos no pueden responder."
+          nombreOtro=""
+          mensajes={mensajes}
+          cargando={cargando}
+          error={error}
+          onEnviar={handleEnviar}
+        />
+      ) : adminElegido ? (
+        <ChatConversacion
+          titulo={`Chat con ${adminElegido.nombre} ${adminElegido.apellido}`}
           subtitulo="Solo vos y este admin ven esta conversación."
-          nombreOtro={seleccionado.nombre}
+          nombreOtro={adminElegido.nombre}
           mensajes={mensajes}
           cargando={cargando}
           error={error}
@@ -134,7 +157,7 @@ export default function ChatSuperadmin() {
       ) : (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6">
           <p className="text-gray-600 text-sm">
-            Elegí un admin de la lista para ver o empezar la conversación.
+            Elegí un admin o el Grupo Galpón Vial para ver o empezar la conversación.
           </p>
         </div>
       )}
