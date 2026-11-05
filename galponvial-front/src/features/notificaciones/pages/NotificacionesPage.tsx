@@ -72,8 +72,10 @@ export default function NotificacionesPage() {
         case "proveedores":
           return acceso;
         case "recordatorio":
-        case "privada":
           return true;
+        case "privada":
+          // Mensajes privados: solo el superadmin (ya devolvio true arriba)
+          return false;
         case "personal":
           return hasPermission("personal:read") || hasPermission("personal:write");
         default:
