@@ -7,6 +7,8 @@ import {
   getMisMensajesPrivados,
   type MensajePrivado,
 } from "../services/privadoService";
+import ChatAdmin from "../components/ChatAdmin";
+import ChatSuperadmin from "../components/ChatSuperadmin";
 
 type Vista = "chat" | "mensajes";
 
@@ -19,7 +21,7 @@ const formatearFecha = (iso: string) =>
 export default function PrivadoPage() {
   const { isSuperAdmin } = useAdminPermissions();
   const superAdmin = isSuperAdmin();
-  const [vista, setVista] = useState<Vista>("mensajes");
+  const [vista, setVista] = useState<Vista>(superAdmin ? "chat" : "mensajes");
   const [asunto, setAsunto] = useState("");
   const [texto, setTexto] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -87,13 +89,7 @@ export default function PrivadoPage() {
         </div>
       </div>
 
-      {vista === "chat" && (
-        <div className="bg-white rounded-xl shadow border border-gray-200 p-6">
-          <p className="text-gray-600 text-sm">
-            El chat con el superadmin está en preparación. Mientras tanto, podés escribirle desde "Mensajes".
-          </p>
-        </div>
-      )}
+      {vista === "chat" && (superAdmin ? <ChatSuperadmin /> : <ChatAdmin />)}
 
       {vista === "mensajes" && superAdmin && (
         <div className="bg-white rounded-xl shadow border border-gray-200 p-6">

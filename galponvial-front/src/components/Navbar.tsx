@@ -5,6 +5,7 @@ import { useAppStore } from "@/app/stores/appStore";
 import { useState } from "react";
 import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
 import { useNoLeidas } from '@/features/notificaciones/hooks/useNoLeidas';
+import { useChatNoLeidos } from '@/features/privado/hooks/useChatNoLeidos';
 
 interface NavItem {
   name: string;
@@ -23,6 +24,7 @@ const Navbar = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const esAdmin = user?.rol === 'admin' || user?.rol === 'superadmin';
   const { conteo } = useNoLeidas(esAdmin);
+  const chatNoLeidos = useChatNoLeidos(esAdmin);
   // Un admin acotado a Almacén solo cuenta los tipos que ve en las pestañas
   const TIPOS_ALMACEN = ['almacen', 'recordatorio', 'privada', 'combustible-carro'];
   const noLeidas = Object.entries(conteo)
@@ -93,6 +95,11 @@ const Navbar = () => {
                   {link.href === ROUTES.notificaciones && noLeidas > 0 && (
                     <span className="ml-2 inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-red-600 text-white text-xs font-bold">
                       {noLeidas}
+                    </span>
+                  )}
+                  {link.href === ROUTES.privado && chatNoLeidos > 0 && (
+                    <span className="ml-2 inline-flex items-center justify-center min-w-[20px] h-5 px-1 rounded-full bg-red-600 text-white text-xs font-bold">
+                      {chatNoLeidos}
                     </span>
                   )}
                 </Link>
