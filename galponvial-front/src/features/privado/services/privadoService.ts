@@ -69,3 +69,36 @@ export async function getChatNoLeidos(): Promise<number> {
   const { data } = await apiClient.get<{ noLeidos: number }>("/mensajes-privados/chat/no-leidos");
   return data.noLeidos;
 }
+
+// ---------- Bandeja de Mensajes (superadmin <-> un admin) ----------
+
+export interface MensajeBandeja {
+  id: number;
+  asunto: string | null;
+  texto: string;
+  fecha: string;
+  recibido: boolean;
+  dniOtro: number;
+  nombreOtro: string;
+  apellidoOtro: string;
+  leido: boolean;
+}
+
+export async function getBandeja(): Promise<MensajeBandeja[]> {
+  const { data } = await apiClient.get<MensajeBandeja[]>("/mensajes-privados/bandeja");
+  return data;
+}
+
+// Solo superadmin: escribirle a un admin elegido
+export async function enviarMensajeA(dni: number, asunto: string, texto: string): Promise<MensajeBandeja> {
+  const { data } = await apiClient.post<MensajeBandeja>(`/mensajes-privados/para/${dni}`, { asunto, texto });
+  return data;
+}
+
+export async function marcarMensajeLeido(id: number): Promise<void> {
+  await apiClient.patch(`/mensajes-privados/${id}/leido`);
+}
+
+export async function eliminarMensaje(id: number): Promise<void> {
+  await apiClient.delete(`/mensajes-privados/${id}`);
+}
