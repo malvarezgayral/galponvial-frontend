@@ -10,6 +10,7 @@ export type Tab =
   | "lubricentro"
   | "combustible-carro"
   | "privada"
+  | "chats"
   | "almacen";
 
 export interface Notificacion {
