@@ -175,7 +175,7 @@ export default function HistorialDocumentacionPersonal({
                 <th className="text-left px-4 py-3 font-medium">DNI</th>
                 <th className="text-left px-4 py-3 font-medium">CUIL</th>
                 <th className="text-left px-4 py-3 font-medium">Historial académico</th>
-                <th className="text-left px-4 py-3 font-medium">Título</th>
+                <th className="text-left px-4 py-3 font-medium">Título/s</th>
               </tr>
             </thead>
             <tbody>
