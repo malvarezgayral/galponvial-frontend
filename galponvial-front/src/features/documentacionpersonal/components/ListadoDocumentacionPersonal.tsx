@@ -1,8 +1,13 @@
+import type { ArchivoPersonalDto, TipoArchivoPersonal } from '../services/personalService';
 import { useState } from 'react';
 import type { PersonalDocumentacionFormData } from './PersonalDocumentacionForm';
 import { useAdminPermissions } from '../../usuarios/hooks/useAdminPermissions';
 
 interface ListadoDocumentacionPersonalProps {
+  archivosPorFila?: ArchivoPersonalDto[][];
+  onAbrirArchivo?: (archivoId: number) => void;
+  onSubirArchivo?: (index: number, tipo: TipoArchivoPersonal, file: File) => void;
+  onEliminarArchivo?: (archivoId: number) => void;
   registros: PersonalDocumentacionFormData[];
   onEliminar: (index: number) => void;
   onEditar: (index: number, data: PersonalDocumentacionFormData) => void;
@@ -24,12 +29,103 @@ function ValorConFecha({ valor, fecha }: { valor: string; fecha: string }) {
   );
 }
 
+const ETIQUETA_TIPO: Record<string, string> = {
+  dni: 'DNI',
+  cuil: 'CUIL',
+  certificado: 'Certificado',
+};
+const TIPOS_ARCHIVO: TipoArchivoPersonal[] = ['dni', 'cuil', 'certificado'];
+const ACCEPT_ARCHIVOS = '.pdf,.jpg,.jpeg,.png,.doc,.docx';
+
+function ArchivosCelda({
+  archivos,
+  editando,
+  onAbrir,
+  onSubir,
+  onEliminar,
+}: {
+  archivos: ArchivoPersonalDto[];
+  editando: boolean;
+  onAbrir?: (archivoId: number) => void;
+  onSubir?: (tipo: TipoArchivoPersonal, file: File) => void;
+  onEliminar?: (archivoId: number) => void;
+}) {
+  const [tipoNuevo, setTipoNuevo] = useState<TipoArchivoPersonal>('dni');
+  const etiqueta = (a: ArchivoPersonalDto, i: number) => {
+    const base = ETIQUETA_TIPO[a.tipo] ?? a.tipo;
+    const total = archivos.filter((b) => b.tipo === a.tipo).length;
+    const n = archivos.slice(0, i + 1).filter((b) => b.tipo === a.tipo).length;
+    return total > 1 ? `${base} ${n}` : base;
+  };
+  return (
+    <div className="flex flex-col gap-1 min-w-[150px]">
+      {archivos.length === 0 && !editando && <span className="text-gray-400">—</span>}
+      {archivos.map((a, i) => (
+        <div key={a.id} className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onAbrir?.(a.id)}
+            title={a.nombreOriginal}
+            className="text-blue-600 hover:text-blue-800 hover:underline text-sm text-left"
+          >
+            {etiqueta(a, i)}
+          </button>
+          {editando && onEliminar && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm(`¿Quitar el archivo "${a.nombreOriginal}"?`)) onEliminar(a.id);
+              }}
+              className="text-gray-400 hover:text-red-600 text-sm"
+              aria-label={`Quitar ${a.nombreOriginal}`}
+            >
+              ×
+            </button>
+          )}
+        </div>
+      ))}
+      {editando && onSubir && (
+        <div className="flex items-center gap-1 mt-1">
+          <select
+            value={tipoNuevo}
+            onChange={(e) => setTipoNuevo(e.target.value as TipoArchivoPersonal)}
+            className="border border-blue-300 rounded px-1 py-1 text-xs bg-white"
+          >
+            {TIPOS_ARCHIVO.map((t) => (
+              <option key={t} value={t}>
+                {ETIQUETA_TIPO[t]}
+              </option>
+            ))}
+          </select>
+          <label className="text-xs text-blue-600 border border-blue-200 rounded px-2 py-1 cursor-pointer hover:bg-blue-50 whitespace-nowrap">
+            Adjuntar
+            <input
+              type="file"
+              accept={ACCEPT_ARCHIVOS}
+              className="hidden"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) onSubir(tipoNuevo, f);
+                e.target.value = '';
+              }}
+            />
+          </label>
+        </div>
+      )}
+    </div>
+  );
+}
+
 const ESTUDIOS_ALCANZADOS_OPTIONS = ['Primario', 'Secundario', 'Terciario', 'Universitario'];
 
 export default function ListadoDocumentacionPersonal({
   registros,
   onEliminar,
   onEditar,
+  archivosPorFila = [],
+  onAbrirArchivo,
+  onSubirArchivo,
+  onEliminarArchivo,
 }: ListadoDocumentacionPersonalProps) {
   const { canWritePersonal, isSuperAdmin } = useAdminPermissions();
   const [filaEditando, setFilaEditando] = useState<number | null>(null);
@@ -127,6 +223,7 @@ export default function ListadoDocumentacionPersonal({
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Aptitud física</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Exámenes médicos</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Exámenes ART</th>
+            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Archivos</th>
             <th className="text-right px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Acciones</th>
           </tr>
         </thead>
@@ -369,6 +466,15 @@ export default function ListadoDocumentacionPersonal({
                   ) : (
                     <ValorConFecha valor={r.historialSalud.examenesMedicosArt} fecha={r.historialSalud.fechaExamenesMedicosArt} />
                   )}
+                </td>
+                <td className="px-3 py-2 align-top">
+                  <ArchivosCelda
+                    archivos={archivosPorFila[index] ?? []}
+                    editando={editando}
+                    onAbrir={onAbrirArchivo}
+                    onSubir={onSubirArchivo ? (tipo, file) => onSubirArchivo(index, tipo, file) : undefined}
+                    onEliminar={onEliminarArchivo}
+                  />
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap text-right">
                   <div className="flex justify-end gap-2">

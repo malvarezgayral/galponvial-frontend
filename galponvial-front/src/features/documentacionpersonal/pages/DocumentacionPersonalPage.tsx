@@ -17,6 +17,9 @@ import {
   registroToForm,
   type DocumentacionPersonalDto,
   type RegistroAdministrativoDto,
+  archivosPersonalService,
+  type ArchivoPersonalDto,
+  type TipoArchivoPersonal,
 } from '../services/personalService';
 
 type Vista =
@@ -44,17 +47,20 @@ const DocumentacionPersonalPage = () => {
   );
   const [docs, setDocs] = useState<DocumentacionPersonalDto[]>([]);
   const [regs, setRegs] = useState<RegistroAdministrativoDto[]>([]);
+  const [archivos, setArchivos] = useState<ArchivoPersonalDto[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const cargar = useCallback(async () => {
     try {
-      const [d, r] = await Promise.all([
+      const [d, r, a] = await Promise.all([
         documentacionService.getAll(),
         registroService.getAll(),
+        archivosPersonalService.listar().catch(() => [] as ArchivoPersonalDto[]),
       ]);
       setDocs(d);
       setRegs(r);
+      setArchivos(a);
     } catch (e) {
       setError(mensajeError(e));
     } finally {
@@ -66,12 +72,69 @@ const DocumentacionPersonalPage = () => {
     cargar();
   }, [cargar]);
 
+  const pendientesDeForm = (
+    d: PersonalDocumentacionFormData
+  ): { tipo: TipoArchivoPersonal; file: File }[] => [
+    ...(d.fotoDni ? [{ tipo: 'dni' as const, file: d.fotoDni }] : []),
+    ...(d.archivoCuil ? [{ tipo: 'cuil' as const, file: d.archivoCuil }] : []),
+    ...d.historialAcademico.certificados.map((file) => ({ tipo: 'certificado' as const, file })),
+  ];
+
+  // Sube los archivos de a uno; devuelve los que fallaron (nombre y motivo)
+  const subirArchivos = async (
+    id: number | undefined,
+    pendientes: { tipo: TipoArchivoPersonal; file: File }[]
+  ): Promise<string[]> => {
+    if (id === undefined) return pendientes.map((p) => p.file.name);
+    const fallidos: string[] = [];
+    for (const p of pendientes) {
+      try {
+        await archivosPersonalService.subir(id, p.tipo, p.file);
+      } catch (e) {
+        fallidos.push(`${p.file.name} (${mensajeError(e)})`);
+      }
+    }
+    return fallidos;
+  };
+
+  const handleAbrirArchivo = async (archivoId: number) => {
+    setError(null);
+    try {
+      await archivosPersonalService.abrir(archivoId);
+    } catch (e) {
+      setError(mensajeError(e));
+    }
+  };
+
+  const handleSubirArchivo = async (index: number, tipo: TipoArchivoPersonal, file: File) => {
+    setError(null);
+    const fallidos = await subirArchivos(docs[index]?.id, [{ tipo, file }]);
+    if (fallidos.length > 0) setError(`No se pudo subir: ${fallidos.join('; ')}`);
+    await cargar();
+  };
+
+  const handleEliminarArchivo = async (archivoId: number) => {
+    setError(null);
+    try {
+      await archivosPersonalService.eliminar(archivoId);
+    } catch (e) {
+      setError(mensajeError(e));
+    }
+    await cargar();
+  };
+
   const handleGuardarDocumentacion = async (data: PersonalDocumentacionFormData) => {
     setError(null);
     try {
-      await documentacionService.create(data);
+      const creado = await documentacionService.create(data);
+      const fallidos = await subirArchivos(creado.id, pendientesDeForm(data));
       await cargar();
       setVista('listado-doc');
+      if (fallidos.length > 0) {
+        setError(
+          `Se guardó la documentación, pero no se pudieron subir estos archivos: ${fallidos.join('; ')}`
+        );
+      }
     } catch (e) {
       setError(mensajeError(e));
     }
@@ -192,6 +255,10 @@ const DocumentacionPersonalPage = () => {
       {vista === 'listado-doc' && (
         <ListadoDocumentacionPersonal
           registros={docsForm}
+          archivosPorFila={docs.map((d) => archivos.filter((x) => x.documentacionId === d.id))}
+          onAbrirArchivo={handleAbrirArchivo}
+          onSubirArchivo={puedeEscribir ? handleSubirArchivo : undefined}
+          onEliminarArchivo={puedeEscribir ? handleEliminarArchivo : undefined}
           onEliminar={handleEliminarDocumentacion}
           onEditar={handleEditarDocumentacion}
         />

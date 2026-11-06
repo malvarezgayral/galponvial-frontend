@@ -81,6 +81,9 @@ export const API_ENDPOINTS = {
     CREATE: '/personal/documentacion',
     UPDATE: (id: number | string) => `/personal/documentacion/${id}`,
     DELETE: (id: number | string) => `/personal/documentacion/${id}`,
+    ARCHIVOS_UPLOAD: (id: number | string) => `/personal/documentacion/${id}/archivos`,
+    ARCHIVOS_LIST: '/personal/documentacion-archivos',
+    ARCHIVO: (archivoId: number | string) => `/personal/documentacion-archivos/${archivoId}`,
   },
   PERSONAL_REGISTRO: {
     LIST: '/personal/registro',
