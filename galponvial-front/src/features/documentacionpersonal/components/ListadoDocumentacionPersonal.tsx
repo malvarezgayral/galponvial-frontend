@@ -8,15 +8,19 @@ interface ListadoDocumentacionPersonalProps {
   onEditar: (index: number, data: PersonalDocumentacionFormData) => void;
 }
 
-function Badge({ value }: { value: boolean }) {
+function fmtFecha(f: string) {
+  if (!f) return '';
+  const [a, m, d] = f.slice(0, 10).split('-');
+  return a && m && d ? `${d}/${m}/${a}` : f;
+}
+
+function ValorConFecha({ valor, fecha }: { valor: string; fecha: string }) {
+  if (!valor && !fecha) return <span className="text-gray-400">—</span>;
   return (
-    <span
-      className={`text-xs font-medium px-2.5 py-1 rounded-md ${
-        value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-      }`}
-    >
-      {value ? 'Sí' : 'No'}
-    </span>
+    <div className="flex flex-col">
+      <span>{valor || '—'}</span>
+      {fecha && <span className="text-xs text-gray-500">{fmtFecha(fecha)}</span>}
+    </div>
   );
 }
 
@@ -112,12 +116,13 @@ export default function ListadoDocumentacionPersonal({
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Apellido</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">N° CUIL</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">N° DNI</th>
+            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Fecha de nacimiento</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Ciudad</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Dirección</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Piso</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Teléfono</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Estudios alcanzados</th>
-            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Título cargado</th>
+            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Título</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Preocupacional</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Aptitud física</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Exámenes médicos</th>
@@ -183,6 +188,18 @@ export default function ListadoDocumentacionPersonal({
                     />
                   ) : (
                     r.numeroDocumento
+                  )}
+                </td>
+                <td className="px-3 py-2 whitespace-nowrap">
+                  {editando ? (
+                    <input
+                      type="date"
+                      value={fila.fechaNacimiento}
+                      onChange={(e) => updateBorrador('fechaNacimiento', e.target.value)}
+                      className={inputClass}
+                    />
+                  ) : (
+                    fmtFecha(r.fechaNacimiento) || '—'
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
@@ -270,55 +287,87 @@ export default function ListadoDocumentacionPersonal({
                       className={inputClass}
                     />
                   ) : (
-                    <Badge value={Boolean(r.historialAcademico.titulo)} />
+                    r.historialAcademico.titulo || '—'
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   {editando ? (
-                    <input
-                      type="text"
-                      value={fila.historialSalud.preocupacional}
-                      onChange={(e) => updateBorradorSalud('preocupacional', e.target.value)}
-                      className={inputClass}
-                    />
+                    <div className="flex flex-col gap-1">
+                      <input
+                        type="text"
+                        value={fila.historialSalud.preocupacional}
+                        onChange={(e) => updateBorradorSalud('preocupacional', e.target.value)}
+                        className={inputClass}
+                      />
+                      <input
+                        type="date"
+                        value={fila.historialSalud.fechaPreocupacional}
+                        onChange={(e) => updateBorradorSalud('fechaPreocupacional', e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
                   ) : (
-                    <Badge value={Boolean(r.historialSalud.preocupacional)} />
+                    <ValorConFecha valor={r.historialSalud.preocupacional} fecha={r.historialSalud.fechaPreocupacional} />
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   {editando ? (
-                    <input
-                      type="text"
-                      value={fila.historialSalud.constanciaAptitudFisica}
-                      onChange={(e) => updateBorradorSalud('constanciaAptitudFisica', e.target.value)}
-                      className={inputClass}
-                    />
+                    <div className="flex flex-col gap-1">
+                      <input
+                        type="text"
+                        value={fila.historialSalud.constanciaAptitudFisica}
+                        onChange={(e) => updateBorradorSalud('constanciaAptitudFisica', e.target.value)}
+                        className={inputClass}
+                      />
+                      <input
+                        type="date"
+                        value={fila.historialSalud.fechaConstanciaAptitudFisica}
+                        onChange={(e) => updateBorradorSalud('fechaConstanciaAptitudFisica', e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
                   ) : (
-                    <Badge value={Boolean(r.historialSalud.constanciaAptitudFisica)} />
+                    <ValorConFecha valor={r.historialSalud.constanciaAptitudFisica} fecha={r.historialSalud.fechaConstanciaAptitudFisica} />
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   {editando ? (
-                    <input
-                      type="text"
-                      value={fila.historialSalud.examenesMedicos}
-                      onChange={(e) => updateBorradorSalud('examenesMedicos', e.target.value)}
-                      className={inputClass}
-                    />
+                    <div className="flex flex-col gap-1">
+                      <input
+                        type="text"
+                        value={fila.historialSalud.examenesMedicos}
+                        onChange={(e) => updateBorradorSalud('examenesMedicos', e.target.value)}
+                        className={inputClass}
+                      />
+                      <input
+                        type="date"
+                        value={fila.historialSalud.fechaExamenesMedicos}
+                        onChange={(e) => updateBorradorSalud('fechaExamenesMedicos', e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
                   ) : (
-                    <Badge value={Boolean(r.historialSalud.examenesMedicos)} />
+                    <ValorConFecha valor={r.historialSalud.examenesMedicos} fecha={r.historialSalud.fechaExamenesMedicos} />
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   {editando ? (
-                    <input
-                      type="text"
-                      value={fila.historialSalud.examenesMedicosArt}
-                      onChange={(e) => updateBorradorSalud('examenesMedicosArt', e.target.value)}
-                      className={inputClass}
-                    />
+                    <div className="flex flex-col gap-1">
+                      <input
+                        type="text"
+                        value={fila.historialSalud.examenesMedicosArt}
+                        onChange={(e) => updateBorradorSalud('examenesMedicosArt', e.target.value)}
+                        className={inputClass}
+                      />
+                      <input
+                        type="date"
+                        value={fila.historialSalud.fechaExamenesMedicosArt}
+                        onChange={(e) => updateBorradorSalud('fechaExamenesMedicosArt', e.target.value)}
+                        className={inputClass}
+                      />
+                    </div>
                   ) : (
-                    <Badge value={Boolean(r.historialSalud.examenesMedicosArt)} />
+                    <ValorConFecha valor={r.historialSalud.examenesMedicosArt} fecha={r.historialSalud.fechaExamenesMedicosArt} />
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap text-right">
