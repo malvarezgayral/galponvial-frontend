@@ -1,22 +1,76 @@
 import { useState } from 'react';
-import { FileInput, TIPO_CARGO_OPTIONS, type RegistroAdministrativoFormData } from './RegistroAdministrativoForm';
+import { TIPO_CARGO_OPTIONS, type RegistroAdministrativoFormData } from './RegistroAdministrativoForm';
+import type { ArchivoRegistroDto, TipoArchivoRegistro } from '../services/personalService';
 import { useAdminPermissions } from '../../usuarios/hooks/useAdminPermissions';
 
 interface ListadoRegistroAdministrativoProps {
   registros: RegistroAdministrativoFormData[];
   onEliminar: (index: number) => void;
   onEditar: (index: number, data: RegistroAdministrativoFormData) => void;
+  archivosPorFila?: ArchivoRegistroDto[][];
+  onAbrirArchivo?: (archivoId: number) => void;
+  onSubirArchivo?: (index: number, tipo: TipoArchivoRegistro, file: File) => void;
+  onEliminarArchivo?: (archivoId: number) => void;
 }
 
-function Badge({ value }: { value: boolean }) {
+function ArchivosTipoCelda({
+  archivos,
+  etiqueta,
+  editando,
+  onAbrir,
+  onSubir,
+  onEliminar,
+}: {
+  archivos: ArchivoRegistroDto[];
+  etiqueta: string;
+  editando: boolean;
+  onAbrir?: (archivoId: number) => void;
+  onSubir?: (file: File) => void;
+  onEliminar?: (archivoId: number) => void;
+}) {
   return (
-    <span
-      className={`text-xs font-medium px-2.5 py-1 rounded-md ${
-        value ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-      }`}
-    >
-      {value ? 'Sí' : 'No'}
-    </span>
+    <div className="flex flex-col gap-1 min-w-[130px]">
+      {archivos.length === 0 && !editando && <span className="text-gray-400">—</span>}
+      {archivos.map((a, i) => (
+        <div key={a.id} className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => onAbrir?.(a.id)}
+            title={a.nombreOriginal}
+            className="text-blue-600 hover:text-blue-800 hover:underline text-sm text-left whitespace-nowrap"
+          >
+            {archivos.length > 1 ? `${etiqueta} ${i + 1}` : etiqueta}
+          </button>
+          {editando && onEliminar && (
+            <button
+              type="button"
+              onClick={() => {
+                if (window.confirm(`¿Quitar el archivo "${a.nombreOriginal}"?`)) onEliminar(a.id);
+              }}
+              className="text-gray-400 hover:text-red-600 text-sm"
+              aria-label={`Quitar ${a.nombreOriginal}`}
+            >
+              ×
+            </button>
+          )}
+        </div>
+      ))}
+      {editando && onSubir && (
+        <label className="text-xs text-blue-600 border border-blue-200 rounded px-2 py-1 cursor-pointer hover:bg-blue-50 whitespace-nowrap w-fit">
+          Adjuntar
+          <input
+            type="file"
+            accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) onSubir(f);
+              e.target.value = '';
+            }}
+          />
+        </label>
+      )}
+    </div>
   );
 }
 
@@ -71,6 +125,10 @@ export default function ListadoRegistroAdministrativo({
   registros,
   onEliminar,
   onEditar,
+  archivosPorFila = [],
+  onAbrirArchivo,
+  onSubirArchivo,
+  onEliminarArchivo,
 }: ListadoRegistroAdministrativoProps) {
   const { canWritePersonal, isSuperAdmin } = useAdminPermissions();
   const [filaEditando, setFilaEditando] = useState<number | null>(null);
@@ -427,38 +485,35 @@ export default function ListadoRegistroAdministrativo({
                     r.historialAcademicoSalud.titulo || '—'
                   )}
                 </td>
-                <td className="px-3 py-2 align-top" style={editando ? { minWidth: 220 } : undefined}>
-                  {editando ? (
-                    <FileInput
-                      label="Certificaciones"
-                      files={fila.historialAcademicoSalud.certificaciones}
-                      onChange={(files) => updateBorradorAcademicoSalud('certificaciones', files)}
-                    />
-                  ) : (
-                    <Badge value={r.historialAcademicoSalud.certificaciones.length > 0} />
-                  )}
+                <td className="px-3 py-2 align-top">
+                  <ArchivosTipoCelda
+                    archivos={(archivosPorFila[index] ?? []).filter((x) => x.tipo === 'certificacion')}
+                    etiqueta="Certificación"
+                    editando={editando}
+                    onAbrir={onAbrirArchivo}
+                    onSubir={onSubirArchivo ? (file) => onSubirArchivo(index, 'certificacion', file) : undefined}
+                    onEliminar={onEliminarArchivo}
+                  />
                 </td>
-                <td className="px-3 py-2 align-top" style={editando ? { minWidth: 220 } : undefined}>
-                  {editando ? (
-                    <FileInput
-                      label="Aptitud física"
-                      files={fila.historialAcademicoSalud.aptitudFisicaExamenes}
-                      onChange={(files) => updateBorradorAcademicoSalud('aptitudFisicaExamenes', files)}
-                    />
-                  ) : (
-                    <Badge value={r.historialAcademicoSalud.aptitudFisicaExamenes.length > 0} />
-                  )}
+                <td className="px-3 py-2 align-top">
+                  <ArchivosTipoCelda
+                    archivos={(archivosPorFila[index] ?? []).filter((x) => x.tipo === 'aptitud')}
+                    etiqueta="Aptitud"
+                    editando={editando}
+                    onAbrir={onAbrirArchivo}
+                    onSubir={onSubirArchivo ? (file) => onSubirArchivo(index, 'aptitud', file) : undefined}
+                    onEliminar={onEliminarArchivo}
+                  />
                 </td>
-                <td className="px-3 py-2 align-top" style={editando ? { minWidth: 220 } : undefined}>
-                  {editando ? (
-                    <FileInput
-                      label="Acto administrativo"
-                      files={fila.historialAcademicoSalud.actoAdministrativo}
-                      onChange={(files) => updateBorradorAcademicoSalud('actoAdministrativo', files)}
-                    />
-                  ) : (
-                    <Badge value={r.historialAcademicoSalud.actoAdministrativo.length > 0} />
-                  )}
+                <td className="px-3 py-2 align-top">
+                  <ArchivosTipoCelda
+                    archivos={(archivosPorFila[index] ?? []).filter((x) => x.tipo === 'acto')}
+                    etiqueta="Acto"
+                    editando={editando}
+                    onAbrir={onAbrirArchivo}
+                    onSubir={onSubirArchivo ? (file) => onSubirArchivo(index, 'acto', file) : undefined}
+                    onEliminar={onEliminarArchivo}
+                  />
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   {editando ? (
@@ -543,16 +598,15 @@ export default function ListadoRegistroAdministrativo({
                     r.licenciaAnual.observaciones || '—'
                   )}
                 </td>
-                <td className="px-3 py-2 align-top" style={editando ? { minWidth: 220 } : undefined}>
-                  {editando ? (
-                    <FileInput
-                      label="Comprobante licencia"
-                      files={fila.licenciaAnual.comprobante}
-                      onChange={(files) => updateBorradorLicenciaAnual('comprobante', files)}
-                    />
-                  ) : (
-                    <Badge value={r.licenciaAnual.comprobante.length > 0} />
-                  )}
+                <td className="px-3 py-2 align-top">
+                  <ArchivosTipoCelda
+                    archivos={(archivosPorFila[index] ?? []).filter((x) => x.tipo === 'licencia_anual')}
+                    etiqueta="Comprobante"
+                    editando={editando}
+                    onAbrir={onAbrirArchivo}
+                    onSubir={onSubirArchivo ? (file) => onSubirArchivo(index, 'licencia_anual', file) : undefined}
+                    onEliminar={onEliminarArchivo}
+                  />
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   {editando ? (
@@ -586,16 +640,15 @@ export default function ListadoRegistroAdministrativo({
                     formatPeriodo(r.licenciaConducir.periodoDesde, r.licenciaConducir.periodoHasta)
                   )}
                 </td>
-                <td className="px-3 py-2 align-top" style={editando ? { minWidth: 220 } : undefined}>
-                  {editando ? (
-                    <FileInput
-                      label="Comprobante conducir"
-                      files={fila.licenciaConducir.comprobante}
-                      onChange={(files) => updateBorradorLicenciaConducir('comprobante', files)}
-                    />
-                  ) : (
-                    <Badge value={r.licenciaConducir.comprobante.length > 0} />
-                  )}
+                <td className="px-3 py-2 align-top">
+                  <ArchivosTipoCelda
+                    archivos={(archivosPorFila[index] ?? []).filter((x) => x.tipo === 'licencia_conducir')}
+                    etiqueta="Comprobante"
+                    editando={editando}
+                    onAbrir={onAbrirArchivo}
+                    onSubir={onSubirArchivo ? (file) => onSubirArchivo(index, 'licencia_conducir', file) : undefined}
+                    onEliminar={onEliminarArchivo}
+                  />
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   {editando ? (

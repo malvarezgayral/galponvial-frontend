@@ -91,6 +91,9 @@ export const API_ENDPOINTS = {
     CREATE: '/personal/registro',
     UPDATE: (id: number | string) => `/personal/registro/${id}`,
     DELETE: (id: number | string) => `/personal/registro/${id}`,
+    ARCHIVOS_UPLOAD: (id: number | string) => `/personal/registro/${id}/archivos`,
+    ARCHIVOS_LIST: '/personal/registro-archivos',
+    ARCHIVO: (archivoId: number | string) => `/personal/registro-archivos/${archivoId}`,
   },
   PERSONAL_CHOFERES: '/personal/choferes',
   AUDITORIA: {

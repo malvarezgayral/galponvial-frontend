@@ -20,6 +20,9 @@ import {
   archivosPersonalService,
   type ArchivoPersonalDto,
   type TipoArchivoPersonal,
+  registroArchivosService,
+  type ArchivoRegistroDto,
+  type TipoArchivoRegistro,
 } from '../services/personalService';
 
 type Vista =
@@ -48,19 +51,22 @@ const DocumentacionPersonalPage = () => {
   const [docs, setDocs] = useState<DocumentacionPersonalDto[]>([]);
   const [regs, setRegs] = useState<RegistroAdministrativoDto[]>([]);
   const [archivos, setArchivos] = useState<ArchivoPersonalDto[]>([]);
+  const [archivosReg, setArchivosReg] = useState<ArchivoRegistroDto[]>([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const cargar = useCallback(async () => {
     try {
-      const [d, r, a] = await Promise.all([
+      const [d, r, a, ar] = await Promise.all([
         documentacionService.getAll(),
         registroService.getAll(),
         archivosPersonalService.listar().catch(() => [] as ArchivoPersonalDto[]),
+        registroArchivosService.listar().catch(() => [] as ArchivoRegistroDto[]),
       ]);
       setDocs(d);
       setRegs(r);
       setArchivos(a);
+      setArchivosReg(ar);
     } catch (e) {
       setError(mensajeError(e));
     } finally {
@@ -167,12 +173,70 @@ const DocumentacionPersonalPage = () => {
     await cargar();
   };
 
+  const pendientesDeRegistro = (
+    d: RegistroAdministrativoFormData
+  ): { tipo: TipoArchivoRegistro; file: File }[] => [
+    ...d.historialAcademicoSalud.certificaciones.map((file) => ({ tipo: 'certificacion' as const, file })),
+    ...d.historialAcademicoSalud.aptitudFisicaExamenes.map((file) => ({ tipo: 'aptitud' as const, file })),
+    ...d.historialAcademicoSalud.actoAdministrativo.map((file) => ({ tipo: 'acto' as const, file })),
+    ...d.licenciaAnual.comprobante.map((file) => ({ tipo: 'licencia_anual' as const, file })),
+    ...d.licenciaConducir.comprobante.map((file) => ({ tipo: 'licencia_conducir' as const, file })),
+  ];
+
+  const subirArchivosRegistro = async (
+    id: number | undefined,
+    pendientes: { tipo: TipoArchivoRegistro; file: File }[]
+  ): Promise<string[]> => {
+    if (id === undefined) return pendientes.map((p) => p.file.name);
+    const fallidos: string[] = [];
+    for (const p of pendientes) {
+      try {
+        await registroArchivosService.subir(id, p.tipo, p.file);
+      } catch (e) {
+        fallidos.push(`${p.file.name} (${mensajeError(e)})`);
+      }
+    }
+    return fallidos;
+  };
+
+  const handleAbrirArchivoRegistro = async (archivoId: number) => {
+    setError(null);
+    try {
+      await registroArchivosService.abrir(archivoId);
+    } catch (e) {
+      setError(mensajeError(e));
+    }
+  };
+
+  const handleSubirArchivoRegistro = async (index: number, tipo: TipoArchivoRegistro, file: File) => {
+    setError(null);
+    const fallidos = await subirArchivosRegistro(regs[index]?.id, [{ tipo, file }]);
+    if (fallidos.length > 0) setError(`No se pudo subir: ${fallidos.join('; ')}`);
+    await cargar();
+  };
+
+  const handleEliminarArchivoRegistro = async (archivoId: number) => {
+    setError(null);
+    try {
+      await registroArchivosService.eliminar(archivoId);
+    } catch (e) {
+      setError(mensajeError(e));
+    }
+    await cargar();
+  };
+
   const handleGuardarRegistro = async (data: RegistroAdministrativoFormData) => {
     setError(null);
     try {
-      await registroService.create(data);
+      const creado = await registroService.create(data);
+      const fallidos = await subirArchivosRegistro(creado.id, pendientesDeRegistro(data));
       await cargar();
       setVista('listado-registro');
+      if (fallidos.length > 0) {
+        setError(
+          `Se guardó el registro, pero no se pudieron subir estos archivos: ${fallidos.join('; ')}`
+        );
+      }
     } catch (e) {
       setError(mensajeError(e));
     }
@@ -275,6 +339,10 @@ const DocumentacionPersonalPage = () => {
       {vista === 'listado-registro' && (
         <ListadoRegistroAdministrativo
           registros={regsForm}
+          archivosPorFila={regs.map((x) => archivosReg.filter((y) => y.registroId === x.id))}
+          onAbrirArchivo={handleAbrirArchivoRegistro}
+          onSubirArchivo={puedeEscribir ? handleSubirArchivoRegistro : undefined}
+          onEliminarArchivo={puedeEscribir ? handleEliminarArchivoRegistro : undefined}
           onEliminar={handleEliminarRegistro}
           onEditar={handleEditarRegistro}
         />

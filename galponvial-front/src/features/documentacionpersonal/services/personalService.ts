@@ -365,3 +365,65 @@ export const archivosPersonalService = {
     await apiClient.delete(API_ENDPOINTS.PERSONAL_DOCUMENTACION.ARCHIVO(archivoId));
   },
 };
+
+// ---------- Archivos de registro administrativo (misma carpeta privada) ----------
+export type TipoArchivoRegistro =
+  | 'certificacion'
+  | 'aptitud'
+  | 'acto'
+  | 'licencia_anual'
+  | 'licencia_conducir';
+
+export interface ArchivoRegistroDto {
+  id: number;
+  registroId: number;
+  tipo: TipoArchivoRegistro;
+  nombreOriginal: string;
+  mimetype: string;
+  tamano: number;
+  created_at: string;
+}
+
+export const registroArchivosService = {
+  listar: async (): Promise<ArchivoRegistroDto[]> => {
+    const { data } = await apiClient.get(API_ENDPOINTS.PERSONAL_REGISTRO.ARCHIVOS_LIST);
+    return list<ArchivoRegistroDto>(data);
+  },
+  subir: async (
+    registroId: number | string,
+    tipo: TipoArchivoRegistro,
+    file: File
+  ): Promise<ArchivoRegistroDto> => {
+    const fd = new FormData();
+    fd.append('tipo', tipo);
+    fd.append('file', file);
+    const { data } = await apiClient.post(
+      API_ENDPOINTS.PERSONAL_REGISTRO.ARCHIVOS_UPLOAD(registroId),
+      fd,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+    return unwrap<ArchivoRegistroDto>(data);
+  },
+  abrir: async (archivoId: number | string): Promise<void> => {
+    const ventana = window.open('', '_blank');
+    try {
+      const { data } = await apiClient.get(
+        API_ENDPOINTS.PERSONAL_REGISTRO.ARCHIVO(archivoId),
+        { responseType: 'blob' }
+      );
+      const url = URL.createObjectURL(data as Blob);
+      if (ventana) {
+        ventana.location.href = url;
+      } else {
+        window.location.href = url;
+      }
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (e) {
+      ventana?.close();
+      throw e;
+    }
+  },
+  eliminar: async (archivoId: number | string): Promise<void> => {
+    await apiClient.delete(API_ENDPOINTS.PERSONAL_REGISTRO.ARCHIVO(archivoId));
+  },
+};
