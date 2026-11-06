@@ -134,7 +134,14 @@ export default function HistorialDocumentacionPersonal({
           </div>
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={limpiarFiltros}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 text-sm font-medium px-5 py-2 rounded"
+          >
+            Limpiar
+          </button>
           <button
             type="button"
             onClick={buscar}
