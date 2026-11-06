@@ -306,3 +306,62 @@ export const registroService = {
     await apiClient.delete(API_ENDPOINTS.PERSONAL_REGISTRO.DELETE(id));
   },
 };
+
+// ---------- Archivos de documentación personal (carpeta privada) ----------
+export type TipoArchivoPersonal = 'dni' | 'cuil' | 'certificado';
+
+export interface ArchivoPersonalDto {
+  id: number;
+  documentacionId: number;
+  tipo: TipoArchivoPersonal;
+  nombreOriginal: string;
+  mimetype: string;
+  tamano: number;
+  created_at: string;
+}
+
+export const archivosPersonalService = {
+  listar: async (): Promise<ArchivoPersonalDto[]> => {
+    const { data } = await apiClient.get(API_ENDPOINTS.PERSONAL_DOCUMENTACION.ARCHIVOS_LIST);
+    return list<ArchivoPersonalDto>(data);
+  },
+  subir: async (
+    documentacionId: number | string,
+    tipo: TipoArchivoPersonal,
+    file: File
+  ): Promise<ArchivoPersonalDto> => {
+    const fd = new FormData();
+    fd.append('tipo', tipo);
+    fd.append('file', file);
+    const { data } = await apiClient.post(
+      API_ENDPOINTS.PERSONAL_DOCUMENTACION.ARCHIVOS_UPLOAD(documentacionId),
+      fd,
+      { headers: { 'Content-Type': 'multipart/form-data' } }
+    );
+    return unwrap<ArchivoPersonalDto>(data);
+  },
+  // Se pide con el token y se abre en otra pestaña. La pestaña se abre antes
+  // del pedido para que el navegador no la bloquee como ventana emergente.
+  abrir: async (archivoId: number | string): Promise<void> => {
+    const ventana = window.open('', '_blank');
+    try {
+      const { data } = await apiClient.get(
+        API_ENDPOINTS.PERSONAL_DOCUMENTACION.ARCHIVO(archivoId),
+        { responseType: 'blob' }
+      );
+      const url = URL.createObjectURL(data as Blob);
+      if (ventana) {
+        ventana.location.href = url;
+      } else {
+        window.location.href = url;
+      }
+      setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (e) {
+      ventana?.close();
+      throw e;
+    }
+  },
+  eliminar: async (archivoId: number | string): Promise<void> => {
+    await apiClient.delete(API_ENDPOINTS.PERSONAL_DOCUMENTACION.ARCHIVO(archivoId));
+  },
+};
