@@ -32,10 +32,27 @@ const SITUACION_OPTIONS: { key: SituacionRevistaKey; label: string; hasHasta?: b
   { key: 'cargoTemporarioDesde', label: 'Cargo temporario', hasHasta: true },
 ];
 
-function situacionRevistaLabel(r: RegistroAdministrativoFormData): string {
+function fmtFecha(f: string) {
+  if (!f) return '';
+  const [a, m, d] = f.slice(0, 10).split('-');
+  return a && m && d ? `${d}/${m}/${a}` : f;
+}
+
+function SituacionRevistaLista({ r }: { r: RegistroAdministrativoFormData }) {
   const s = r.situacionRevista;
-  const encontrada = SITUACION_OPTIONS.find((opt) => s[opt.key]);
-  return encontrada ? encontrada.label : '—';
+  const items = SITUACION_OPTIONS.filter((opt) => s[opt.key]).map((opt) =>
+    opt.hasHasta
+      ? `${opt.label}: ${fmtFecha(s[opt.key])} a ${fmtFecha(s.cargoTemporarioHasta) || '—'}`
+      : `${opt.label}: desde ${fmtFecha(s[opt.key])}`
+  );
+  if (items.length === 0) return <span>—</span>;
+  return (
+    <div className="flex flex-col gap-0.5 whitespace-nowrap">
+      {items.map((txt) => (
+        <span key={txt}>{txt}</span>
+      ))}
+    </div>
+  );
 }
 
 function getSituacionKeyActual(s: SituacionRevista): SituacionRevistaKey {
@@ -44,7 +61,7 @@ function getSituacionKeyActual(s: SituacionRevista): SituacionRevistaKey {
 
 function formatPeriodo(desde: string, hasta: string): string {
   if (!desde && !hasta) return '—';
-  return `${desde || '—'} a ${hasta || '—'}`;
+  return `${fmtFecha(desde) || '—'} a ${fmtFecha(hasta) || '—'}`;
 }
 
 const ESTUDIOS_OPTIONS = ['Primario', 'Secundario', 'Terciario', 'Universitario'];
@@ -160,7 +177,7 @@ export default function ListadoRegistroAdministrativo({
 
   return (
     <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
-      <table className="min-w-[2800px] w-full text-sm">
+      <table className="min-w-[3100px] w-full text-sm">
         <thead>
           <tr className="border-b border-gray-200 bg-gray-50">
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Nombre</th>
@@ -181,6 +198,8 @@ export default function ListadoRegistroAdministrativo({
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Certificaciones</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Aptitud física</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Acto administrativo</th>
+            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Lic. anual — fecha presentada</th>
+            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Lic. anual — año</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Lic. anual — período</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Lic. anual — días</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Lic. anual — asunto</th>
@@ -375,7 +394,7 @@ export default function ListadoRegistroAdministrativo({
                       className={inputClass}
                     />
                   ) : (
-                    r.fechaIngreso || '—'
+                    fmtFecha(r.fechaIngreso) || '—'
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
@@ -439,6 +458,30 @@ export default function ListadoRegistroAdministrativo({
                     />
                   ) : (
                     <Badge value={r.historialAcademicoSalud.actoAdministrativo.length > 0} />
+                  )}
+                </td>
+                <td className="px-3 py-2 whitespace-nowrap">
+                  {editando ? (
+                    <input
+                      type="date"
+                      value={fila.licenciaAnual.fechaPresentada}
+                      onChange={(e) => updateBorradorLicenciaAnual('fechaPresentada', e.target.value)}
+                      className={inputClass}
+                    />
+                  ) : (
+                    fmtFecha(r.licenciaAnual.fechaPresentada) || '—'
+                  )}
+                </td>
+                <td className="px-3 py-2 whitespace-nowrap">
+                  {editando ? (
+                    <input
+                      type="text"
+                      value={fila.licenciaAnual.anio}
+                      onChange={(e) => updateBorradorLicenciaAnual('anio', e.target.value)}
+                      className={inputClass}
+                    />
+                  ) : (
+                    r.licenciaAnual.anio || '—'
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
@@ -563,7 +606,7 @@ export default function ListadoRegistroAdministrativo({
                       className={inputClass}
                     />
                   ) : (
-                    r.unidadACargoDesde || '—'
+                    fmtFecha(r.unidadACargoDesde) || '—'
                   )}
                 </td>
                 <td className="px-3 py-2 align-top" style={editando ? { minWidth: 170 } : undefined}>
@@ -602,7 +645,7 @@ export default function ListadoRegistroAdministrativo({
                       )}
                     </div>
                   ) : (
-                    situacionRevistaLabel(r)
+                    <SituacionRevistaLista r={r} />
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap text-right align-top">
