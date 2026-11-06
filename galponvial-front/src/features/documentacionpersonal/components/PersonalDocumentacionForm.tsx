@@ -51,6 +51,7 @@ const ESTUDIOS_ALCANZADOS_OPTIONS = [
   "Secundario",
   "Terciario",
   "Universitario",
+  "Capacitaciones",
 ];
 
 const emptyForm: PersonalDocumentacionFormData = {
@@ -451,7 +452,7 @@ export default function PersonalDocumentacionForm({
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-gray-700">
-              Título
+              Título/s
             </label>
             <input
               type="text"

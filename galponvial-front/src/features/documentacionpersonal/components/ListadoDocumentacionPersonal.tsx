@@ -116,7 +116,13 @@ function ArchivosCelda({
   );
 }
 
-const ESTUDIOS_ALCANZADOS_OPTIONS = ['Primario', 'Secundario', 'Terciario', 'Universitario'];
+const ESTUDIOS_ALCANZADOS_OPTIONS = [
+  'Primario',
+  'Secundario',
+  'Terciario',
+  'Universitario',
+  'Capacitaciones',
+];
 
 export default function ListadoDocumentacionPersonal({
   registros,
@@ -218,7 +224,7 @@ export default function ListadoDocumentacionPersonal({
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Piso</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Teléfono</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Estudios alcanzados</th>
-            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Título</th>
+            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Título/s</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Preocupacional</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Aptitud física</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Exámenes médicos</th>
