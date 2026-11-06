@@ -28,16 +28,21 @@ export default function HistorialDocumentacionPersonal({
 }: HistorialDocumentacionPersonalProps) {
   const [filtrosDraft, setFiltrosDraft] = useState<Filtros>(filtrosVacios);
   const [filtrosAplicados, setFiltrosAplicados] = useState<Filtros>(filtrosVacios);
+  const [buscado, setBuscado] = useState(false);
 
   const updateFiltro = <K extends keyof Filtros>(campo: K, valor: Filtros[K]) => {
     setFiltrosDraft((prev) => ({ ...prev, [campo]: valor }));
   };
 
-  const buscar = () => setFiltrosAplicados(filtrosDraft);
+  const buscar = () => {
+    setFiltrosAplicados(filtrosDraft);
+    setBuscado(true);
+  };
 
   const limpiarFiltros = () => {
     setFiltrosDraft(filtrosVacios);
     setFiltrosAplicados(filtrosVacios);
+    setBuscado(false);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -153,7 +158,11 @@ export default function HistorialDocumentacionPersonal({
       </div>
 
       <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
-        {registrosFiltrados.length === 0 ? (
+        {!buscado ? (
+          <p className="p-6 text-sm text-gray-400">
+            Completá los filtros y tocá Buscar para ver el historial.
+          </p>
+        ) : registrosFiltrados.length === 0 ? (
           <p className="p-6 text-sm text-gray-400">
             No se encontraron registros con los filtros aplicados.
           </p>
