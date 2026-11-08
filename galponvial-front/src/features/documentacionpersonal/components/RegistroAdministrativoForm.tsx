@@ -8,10 +8,10 @@ const MAX_FILE_SIZE_MB = 10;
 const ESTUDIOS_OPTIONS = ["Primario", "Secundario", "Terciario", "Universitario"];
 const TIPO_DNI_OPTIONS = ["DNI", "LC", "LE"];
 
-const SECRETARIA_OPTIONS: string[] = [];
-const DIRECCION_OPTIONS: string[] = [];
+const SECRETARIA_OPTIONS: string[] = ["Infraestructura, Obras y Servicios Públicos"];
+const DIRECCION_OPTIONS: string[] = ["Dirección de Mantenimiento Vial"];
 export const TIPO_CARGO_OPTIONS: string[] = ["Chofer"];
-const AREA_ESPECIFICA_OPTIONS: string[] = [];
+const AREA_ESPECIFICA_OPTIONS: string[] = ["Mejoramiento de caminos para acceso a Escuelas Rurales"];
 
 interface HistorialAcademicoSalud {
   estudiosAlcanzados: string;
