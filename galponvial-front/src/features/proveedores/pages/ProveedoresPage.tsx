@@ -23,7 +23,7 @@ export default function ProveedoresPage() {
   const [error, setError] = useState('');
   const [formData, setFormData] = useState<CreateProveedorPayload>(formVacio);
   const [guardando, setGuardando] = useState(false);
-  const [eliminandoId, setEliminandoId] = useState<number | null>(null);
+  const [busquedaLimpia, setBusquedaLimpia] = useState(false);
 
   const cargarProveedores = async () => {
     try {
@@ -52,26 +52,6 @@ export default function ProveedoresPage() {
   const proveedoresFiltrados = filtroGrupo
     ? proveedores.filter((p) => p.rubro === filtroGrupo)
     : proveedores;
-
-  const handleEliminar = async (p: Proveedor) => {
-    if (!window.confirm(`¿Eliminar el proveedor "${p.nombre}"? Esta acción no se puede deshacer.`)) return;
-    try {
-      setEliminandoId(p.id);
-      setError('');
-      await proveedoresService.remove(p.id);
-      const restantes = proveedores.filter((x) => x.id !== p.id);
-      setProveedores(restantes);
-      if (filtroGrupo && !restantes.some((x) => x.rubro === filtroGrupo)) {
-        setFiltroGrupo('');
-      }
-    } catch (err) {
-      const msg = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
-      setError(Array.isArray(msg) ? msg.join(' ') : msg || 'No se pudo eliminar el proveedor.');
-      console.error(err);
-    } finally {
-      setEliminandoId(null);
-    }
-  };
 
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -136,7 +116,7 @@ export default function ProveedoresPage() {
               <div className="flex flex-row gap-3">
                 <select
                   value={filtroGrupo}
-                  onChange={(e) => setFiltroGrupo(e.target.value)}
+                  onChange={(e) => { setFiltroGrupo(e.target.value); setBusquedaLimpia(false); }}
                   className="flex-1 min-w-0 border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="">Todos los rubros</option>
@@ -146,11 +126,19 @@ export default function ProveedoresPage() {
                 </select>
                 <button
                   type="button"
-                  onClick={() => setFiltroGrupo('')}
-                  disabled={!filtroGrupo}
+                  onClick={() => { setFiltroGrupo(''); setBusquedaLimpia(true); }}
+                  disabled={busquedaLimpia}
                   className="px-4 py-2 rounded font-medium text-white bg-gray-500 hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   Limpiar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setBusquedaLimpia(false)}
+                  style={{ backgroundColor: '#0062e3' }}
+                  className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
+                >
+                  Buscar
                 </button>
               </div>
             </div>
@@ -166,41 +154,37 @@ export default function ProveedoresPage() {
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Dirección</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Ciudad</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Rubro</th>
-                    <th className="px-3 py-2 text-left font-semibold text-gray-600">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {cargando && (
                     <tr>
-                      <td colSpan={6} className="px-3 py-6 text-center text-gray-400">
+                      <td colSpan={5} className="px-3 py-6 text-center text-gray-400">
                         Cargando proveedores...
                       </td>
                     </tr>
                   )}
-                  {!cargando && proveedoresFiltrados.length === 0 && (
+                  {!cargando && busquedaLimpia && (
                     <tr>
-                      <td colSpan={6} className="px-3 py-6 text-center text-gray-400">
+                      <td colSpan={5} className="px-3 py-6 text-center text-gray-400">
+                        Búsqueda limpia. Elegí un rubro o tocá Buscar para ver los proveedores.
+                      </td>
+                    </tr>
+                  )}
+                  {!cargando && !busquedaLimpia && proveedoresFiltrados.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-3 py-6 text-center text-gray-400">
                         No hay proveedores cargados.
                       </td>
                     </tr>
                   )}
-                  {!cargando && proveedoresFiltrados.map((p) => (
+                  {!cargando && !busquedaLimpia && proveedoresFiltrados.map((p) => (
                     <tr key={p.id} className="hover:bg-gray-50">
                       <td className="px-3 py-2">{p.nombre}</td>
                       <td className="px-3 py-2">{p.telefono || '-'}</td>
                       <td className="px-3 py-2">{p.direccion || '-'}</td>
                       <td className="px-3 py-2">{p.ciudad || '-'}</td>
                       <td className="px-3 py-2">{p.rubro || '-'}</td>
-                      <td className="px-3 py-2">
-                        <button
-                          type="button"
-                          onClick={() => handleEliminar(p)}
-                          disabled={eliminandoId === p.id}
-                          className="px-3 py-1 rounded text-white bg-red-600 hover:bg-red-700 transition-colors disabled:opacity-50"
-                        >
-                          {eliminandoId === p.id ? 'Eliminando...' : 'Eliminar'}
-                        </button>
-                      </td>
                     </tr>
                   ))}
                 </tbody>
