@@ -112,16 +112,26 @@ export default function ProveedoresPage() {
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Filtrar por rubro
               </label>
-              <select
-                value={filtroGrupo}
-                onChange={(e) => setFiltroGrupo(e.target.value)}
-                className="w-full border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="">Todos los rubros</option>
-                {gruposDisponibles.map((g) => (
-                  <option key={g} value={g}>{g}</option>
-                ))}
-              </select>
+              <div className="flex flex-row gap-3">
+                <select
+                  value={filtroGrupo}
+                  onChange={(e) => setFiltroGrupo(e.target.value)}
+                  className="flex-1 min-w-0 border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="">Todos los rubros</option>
+                  {gruposDisponibles.map((g) => (
+                    <option key={g} value={g}>{g}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setFiltroGrupo('')}
+                  disabled={!filtroGrupo}
+                  className="px-4 py-2 rounded font-medium text-white bg-gray-500 hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Limpiar
+                </button>
+              </div>
             </div>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}
