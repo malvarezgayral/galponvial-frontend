@@ -23,6 +23,7 @@ export default function ProveedoresPage() {
   const [error, setError] = useState('');
   const [formData, setFormData] = useState<CreateProveedorPayload>(formVacio);
   const [guardando, setGuardando] = useState(false);
+  const [eliminandoId, setEliminandoId] = useState<number | null>(null);
 
   const cargarProveedores = async () => {
     try {
@@ -51,6 +52,26 @@ export default function ProveedoresPage() {
   const proveedoresFiltrados = filtroGrupo
     ? proveedores.filter((p) => p.rubro === filtroGrupo)
     : proveedores;
+
+  const handleEliminar = async (p: Proveedor) => {
+    if (!window.confirm(`¿Eliminar el proveedor "${p.nombre}"? Esta acción no se puede deshacer.`)) return;
+    try {
+      setEliminandoId(p.id);
+      setError('');
+      await proveedoresService.remove(p.id);
+      const restantes = proveedores.filter((x) => x.id !== p.id);
+      setProveedores(restantes);
+      if (filtroGrupo && !restantes.some((x) => x.rubro === filtroGrupo)) {
+        setFiltroGrupo('');
+      }
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
+      setError(Array.isArray(msg) ? msg.join(' ') : msg || 'No se pudo eliminar el proveedor.');
+      console.error(err);
+    } finally {
+      setEliminandoId(null);
+    }
+  };
 
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -145,19 +166,20 @@ export default function ProveedoresPage() {
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Dirección</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Ciudad</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Rubro</th>
+                    <th className="px-3 py-2 text-left font-semibold text-gray-600">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {cargando && (
                     <tr>
-                      <td colSpan={5} className="px-3 py-6 text-center text-gray-400">
+                      <td colSpan={6} className="px-3 py-6 text-center text-gray-400">
                         Cargando proveedores...
                       </td>
                     </tr>
                   )}
                   {!cargando && proveedoresFiltrados.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="px-3 py-6 text-center text-gray-400">
+                      <td colSpan={6} className="px-3 py-6 text-center text-gray-400">
                         No hay proveedores cargados.
                       </td>
                     </tr>
@@ -169,6 +191,16 @@ export default function ProveedoresPage() {
                       <td className="px-3 py-2">{p.direccion || '-'}</td>
                       <td className="px-3 py-2">{p.ciudad || '-'}</td>
                       <td className="px-3 py-2">{p.rubro || '-'}</td>
+                      <td className="px-3 py-2">
+                        <button
+                          type="button"
+                          onClick={() => handleEliminar(p)}
+                          disabled={eliminandoId === p.id}
+                          className="px-3 py-1 rounded text-white bg-red-600 hover:bg-red-700 transition-colors disabled:opacity-50"
+                        >
+                          {eliminandoId === p.id ? 'Eliminando...' : 'Eliminar'}
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
