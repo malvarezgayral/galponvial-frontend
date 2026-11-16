@@ -17,6 +17,7 @@ import {
   type OrdenCompra,
   type CreateOrdenCompraPayload,
 } from "../services/ordenCompraService";
+import { useJurisdicciones, dependenciasPorNombre } from "@/shared/hooks/useJurisdicciones";
 
 type Vista = "presupuestos" | "suministro" | "historial-presupuestos" | "historial";
 
@@ -115,6 +116,9 @@ export default function ComprasPage() {
   }, []);
 
   const nombreProveedor = (p: Proveedor | null) => p?.nombre || "-";
+
+  const { jurisdicciones } = useJurisdicciones();
+  const dependenciasSuministro = dependenciasPorNombre(jurisdicciones, suministroForm.jurisdiccion);
 
   const handleChangeSuministro = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -449,14 +453,29 @@ export default function ComprasPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Jurisdicción</label>
-                  <input
-                    type="text"
+                  <select
                     name="jurisdiccion"
-                    value={suministroForm.jurisdiccion}
-                    onChange={handleChangeSuministro}
-                    placeholder="Ingrese la jurisdicción"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                    value={suministroForm.jurisdiccion ?? ""}
+                    onChange={(e) => {
+                      handleChangeSuministro(e);
+                      setSuministroForm((prev) => ({ ...prev, dependenciaSolicitante: "" }));
+                    }}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="">Seleccione la jurisdicción</option>
+                    {jurisdicciones.map((j) => (
+                      <option key={j.id_jurisdiccion} value={j.nombre}>
+                        {j.nombre}
+                      </option>
+                    ))}
+                    {suministroForm.jurisdiccion &&
+                      jurisdicciones.length > 0 &&
+                      !jurisdicciones.some((j) => j.nombre === suministroForm.jurisdiccion) && (
+                        <option value={suministroForm.jurisdiccion}>
+                          {suministroForm.jurisdiccion} (anterior)
+                        </option>
+                      )}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Unidad Ejecutora</label>
@@ -471,14 +490,31 @@ export default function ComprasPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Dependencia Solicitante</label>
-                  <input
-                    type="text"
+                  <select
                     name="dependenciaSolicitante"
-                    value={suministroForm.dependenciaSolicitante}
+                    value={suministroForm.dependenciaSolicitante ?? ""}
                     onChange={handleChangeSuministro}
-                    placeholder="Ingrese la dependencia solicitante"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
+                    disabled={!suministroForm.jurisdiccion}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100"
+                  >
+                    <option value="">
+                      {suministroForm.jurisdiccion
+                        ? "Seleccione la dependencia"
+                        : "Primero seleccione la jurisdicción"}
+                    </option>
+                    {dependenciasSuministro.map((d) => (
+                      <option key={d.id_dependencia} value={d.nombre}>
+                        {d.nombre}
+                      </option>
+                    ))}
+                    {suministroForm.dependenciaSolicitante &&
+                      dependenciasSuministro.length > 0 &&
+                      !dependenciasSuministro.some((d) => d.nombre === suministroForm.dependenciaSolicitante) && (
+                        <option value={suministroForm.dependenciaSolicitante}>
+                          {suministroForm.dependenciaSolicitante} (anterior)
+                        </option>
+                      )}
+                  </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Unidad *</label>
