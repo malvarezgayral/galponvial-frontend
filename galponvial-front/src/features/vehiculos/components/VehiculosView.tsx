@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useVehiculosStore } from "../store";
+import { useJurisdicciones } from "@/shared/hooks/useJurisdicciones";
 import { useAppStore } from "@/app/stores/appStore";
 import { ROUTES } from "@/app/routes";
 import { VehiculoCard } from "./VehiculoCard";
@@ -36,6 +37,9 @@ export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos 
   } = useVehiculosStore();
 
   const { user } = useAppStore();
+
+  const { jurisdicciones } = useJurisdicciones();
+  const idJurisdiccionFiltro = Number(filters.jurisdiccion) || 0;
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedVehiculo, setSelectedVehiculo] = useState<Vehiculo | null>(
@@ -215,13 +219,16 @@ export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos 
             </label>
             <select
               value={filters.jurisdiccion || ""}
-              onChange={(e) => setFilter("jurisdiccion", e.target.value || null)}
+              onChange={(e) => {
+                setFilter("jurisdiccion", e.target.value || null);
+                setFilter("dependencia", null);
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todas las jurisdicciones</option>
-              {dropdownData?.jurisdicciones.map((jurisdiccion) => (
-                <option key={jurisdiccion.id} value={jurisdiccion.value}>
-                  {jurisdiccion.label}
+              {jurisdicciones.map((j) => (
+                <option key={j.id_jurisdiccion} value={j.id_jurisdiccion}>
+                  {j.nombre}
                 </option>
               ))}
             </select>
@@ -232,13 +239,24 @@ export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos 
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Dependencia
             </label>
-            <input
-              type="text"
-              placeholder="Filtrar por dependencia..."
+            <select
               value={filters.dependencia || ""}
               onChange={(e) => setFilter("dependencia", e.target.value || null)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            >
+              <option value="">Todas las dependencias</option>
+              {jurisdicciones
+                .filter((j) => !idJurisdiccionFiltro || j.id_jurisdiccion === idJurisdiccionFiltro)
+                .map((j) => (
+                  <optgroup key={j.id_jurisdiccion} label={j.nombre}>
+                    {j.dependencias.map((d) => (
+                      <option key={d.id_dependencia} value={d.nombre}>
+                        {d.nombre}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+            </select>
           </div>
         </div>
 

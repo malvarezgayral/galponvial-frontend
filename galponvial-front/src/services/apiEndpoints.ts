@@ -5,6 +5,9 @@ export const API_ENDPOINTS = {
     LOGOUT: '/usuario/logout',
     REFRESH: '/usuario/refresh',
   },
+  JURISDICCIONES: {
+    LIST: '/jurisdicciones',
+  },
   VEHICULOS: {
     LIST: '/vehiculos',
     DETAIL: (id: string) => `/vehiculos/${id}`,

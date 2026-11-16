@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Button } from '@/shared/ui/Button';
 import { useVehiculosStore } from '../store';
+import { useJurisdicciones, dependenciasPorId } from '@/shared/hooks/useJurisdicciones';
 import type { Vehiculo, DropdownData } from '../types';
 
 interface EditVehiculoModalProps {
@@ -30,6 +31,10 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
 
   // Find the vehicle to edit
   const vehiculo = vehiculoId ? vehiculos.find((v) => v.id_vehiculo === vehiculoId) : null;
+
+  const { jurisdicciones } = useJurisdicciones();
+  const idJurisdiccionElegida = Number(formData.infoAdicional?.jurisdiccion?.id_jurisdiccion) || 0;
+  const dependenciasDisponibles = dependenciasPorId(jurisdicciones, idJurisdiccionElegida);
 
   // Initialize form when modal opens or vehicle changes
   useEffect(() => {
@@ -146,6 +151,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
     if (isNested && nestedField) {
       setFormData((prev) => ({
         ...prev,
+        ...(nestedField === 'jurisdiccion' && { dependencia: '' }),
         infoAdicional: {
           numero_motor: prev.infoAdicional?.numero_motor ?? '',
             numero_chasis: prev.infoAdicional?.numero_chasis ?? '',
@@ -325,15 +331,27 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 Dependencia
               </label>
-              <input
-                type="text"
+              <select
                 value={formData.dependencia || ''}
                 onChange={(e) => handleInputChange('dependencia', e.target.value)}
                 className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                   fieldErrors.dependencia ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
                 }`}
-                disabled={loading}
-              />
+                disabled={loading || !idJurisdiccionElegida}
+              >
+                <option value="">
+                  {idJurisdiccionElegida ? 'Seleccionar dependencia' : 'Primero seleccionar jurisdicción'}
+                </option>
+                {dependenciasDisponibles.map((d) => (
+                  <option key={d.id_dependencia} value={d.nombre}>
+                    {d.nombre}
+                  </option>
+                ))}
+                {formData.dependencia &&
+                  !dependenciasDisponibles.some((d) => d.nombre === formData.dependencia) && (
+                    <option value={formData.dependencia}>{formData.dependencia} (anterior)</option>
+                  )}
+              </select>
               {fieldErrors.dependencia && <p className="text-red-500 text-sm mt-1">{fieldErrors.dependencia}</p>}
             </div>
           </div>
@@ -564,9 +582,9 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                     disabled={loading}
                   >
                     <option value="">Seleccionar jurisdicción</option>
-                    {dropdownData?.jurisdicciones.map((jurisdiccion) => (
-                      <option key={jurisdiccion.id} value={jurisdiccion.value}>
-                        {jurisdiccion.label}
+                    {jurisdicciones.map((j) => (
+                      <option key={j.id_jurisdiccion} value={j.id_jurisdiccion}>
+                        {j.nombre}
                       </option>
                     ))}
                   </select>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/shared/ui/Button";
 import { useVehiculosStore } from "../store";
+import { useJurisdicciones, dependenciasPorId } from "@/shared/hooks/useJurisdicciones";
 import type { CreateVehiculoPayload, DropdownData } from "../types";
 
 const INITIAL_FORM_STATE: CreateVehiculoPayload = {
@@ -77,6 +78,10 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
     }));
   };
 
+  const { jurisdicciones } = useJurisdicciones();
+  const idJurisdiccionElegida = Number(formData.infoAdicional.jurisdiccion?.id_jurisdiccion) || 0;
+  const dependenciasDisponibles = dependenciasPorId(jurisdicciones, idJurisdiccionElegida);
+
   /**
    * Handle input changes for additional info fields
    */
@@ -90,6 +95,7 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
       if (field === "jurisdiccion") {
         return {
           ...prev,
+          dependencia: "",
           infoAdicional: {
             ...prev.infoAdicional,
             jurisdiccion: {
@@ -538,9 +544,9 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
                 }`}
               >
                 <option value="">Selecciona una jurisdicción</option>
-                {dropdownData?.jurisdicciones.map((option) => (
-                  <option key={option.id} value={option.value}>
-                    {option.label}
+                {jurisdicciones.map((j) => (
+                  <option key={j.id_jurisdiccion} value={j.id_jurisdiccion}>
+                    {j.nombre}
                   </option>
                 ))}
               </select>
@@ -564,13 +570,23 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
                 id="dependencia"
                 value={formData.dependencia}
                 onChange={(e) => handleInputChange(e, "dependencia")}
+                disabled={!idJurisdiccionElegida}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${
                   fieldErrors.dependencia
                     ? "border-red-500 focus:ring-red-500"
                     : "border-gray-300 focus:ring-blue-500"
                 }`}
               >
-                <option value="">Sin opciones disponibles</option>
+                <option value="">
+                  {idJurisdiccionElegida
+                    ? "Selecciona una dependencia"
+                    : "Primero selecciona una jurisdicción"}
+                </option>
+                {dependenciasDisponibles.map((d) => (
+                  <option key={d.id_dependencia} value={d.nombre}>
+                    {d.nombre}
+                  </option>
+                ))}
               </select>
               {fieldErrors.dependencia && (
                 <p className="text-red-500 text-sm mt-1">
