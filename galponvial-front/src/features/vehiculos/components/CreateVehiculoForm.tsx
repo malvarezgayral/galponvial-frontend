@@ -25,7 +25,7 @@ const INITIAL_FORM_STATE: CreateVehiculoPayload = {
     licencia_clase: "",
     licencia_vencimiento: "",
     color: "",
-    seguro_empresa: "",
+    seguro_empresa: "Provincia Seguros",
     poliza: "",
     jurisdiccion: {
       id_jurisdiccion: 0,
@@ -635,12 +635,13 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
                 htmlFor="seguro_empresa"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Empresa de seguros
+                Empresa de Seguros
               </label>
               <input
                 id="seguro_empresa"
                 type="text"
-                placeholder="Ej: Seguros Pernada S.A"
+                readOnly
+                style={{ backgroundColor: "#f3f4f6", cursor: "not-allowed" }}
                 value={formData.infoAdicional.seguro_empresa}
                 onChange={(e) =>
                   handleAdditionalInfoChange(e, "seguro_empresa")
@@ -775,12 +776,12 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
                 htmlFor="poliza"
                 className="block text-sm font-medium text-gray-700 mb-1"
               >
-                Póliza
+                Número de Póliza
               </label>
               <input
                 id="poliza"
                 type="text"
-                placeholder="Ej: unapolizadealguntipo"
+                placeholder="Ej: 123456789"
                 value={formData.infoAdicional.poliza}
                 onChange={(e) => handleAdditionalInfoChange(e, "poliza")}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 ${

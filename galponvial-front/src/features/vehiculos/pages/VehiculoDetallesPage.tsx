@@ -402,12 +402,12 @@ const VehiculoDetallesPage: React.FC = () => {
           </div>
 
           <div>
-            <span className="text-gray-600 font-medium block mb-2">Seguro Empresa</span>
+            <span className="text-gray-600 font-medium block mb-2">Empresa de Seguros</span>
             <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.seguro_empresa || "Sin info"}</p>
           </div>
 
           <div>
-            <span className="text-gray-600 font-medium block mb-2">Póliza</span>
+            <span className="text-gray-600 font-medium block mb-2">Número de Póliza</span>
             <p className="text-gray-900 font-semibold">{vehiculo.infoAdicional?.poliza || "Sin info"}</p>
           </div>
 

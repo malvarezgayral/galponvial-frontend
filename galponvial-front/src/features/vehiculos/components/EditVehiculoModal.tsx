@@ -58,7 +58,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
             licencia_vencimiento: vehiculo.infoAdicional.licencia_vencimiento ?? '',
           licencia_conductor: vehiculo.infoAdicional.licencia_conductor,
           color: vehiculo.infoAdicional.color,
-          seguro_empresa: vehiculo.infoAdicional.seguro_empresa,
+          seguro_empresa: 'Provincia Seguros',
           poliza: vehiculo.infoAdicional.poliza,
           jurisdiccion: vehiculo.infoAdicional.jurisdiccion,
         },
@@ -380,11 +380,13 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Seguro Empresa
+                    Empresa de Seguros
                   </label>
                   <input
                     type="text"
-                    value={formData.infoAdicional?.seguro_empresa || ''}
+                    value={formData.infoAdicional?.seguro_empresa || 'Provincia Seguros'}
+                    readOnly
+                    style={{ backgroundColor: '#f3f4f6', cursor: 'not-allowed' }}
                     onChange={(e) =>
                       handleInputChange('seguro_empresa', e.target.value, true, 'seguro_empresa')
                     }
@@ -475,7 +477,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
               <div className="grid grid-cols-2 gap-4 mt-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Póliza
+                    Número de Póliza
                   </label>
                   <input
                     type="text"
