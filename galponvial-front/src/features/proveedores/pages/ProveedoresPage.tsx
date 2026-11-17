@@ -14,6 +14,13 @@ const formVacio: CreateProveedorPayload = {
   horarios: '',
   ciudad: '',
   rubro: '',
+  codigo: '',
+  nombre_fantasia: '',
+  numero: '',
+  codigo_area: '',
+  codigo_postal: '',
+  cuit: '',
+  estado: 'NORMAL',
 };
 
 export default function ProveedoresPage() {
@@ -87,10 +94,17 @@ export default function ProveedoresPage() {
       horarios: p.horarios || '',
       ciudad: p.ciudad || '',
       rubro: p.rubro || '',
+      codigo: p.codigo || '',
+      nombre_fantasia: p.nombre_fantasia || '',
+      numero: p.numero || '',
+      codigo_area: p.codigo_area || '',
+      codigo_postal: p.codigo_postal || '',
+      cuit: p.cuit || '',
+      estado: p.estado || 'NORMAL',
     });
   };
 
-  const handleEdicionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEdicionChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormEdicion((prev) => ({ ...prev, [name]: value }));
   };
@@ -118,7 +132,7 @@ export default function ProveedoresPage() {
   );
 
   const handleFormChange = (
-    e: React.ChangeEvent<HTMLInputElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -132,7 +146,8 @@ export default function ProveedoresPage() {
       setFormData(formVacio);
       setVistaActiva('visualizar');
     } catch (err) {
-      alert('No se pudo registrar el proveedor.');
+      const msg = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
+      alert(Array.isArray(msg) ? msg.join('\n') : msg || 'No se pudo registrar el proveedor.');
       console.error(err);
     } finally {
       setGuardando(false);
@@ -231,7 +246,7 @@ export default function ProveedoresPage() {
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">
-                    <th className="px-3 py-2 text-left font-semibold text-gray-600">Nombre</th>
+                    <th className="px-3 py-2 text-left font-semibold text-gray-600">Razón Social</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Teléfono</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Dirección</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Ciudad</th>
@@ -290,7 +305,7 @@ export default function ProveedoresPage() {
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Nombre</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Razón Social</th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-600">Rubro</th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-600">Ciudad</th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-600">Acciones</th>
@@ -338,7 +353,7 @@ export default function ProveedoresPage() {
             <table className="min-w-full text-sm">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Nombre</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Razón Social</th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-600">Rubro</th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-600">Ciudad</th>
                   <th className="px-3 py-2 text-left font-semibold text-gray-600">Acciones</th>
@@ -384,63 +399,147 @@ export default function ProveedoresPage() {
           {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
           <form onSubmit={handleGuardarEdicion} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Código *</label>
               <input
                 type="text"
-                name="nombre"
-                value={formEdicion.nombre}
+                name="codigo"
+                value={formEdicion.codigo ?? ''}
                 onChange={handleEdicionChange}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Razón Social *</label>
+              <input
+                type="text"
+                name="nombre"
+                value={formEdicion.nombre ?? ''}
+                onChange={handleEdicionChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de Fantasía *</label>
+              <input
+                type="text"
+                name="nombre_fantasia"
+                value={formEdicion.nombre_fantasia ?? ''}
+                onChange={handleEdicionChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono *</label>
               <input
                 type="text"
                 name="telefono"
-                value={formEdicion.telefono}
+                value={formEdicion.telefono ?? ''}
                 onChange={handleEdicionChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Dirección *</label>
               <input
                 type="text"
                 name="direccion"
-                value={formEdicion.direccion}
+                value={formEdicion.direccion ?? ''}
                 onChange={handleEdicionChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Horarios</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">N° *</label>
+              <input
+                type="text"
+                name="numero"
+                value={formEdicion.numero ?? ''}
+                onChange={handleEdicionChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Código de Área *</label>
+              <input
+                type="text"
+                name="codigo_area"
+                value={formEdicion.codigo_area ?? ''}
+                onChange={handleEdicionChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">C.P. *</label>
+              <input
+                type="text"
+                name="codigo_postal"
+                value={formEdicion.codigo_postal ?? ''}
+                onChange={handleEdicionChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">CUIT *</label>
+              <input
+                type="text"
+                name="cuit"
+                value={formEdicion.cuit ?? ''}
+                onChange={handleEdicionChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Estado *</label>
+              <select
+                name="estado"
+                value={formEdicion.estado ?? 'NORMAL'}
+                onChange={handleEdicionChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="NORMAL">NORMAL</option>
+                <option value="FUERA DE ESTADO">FUERA DE ESTADO</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Horarios *</label>
               <input
                 type="text"
                 name="horarios"
-                value={formEdicion.horarios}
+                value={formEdicion.horarios ?? ''}
                 onChange={handleEdicionChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Ciudad</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ciudad *</label>
               <input
                 type="text"
                 name="ciudad"
-                value={formEdicion.ciudad}
+                value={formEdicion.ciudad ?? ''}
                 onChange={handleEdicionChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Rubro</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rubro *</label>
               <input
                 type="text"
                 name="rubro"
-                value={formEdicion.rubro}
+                value={formEdicion.rubro ?? ''}
                 onChange={handleEdicionChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
@@ -473,63 +572,147 @@ export default function ProveedoresPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Nuevo Proveedor</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Código *</label>
               <input
                 type="text"
-                name="nombre"
-                value={formData.nombre}
+                name="codigo"
+                value={formData.codigo ?? ''}
                 onChange={handleFormChange}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Razón Social *</label>
+              <input
+                type="text"
+                name="nombre"
+                value={formData.nombre ?? ''}
+                onChange={handleFormChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de Fantasía *</label>
+              <input
+                type="text"
+                name="nombre_fantasia"
+                value={formData.nombre_fantasia ?? ''}
+                onChange={handleFormChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono *</label>
               <input
                 type="text"
                 name="telefono"
-                value={formData.telefono}
+                value={formData.telefono ?? ''}
                 onChange={handleFormChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Dirección *</label>
               <input
                 type="text"
                 name="direccion"
-                value={formData.direccion}
+                value={formData.direccion ?? ''}
                 onChange={handleFormChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Horarios</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">N° *</label>
+              <input
+                type="text"
+                name="numero"
+                value={formData.numero ?? ''}
+                onChange={handleFormChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Código de Área *</label>
+              <input
+                type="text"
+                name="codigo_area"
+                value={formData.codigo_area ?? ''}
+                onChange={handleFormChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">C.P. *</label>
+              <input
+                type="text"
+                name="codigo_postal"
+                value={formData.codigo_postal ?? ''}
+                onChange={handleFormChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">CUIT *</label>
+              <input
+                type="text"
+                name="cuit"
+                value={formData.cuit ?? ''}
+                onChange={handleFormChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Estado *</label>
+              <select
+                name="estado"
+                value={formData.estado ?? 'NORMAL'}
+                onChange={handleFormChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              >
+                <option value="NORMAL">NORMAL</option>
+                <option value="FUERA DE ESTADO">FUERA DE ESTADO</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Horarios *</label>
               <input
                 type="text"
                 name="horarios"
-                value={formData.horarios}
+                value={formData.horarios ?? ''}
                 onChange={handleFormChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Ciudad</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ciudad *</label>
               <input
                 type="text"
                 name="ciudad"
-                value={formData.ciudad}
+                value={formData.ciudad ?? ''}
                 onChange={handleFormChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Rubro</label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rubro *</label>
               <input
                 type="text"
                 name="rubro"
-                value={formData.rubro}
+                value={formData.rubro ?? ''}
                 onChange={handleFormChange}
+                required
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>

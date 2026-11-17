@@ -55,12 +55,40 @@ export const InfoProveedorForm: React.FC = () => {
       {seleccionado ? (
         <div className="space-y-4">
           <div>
+            <span className="block text-sm font-medium text-gray-500">Código</span>
+            <span className="block text-base text-gray-900">{seleccionado.codigo || '-'}</span>
+          </div>
+          <div>
+            <span className="block text-sm font-medium text-gray-500">Nombre de Fantasía</span>
+            <span className="block text-base text-gray-900">{seleccionado.nombre_fantasia || '-'}</span>
+          </div>
+          <div>
             <span className="block text-sm font-medium text-gray-500">Teléfono</span>
             <span className="block text-base text-gray-900">{seleccionado.telefono || '-'}</span>
           </div>
           <div>
             <span className="block text-sm font-medium text-gray-500">Dirección</span>
             <span className="block text-base text-gray-900">{seleccionado.direccion || '-'}</span>
+          </div>
+          <div>
+            <span className="block text-sm font-medium text-gray-500">N°</span>
+            <span className="block text-base text-gray-900">{seleccionado.numero || '-'}</span>
+          </div>
+          <div>
+            <span className="block text-sm font-medium text-gray-500">Código de Área</span>
+            <span className="block text-base text-gray-900">{seleccionado.codigo_area || '-'}</span>
+          </div>
+          <div>
+            <span className="block text-sm font-medium text-gray-500">C.P.</span>
+            <span className="block text-base text-gray-900">{seleccionado.codigo_postal || '-'}</span>
+          </div>
+          <div>
+            <span className="block text-sm font-medium text-gray-500">CUIT</span>
+            <span className="block text-base text-gray-900">{seleccionado.cuit || '-'}</span>
+          </div>
+          <div>
+            <span className="block text-sm font-medium text-gray-500">Estado</span>
+            <span className="block text-base text-gray-900">{seleccionado.estado || '-'}</span>
           </div>
           <div>
             <span className="block text-sm font-medium text-gray-500">Horarios</span>
