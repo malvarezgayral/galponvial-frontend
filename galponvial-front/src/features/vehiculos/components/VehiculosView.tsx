@@ -39,7 +39,25 @@ export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos 
   const { user } = useAppStore();
 
   const { jurisdicciones } = useJurisdicciones();
-  const idJurisdiccionFiltro = Number(filters.jurisdiccion) || 0;
+  // Borrador de filtros: se edita en pantalla y se aplica solo con "Buscar" (o Enter)
+  const [borrador, setBorrador] = useState(filters);
+  useEffect(() => {
+    setBorrador(filters);
+  }, [filters]);
+  const setCampo = (campo: keyof typeof filters, valor: string | null) =>
+    setBorrador((prev) => ({ ...prev, [campo]: valor }));
+  const aplicarFiltros = () => {
+    setFilter("searchTerm", borrador.searchTerm);
+    setFilter("estado", borrador.estado);
+    setFilter("tipo", borrador.tipo);
+    setFilter("jurisdiccion", borrador.jurisdiccion);
+    setFilter("dependencia", borrador.dependencia);
+  };
+  const limpiarFiltros = () => {
+    resetFilters();
+    setBorrador(useVehiculosStore.getState().filters);
+  };
+  const idJurisdiccionFiltro = Number(borrador.jurisdiccion) || 0;
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedVehiculo, setSelectedVehiculo] = useState<Vehiculo | null>(
@@ -166,8 +184,9 @@ export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos 
             <input
               type="text"
               placeholder="Buscar..."
-              value={filters.searchTerm}
-              onChange={(e) => setFilter("searchTerm", e.target.value)}
+              value={borrador.searchTerm}
+              onChange={(e) => setCampo("searchTerm", e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") aplicarFiltros(); }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -178,8 +197,8 @@ export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos 
               Estado del vehículo
             </label>
             <select
-              value={filters.estado || ""}
-              onChange={(e) => setFilter("estado", e.target.value || null)}
+              value={borrador.estado || ""}
+              onChange={(e) => setCampo("estado", e.target.value || null)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todos los estados</option>
@@ -199,8 +218,8 @@ export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos 
               Tipo de vehículo
             </label>
             <select
-              value={filters.tipo || ""}
-              onChange={(e) => setFilter("tipo", e.target.value || null)}
+              value={borrador.tipo || ""}
+              onChange={(e) => setCampo("tipo", e.target.value || null)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todos los tipos</option>
@@ -218,10 +237,10 @@ export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos 
               Jurisdicción
             </label>
             <select
-              value={filters.jurisdiccion || ""}
+              value={borrador.jurisdiccion || ""}
               onChange={(e) => {
-                setFilter("jurisdiccion", e.target.value || null);
-                setFilter("dependencia", null);
+                setCampo("jurisdiccion", e.target.value || null);
+                setCampo("dependencia", null);
               }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
@@ -240,8 +259,8 @@ export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos 
               Dependencia
             </label>
             <select
-              value={filters.dependencia || ""}
-              onChange={(e) => setFilter("dependencia", e.target.value || null)}
+              value={borrador.dependencia || ""}
+              onChange={(e) => setCampo("dependencia", e.target.value || null)}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Todas las dependencias</option>
@@ -260,9 +279,16 @@ export const VehiculosView: React.FC<VehiculosViewProps> = ({ estadosPermitidos 
           </div>
         </div>
 
+        {/* Buscar: aplica los filtros solo al hacer clic */}
+        <button
+          onClick={aplicarFiltros}
+          className="mt-4 mr-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors cursor-pointer"
+        >
+          Buscar
+        </button>
         {/* Reset filters button */}
         <button
-          onClick={resetFilters}
+          onClick={limpiarFiltros}
           className="mt-4 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors cursor-pointer"
         >
           Limpiar filtros
