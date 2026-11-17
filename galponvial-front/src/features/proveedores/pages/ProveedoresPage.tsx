@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { InfoProveedorForm } from '../components/InfoProveedorForm';
+import { useAppStore } from '@/app/stores/appStore';
 import {
   proveedoresService,
   type Proveedor,
@@ -16,7 +17,7 @@ const formVacio: CreateProveedorPayload = {
 };
 
 export default function ProveedoresPage() {
-  const [vistaActiva, setVistaActiva] = useState<'visualizar' | 'info' | 'nuevo'>('visualizar');
+  const [vistaActiva, setVistaActiva] = useState<'visualizar' | 'info' | 'nuevo' | 'eliminar'>('visualizar');
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [filtroGrupo, setFiltroGrupo] = useState('');
   const [cargando, setCargando] = useState(false);
@@ -24,6 +25,9 @@ export default function ProveedoresPage() {
   const [formData, setFormData] = useState<CreateProveedorPayload>(formVacio);
   const [guardando, setGuardando] = useState(false);
   const [busquedaLimpia, setBusquedaLimpia] = useState(false);
+  const [eliminandoId, setEliminandoId] = useState<number | null>(null);
+  const { user } = useAppStore();
+  const esSuperadmin = Boolean(user && 'rol' in user && user.rol === 'superadmin');
 
   const cargarProveedores = async () => {
     try {
@@ -40,7 +44,7 @@ export default function ProveedoresPage() {
   };
 
   useEffect(() => {
-    if (vistaActiva === 'visualizar') {
+    if (vistaActiva === 'visualizar' || vistaActiva === 'eliminar') {
       cargarProveedores();
     }
   }, [vistaActiva]);
@@ -52,6 +56,26 @@ export default function ProveedoresPage() {
   const proveedoresFiltrados = filtroGrupo
     ? proveedores.filter((p) => p.rubro === filtroGrupo)
     : proveedores;
+
+  const handleEliminar = async (p: Proveedor) => {
+    if (!window.confirm('¿Eliminar el proveedor "' + p.nombre + '"? Esta acción no se puede deshacer.')) return;
+    try {
+      setEliminandoId(p.id);
+      setError('');
+      await proveedoresService.remove(p.id);
+      setProveedores((prev) => prev.filter((x) => x.id !== p.id));
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
+      setError(Array.isArray(msg) ? msg.join(' ') : msg || 'No se pudo eliminar el proveedor.');
+      console.error(err);
+    } finally {
+      setEliminandoId(null);
+    }
+  };
+
+  const proveedoresOrdenados = [...proveedores].sort((a, b) =>
+    a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
+  );
 
   const handleFormChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -103,6 +127,15 @@ export default function ProveedoresPage() {
           >
             + Nuevo Proveedor
           </button>
+          {esSuperadmin && (
+            <button
+              onClick={() => setVistaActiva('eliminar')}
+              style={{ backgroundColor: '#0062e3' }}
+              className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
+            >
+              Eliminar Proveedor
+            </button>
+          )}
         </div>
       </div>
 
@@ -190,6 +223,57 @@ export default function ProveedoresPage() {
                 </tbody>
               </table>
             </div>
+          </div>
+        </div>
+      )}
+
+      {vistaActiva === 'eliminar' && esSuperadmin && (
+        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+          <h2 className="text-xl font-bold text-gray-900">Eliminar Proveedor</h2>
+          <p className="text-sm text-gray-600">
+            Solo se pueden eliminar proveedores sin órdenes de compra, suministros ni presupuestos asociados.
+          </p>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Nombre</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Rubro</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Ciudad</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {cargando && (
+                  <tr>
+                    <td colSpan={4} className="px-3 py-6 text-center text-gray-400">Cargando proveedores...</td>
+                  </tr>
+                )}
+                {!cargando && proveedoresOrdenados.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-3 py-6 text-center text-gray-400">No hay proveedores cargados.</td>
+                  </tr>
+                )}
+                {!cargando && proveedoresOrdenados.map((p) => (
+                  <tr key={p.id} className="hover:bg-gray-50">
+                    <td className="px-3 py-2">{p.nombre}</td>
+                    <td className="px-3 py-2">{p.rubro || '-'}</td>
+                    <td className="px-3 py-2">{p.ciudad || '-'}</td>
+                    <td className="px-3 py-2">
+                      <button
+                        type="button"
+                        onClick={() => handleEliminar(p)}
+                        disabled={eliminandoId !== null}
+                        className="px-3 py-1 rounded text-white bg-red-600 hover:bg-red-700 transition-colors disabled:opacity-50"
+                      >
+                        {eliminandoId === p.id ? 'Eliminando...' : 'Eliminar'}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
