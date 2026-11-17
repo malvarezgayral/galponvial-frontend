@@ -103,6 +103,14 @@ const applyFilters = (vehiculos: Vehiculo[], filters: VehiculosFilters): Vehicul
   });
 };
 
+/** Devuelve el motivo que manda el backend (p. ej. validaciones de un 400) en lugar del texto genérico de axios */
+const mensajeDeError = (error: unknown, porDefecto: string): string => {
+  const msg = (error as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
+  if (Array.isArray(msg) && msg.length) return msg.join(' · ');
+  if (typeof msg === 'string' && msg) return msg;
+  return error instanceof Error ? error.message : porDefecto;
+};
+
 export const useVehiculosStore = create<VehiculosState>((set, get) => ({
   dropdownData: null,
   dropdownLoading: false,
@@ -174,7 +182,7 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
       await vehiculosService.create(vehiculo);
       set({ createSuccess: true });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Error al crear vehículo';
+      const message = mensajeDeError(error, 'Error al crear vehículo');
       set({ createError: message });
     } finally {
       set({ createLoading: false });
@@ -241,7 +249,7 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
       const filtered = applyFilters(vehiculos, get().filters);
       set({ vehiculos, filteredVehiculos: filtered });
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Error al actualizar vehículo';
+      const message = mensajeDeError(error, 'Error al actualizar vehículo');
       throw new Error(message);
     }
   },
@@ -255,7 +263,7 @@ export const useVehiculosStore = create<VehiculosState>((set, get) => ({
       // Refetch vehicles after soft delete
       await get().fetchAllVehiculos();
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Error al eliminar vehículo';
+      const message = mensajeDeError(error, 'Error al eliminar vehículo');
       throw new Error(message);
     }
   },
