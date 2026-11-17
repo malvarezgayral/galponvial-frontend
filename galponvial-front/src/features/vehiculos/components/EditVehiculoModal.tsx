@@ -453,6 +453,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
                     <option value="Diesel">Diesel</option>
                     <option value="Euro">Euro</option>
                     <option value="Nafta">Nafta</option>
+                    <option value="Ninguno">Ninguno</option>
                   </select>
                   {fieldErrors['infoAdicional.tipo_combustible'] && <p className="text-red-500 text-sm mt-1">{fieldErrors['infoAdicional.tipo_combustible']}</p>}
                 </div>
