@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { InfoProveedorForm } from '../components/InfoProveedorForm';
-import { useAppStore } from '@/app/stores/appStore';
+import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
 import {
   proveedoresService,
   type Proveedor,
@@ -17,7 +17,7 @@ const formVacio: CreateProveedorPayload = {
 };
 
 export default function ProveedoresPage() {
-  const [vistaActiva, setVistaActiva] = useState<'visualizar' | 'info' | 'nuevo' | 'eliminar'>('visualizar');
+  const [vistaActiva, setVistaActiva] = useState<'visualizar' | 'info' | 'nuevo' | 'eliminar' | 'editar'>('visualizar');
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [filtroGrupo, setFiltroGrupo] = useState('');
   const [cargando, setCargando] = useState(false);
@@ -26,8 +26,12 @@ export default function ProveedoresPage() {
   const [guardando, setGuardando] = useState(false);
   const [busquedaLimpia, setBusquedaLimpia] = useState(false);
   const [eliminandoId, setEliminandoId] = useState<number | null>(null);
-  const { user } = useAppStore();
-  const esSuperadmin = Boolean(user && 'rol' in user && user.rol === 'superadmin');
+  const { isAdmin, isSuperAdmin } = useAdminPermissions();
+  const esSuperadmin = isSuperAdmin();
+  const esAdmin = isAdmin();
+  const [editandoId, setEditandoId] = useState<number | null>(null);
+  const [formEdicion, setFormEdicion] = useState<CreateProveedorPayload>(formVacio);
+  const [guardandoEdicion, setGuardandoEdicion] = useState(false);
 
   const cargarProveedores = async () => {
     try {
@@ -44,7 +48,7 @@ export default function ProveedoresPage() {
   };
 
   useEffect(() => {
-    if (vistaActiva === 'visualizar' || vistaActiva === 'eliminar') {
+    if (vistaActiva === 'visualizar' || vistaActiva === 'eliminar' || vistaActiva === 'editar') {
       cargarProveedores();
     }
   }, [vistaActiva]);
@@ -70,6 +74,42 @@ export default function ProveedoresPage() {
       console.error(err);
     } finally {
       setEliminandoId(null);
+    }
+  };
+
+  const abrirEdicion = (p: Proveedor) => {
+    setError('');
+    setEditandoId(p.id);
+    setFormEdicion({
+      nombre: p.nombre || '',
+      telefono: p.telefono || '',
+      direccion: p.direccion || '',
+      horarios: p.horarios || '',
+      ciudad: p.ciudad || '',
+      rubro: p.rubro || '',
+    });
+  };
+
+  const handleEdicionChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormEdicion((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleGuardarEdicion = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editandoId === null) return;
+    try {
+      setGuardandoEdicion(true);
+      setError('');
+      const actualizado = await proveedoresService.update(editandoId, formEdicion);
+      setProveedores((prev) => prev.map((x) => (x.id === editandoId ? { ...x, ...formEdicion, ...(actualizado || {}) } : x)));
+      setEditandoId(null);
+    } catch (err) {
+      const msg = (err as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
+      setError(Array.isArray(msg) ? msg.join(' ') : msg || 'No se pudo guardar el proveedor.');
+      console.error(err);
+    } finally {
+      setGuardandoEdicion(false);
     }
   };
 
@@ -127,7 +167,16 @@ export default function ProveedoresPage() {
           >
             + Nuevo Proveedor
           </button>
-          {esSuperadmin && (
+          {esAdmin && (
+            <button
+              onClick={() => { setEditandoId(null); setError(''); setVistaActiva('editar'); }}
+              style={{ backgroundColor: '#0062e3' }}
+              className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
+            >
+              Editar Proveedor
+            </button>
+          )}
+          {(
             <button
               onClick={() => setVistaActiva('eliminar')}
               style={{ backgroundColor: '#0062e3' }}
@@ -227,12 +276,15 @@ export default function ProveedoresPage() {
         </div>
       )}
 
-      {vistaActiva === 'eliminar' && esSuperadmin && (
+      {vistaActiva === 'eliminar' && (
         <div className="bg-white rounded-lg shadow p-6 space-y-4">
           <h2 className="text-xl font-bold text-gray-900">Eliminar Proveedor</h2>
           <p className="text-sm text-gray-600">
             Solo se pueden eliminar proveedores sin órdenes de compra, suministros ni presupuestos asociados.
           </p>
+          {!esSuperadmin && (
+            <p className="text-sm font-medium text-amber-700">Solo el superadministrador puede eliminar proveedores.</p>
+          )}
           {error && <p className="text-red-500 text-sm">{error}</p>}
           <div className="overflow-x-auto">
             <table className="min-w-full text-sm">
@@ -264,7 +316,7 @@ export default function ProveedoresPage() {
                       <button
                         type="button"
                         onClick={() => handleEliminar(p)}
-                        disabled={eliminandoId !== null}
+                        disabled={eliminandoId !== null || !esSuperadmin}
                         className="px-3 py-1 rounded text-white bg-red-600 hover:bg-red-700 transition-colors disabled:opacity-50"
                       >
                         {eliminandoId === p.id ? 'Eliminando...' : 'Eliminar'}
@@ -275,6 +327,140 @@ export default function ProveedoresPage() {
               </tbody>
             </table>
           </div>
+        </div>
+      )}
+
+      {vistaActiva === 'editar' && esAdmin && editandoId === null && (
+        <div className="bg-white rounded-lg shadow p-6 space-y-4">
+          <h2 className="text-xl font-bold text-gray-900">Editar Proveedor</h2>
+          {error && <p className="text-red-500 text-sm">{error}</p>}
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Nombre</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Rubro</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Ciudad</th>
+                  <th className="px-3 py-2 text-left font-semibold text-gray-600">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {cargando && (
+                  <tr>
+                    <td colSpan={4} className="px-3 py-6 text-center text-gray-400">Cargando proveedores...</td>
+                  </tr>
+                )}
+                {!cargando && proveedoresOrdenados.length === 0 && (
+                  <tr>
+                    <td colSpan={4} className="px-3 py-6 text-center text-gray-400">No hay proveedores cargados.</td>
+                  </tr>
+                )}
+                {!cargando && proveedoresOrdenados.map((p) => (
+                  <tr key={p.id} className="hover:bg-gray-50">
+                    <td className="px-3 py-2">{p.nombre}</td>
+                    <td className="px-3 py-2">{p.rubro || '-'}</td>
+                    <td className="px-3 py-2">{p.ciudad || '-'}</td>
+                    <td className="px-3 py-2">
+                      <button
+                        type="button"
+                        onClick={() => abrirEdicion(p)}
+                        style={{ backgroundColor: '#0062e3' }}
+                        className="px-3 py-1 rounded text-white transition-colors hover:opacity-90"
+                      >
+                        Editar
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {vistaActiva === 'editar' && esAdmin && editandoId !== null && (
+        <div className="w-full max-w-lg bg-white rounded-lg shadow-md p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Editar Proveedor</h2>
+          {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+          <form onSubmit={handleGuardarEdicion} className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nombre *</label>
+              <input
+                type="text"
+                name="nombre"
+                value={formEdicion.nombre}
+                onChange={handleEdicionChange}
+                required
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
+              <input
+                type="text"
+                name="telefono"
+                value={formEdicion.telefono}
+                onChange={handleEdicionChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Dirección</label>
+              <input
+                type="text"
+                name="direccion"
+                value={formEdicion.direccion}
+                onChange={handleEdicionChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Horarios</label>
+              <input
+                type="text"
+                name="horarios"
+                value={formEdicion.horarios}
+                onChange={handleEdicionChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Ciudad</label>
+              <input
+                type="text"
+                name="ciudad"
+                value={formEdicion.ciudad}
+                onChange={handleEdicionChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Rubro</label>
+              <input
+                type="text"
+                name="rubro"
+                value={formEdicion.rubro}
+                onChange={handleEdicionChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                disabled={guardandoEdicion}
+                className="flex-1 px-6 py-3 bg-[#378AFE] text-white font-medium rounded-lg hover:bg-[#0962DE] transition-colors disabled:opacity-50"
+              >
+                {guardandoEdicion ? 'Guardando...' : 'Guardar cambios'}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setEditandoId(null); setError(''); }}
+                className="px-6 py-3 bg-gray-500 text-white font-medium rounded-lg hover:bg-gray-600 transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </form>
         </div>
       )}
 
