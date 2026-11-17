@@ -9,6 +9,13 @@ export interface Proveedor {
   horarios?: string;
   ciudad?: string;
   rubro?: string;
+  codigo?: string;
+  nombre_fantasia?: string;
+  numero?: string;
+  codigo_area?: string;
+  codigo_postal?: string;
+  cuit?: string;
+  estado?: string;
   created_at?: string;
 }
 
