@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useJurisdicciones, dependenciasPorNombre } from '@/shared/hooks/useJurisdicciones';
 import { TIPO_CARGO_OPTIONS, type RegistroAdministrativoFormData } from './RegistroAdministrativoForm';
 import type { ArchivoRegistroDto, TipoArchivoRegistro } from '../services/personalService';
 import { useAdminPermissions } from '../../usuarios/hooks/useAdminPermissions';
@@ -121,6 +122,10 @@ function formatPeriodo(desde: string, hasta: string): string {
 const ESTUDIOS_OPTIONS = ['Primario', 'Secundario', 'Terciario', 'Universitario'];
 const TIPO_DNI_OPTIONS = ['DNI', 'LC', 'LE'];
 
+/** Opciones de la lista; si el registro tiene un valor viejo que no está en la lista, se agrega para no perderlo. */
+const conValorActual = (opciones: string[], actual: string): string[] =>
+  actual && opciones.includes(actual) === false ? [actual, ...opciones] : opciones;
+
 export default function ListadoRegistroAdministrativo({
   registros,
   onEliminar,
@@ -175,6 +180,8 @@ export default function ListadoRegistroAdministrativo({
   ) => {
     setBorrador((prev) => (prev ? { ...prev, [field]: value } : prev));
   };
+
+  const { jurisdicciones } = useJurisdicciones();
 
   const updateBorradorAcademicoSalud = <K extends keyof RegistroAdministrativoFormData['historialAcademicoSalud']>(
     field: K,
@@ -378,24 +385,33 @@ export default function ListadoRegistroAdministrativo({
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   {editando ? (
-                    <input
-                      type="text"
+                    <select
                       value={fila.secretariaACargo}
-                      onChange={(e) => updateBorrador('secretariaACargo', e.target.value)}
+                      onChange={(e) => { updateBorrador('secretariaACargo', e.target.value); updateBorrador('direccionACargo', ''); }}
                       className={inputClass}
-                    />
+                    >
+                      <option value="">Seleccionar...</option>
+                      {conValorActual(jurisdicciones.map((j) => j.nombre), fila.secretariaACargo).map((n) => (
+                        <option key={n} value={n}>{n}</option>
+                      ))}
+                    </select>
                   ) : (
                     r.secretariaACargo || '—'
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
                   {editando ? (
-                    <input
-                      type="text"
+                    <select
                       value={fila.direccionACargo}
                       onChange={(e) => updateBorrador('direccionACargo', e.target.value)}
+                      disabled={fila.secretariaACargo === ''}
                       className={inputClass}
-                    />
+                    >
+                      <option value="">Seleccionar...</option>
+                      {conValorActual(dependenciasPorNombre(jurisdicciones, fila.secretariaACargo).map((d) => d.nombre), fila.direccionACargo).map((n) => (
+                        <option key={n} value={n}>{n}</option>
+                      ))}
+                    </select>
                   ) : (
                     r.direccionACargo || '—'
                   )}

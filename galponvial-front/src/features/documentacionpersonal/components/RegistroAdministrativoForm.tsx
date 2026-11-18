@@ -1,3 +1,4 @@
+import { useJurisdicciones, dependenciasPorNombre } from "@/shared/hooks/useJurisdicciones";
 import { useState } from "react";
 
 const ACCEPTED_FILE_TYPES =
@@ -8,8 +9,6 @@ const MAX_FILE_SIZE_MB = 10;
 const ESTUDIOS_OPTIONS = ["Primario", "Secundario", "Terciario", "Universitario"];
 const TIPO_DNI_OPTIONS = ["DNI", "LC", "LE"];
 
-const SECRETARIA_OPTIONS: string[] = ["Infraestructura, Obras y Servicios Públicos"];
-const DIRECCION_OPTIONS: string[] = ["Dirección de Mantenimiento Vial"];
 export const TIPO_CARGO_OPTIONS: string[] = ["Chofer"];
 
 interface HistorialAcademicoSalud {
@@ -229,6 +228,10 @@ export default function RegistroAdministrativoForm({
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Las mismas listas de Jurisdicción y Dependencia que usa Vehículos (vienen de la base)
+  const { jurisdicciones } = useJurisdicciones();
+  const dependenciasDisponibles = dependenciasPorNombre(jurisdicciones, form.secretariaACargo);
+
   const updateAcademicoSalud = <K extends keyof HistorialAcademicoSalud>(
     field: K,
     value: HistorialAcademicoSalud[K]
@@ -364,13 +367,13 @@ export default function RegistroAdministrativoForm({
           <label className="text-sm font-medium text-gray-700">Jurisdicción</label>
           <select
             value={form.secretariaACargo}
-            onChange={(e) => updateField("secretariaACargo", e.target.value)}
+            onChange={(e) => setForm((prev) => ({ ...prev, secretariaACargo: e.target.value, direccionACargo: "" }))}
             className="border border-gray-300 rounded px-3 py-2 text-base bg-white"
           >
             <option value="">Seleccionar...</option>
-            {SECRETARIA_OPTIONS.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
+            {jurisdicciones.map((j) => (
+              <option key={j.id_jurisdiccion} value={j.nombre}>
+                {j.nombre}
               </option>
             ))}
           </select>
@@ -379,13 +382,14 @@ export default function RegistroAdministrativoForm({
           <label className="text-sm font-medium text-gray-700">Dependencia</label>
           <select
             value={form.direccionACargo}
+            disabled={form.secretariaACargo === ""}
             onChange={(e) => updateField("direccionACargo", e.target.value)}
             className="border border-gray-300 rounded px-3 py-2 text-base bg-white"
           >
             <option value="">Seleccionar...</option>
-            {DIRECCION_OPTIONS.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
+            {dependenciasDisponibles.map((d) => (
+              <option key={d.id_dependencia} value={d.nombre}>
+                {d.nombre}
               </option>
             ))}
           </select>
