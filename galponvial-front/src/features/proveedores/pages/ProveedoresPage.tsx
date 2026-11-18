@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { InfoProveedorForm } from '../components/InfoProveedorForm';
 import { useAdminPermissions } from '@/features/usuarios/hooks/useAdminPermissions';
 import {
   proveedoresService,
@@ -53,7 +52,7 @@ const normalizar = (s?: string | null): string =>
 const soloDigitos = (s?: string | null): string => (s ?? '').replace(/\D/g, '');
 
 export default function ProveedoresPage() {
-  const [vistaActiva, setVistaActiva] = useState<'visualizar' | 'info' | 'nuevo' | 'eliminar' | 'editar'>('nuevo');
+  const [vistaActiva, setVistaActiva] = useState<'visualizar' | 'nuevo' | 'eliminar' | 'editar'>('nuevo');
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [borradorFiltros, setBorradorFiltros] = useState<FiltrosProveedor>(FILTROS_VACIOS);
   const [filtros, setFiltros] = useState<FiltrosProveedor>(FILTROS_VACIOS);
@@ -209,14 +208,6 @@ export default function ProveedoresPage() {
             className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
           >
             Visualizar Proveedor
-          </button>
-
-          <button
-            onClick={() => setVistaActiva('info')}
-            style={{ backgroundColor: '#0062e3' }}
-            className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
-          >
-            Info del Proveedor
           </button>
           {esAdmin && (
             <button
@@ -636,10 +627,6 @@ export default function ProveedoresPage() {
             </div>
           </form>
         </div>
-      )}
-
-      {vistaActiva === 'info' && (
-        <InfoProveedorForm />
       )}
 
       {vistaActiva === 'nuevo' && (
