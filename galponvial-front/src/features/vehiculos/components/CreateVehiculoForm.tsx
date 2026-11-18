@@ -130,8 +130,8 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
       "modelo",
       "tipo_vehiculo",
       "status",
-      "uso_combustible",
-      "uso_km",
+      "anio",
+      "dependencia",
     ];
 
     const requiredAdditionalFields = [
@@ -203,7 +203,12 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
     }
 
     setFieldErrors({});
-    await createVehiculo(formData);
+    // Los usos son opcionales: si quedan vacíos se guarda 0
+    await createVehiculo({
+      ...formData,
+      uso_combustible: Number.isFinite(formData.uso_combustible) ? formData.uso_combustible : 0,
+      uso_km: Number.isFinite(formData.uso_km) ? formData.uso_km : 0,
+    });
   };
 
   /**
