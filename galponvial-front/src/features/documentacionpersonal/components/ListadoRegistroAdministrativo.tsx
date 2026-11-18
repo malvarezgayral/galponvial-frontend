@@ -245,10 +245,9 @@ export default function ListadoRegistroAdministrativo({
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Tipo DNI</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Número DNI</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Número CUIL</th>
-            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Secretaría a cargo</th>
-            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Dirección a cargo</th>
+            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Jurisdicción</th>
+            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Dependencia</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Tipo de cargo</th>
-            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Área específica</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Antigüedad</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Fecha de ingreso</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Estudios alcanzados</th>
@@ -417,18 +416,6 @@ export default function ListadoRegistroAdministrativo({
                     </select>
                   ) : (
                     r.tipoCargo || '—'
-                  )}
-                </td>
-                <td className="px-3 py-2 whitespace-nowrap">
-                  {editando ? (
-                    <input
-                      type="text"
-                      value={fila.areaEspecifica}
-                      onChange={(e) => updateBorrador('areaEspecifica', e.target.value)}
-                      className={inputClass}
-                    />
-                  ) : (
-                    r.areaEspecifica || '—'
                   )}
                 </td>
                 <td className="px-3 py-2 whitespace-nowrap">
