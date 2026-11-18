@@ -1,3 +1,4 @@
+import { traducirErroresValidacion } from '../../shared/utils/erroresValidacion';
 import { create } from 'zustand';
 import { vehiculosService } from './services/vehiculosService';
 import type { CreateVehiculoPayload, DropdownData, Vehiculo, VehiculosEnums } from './types';
@@ -103,11 +104,41 @@ const applyFilters = (vehiculos: Vehiculo[], filters: VehiculosFilters): Vehicul
   });
 };
 
-/** Devuelve el motivo que manda el backend (p. ej. validaciones de un 400) en lugar del texto genérico de axios */
+/** Etiquetas de los campos de Vehículos, para traducir los errores del backend */
+const ETIQUETAS_VEHICULO: Record<string, string> = {
+  codigo: 'Código vehículo',
+  nombre: 'Nombre',
+  marca: 'Marca',
+  modelo: 'Modelo',
+  anio: 'Año',
+  tipo_vehiculo: 'Tipo de vehículo',
+  status: 'Estado',
+  uso_combustible: 'Uso de Combustible',
+  uso_km: 'Uso de kilometraje',
+  dependencia: 'Dependencia',
+  infoAdicional: 'Información adicional',
+  numero_serie: 'Número de serie',
+  numero_motor: 'Número de motor',
+  numero_chasis: 'Número de chasis',
+  tipo_combustible: 'Tipo de combustible',
+  patente: 'Número de patente',
+  licencia_conductor: 'Licencia del conductor',
+  licencia_categoria: 'Categoría',
+  licencia_clase: 'Clase',
+  licencia_vencimiento: 'Fecha de vencimiento',
+  color: 'Color',
+  seguro_empresa: 'Empresa de Seguros',
+  poliza: 'Número de Póliza',
+  id_jurisdiccion: 'Jurisdicción',
+};
+
+/** Devuelve el motivo que manda el backend (p. ej. validaciones de un 400), traducido al castellano, en lugar del texto genérico de axios */
 const mensajeDeError = (error: unknown, porDefecto: string): string => {
   const msg = (error as { response?: { data?: { message?: string | string[] } } })?.response?.data?.message;
-  if (Array.isArray(msg) && msg.length) return msg.join(' · ');
-  if (typeof msg === 'string' && msg) return msg;
+  const lista = Array.isArray(msg) ? msg : typeof msg === 'string' && msg ? [msg] : [];
+  const traducidos = traducirErroresValidacion(lista, ETIQUETAS_VEHICULO);
+  if (traducidos.length === 1) return traducidos[0];
+  if (traducidos.length > 1) return `Revisá estos campos:\n• ${traducidos.join('\n• ')}`;
   return error instanceof Error ? error.message : porDefecto;
 };
 

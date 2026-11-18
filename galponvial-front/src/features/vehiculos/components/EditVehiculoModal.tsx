@@ -185,7 +185,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
 
         {/* Error message */}
         {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded text-red-800 text-sm">
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded text-red-800 text-sm whitespace-pre-line">
             {error}
           </div>
         )}

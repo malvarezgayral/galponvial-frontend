@@ -258,7 +258,7 @@ export const CreateVehiculoForm: React.FC<CreateVehiculoFormProps> = ({
 
       {/* Error Message */}
       {showError && (
-        <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+        <div className="mb-6 p-4 bg-red-100 border border-red-400 text-red-700 rounded-lg whitespace-pre-line">
           ✗ {createError || "Error al crear el vehículo"}
         </div>
       )}
