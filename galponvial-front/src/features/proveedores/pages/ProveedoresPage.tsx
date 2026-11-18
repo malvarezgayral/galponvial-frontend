@@ -23,10 +23,40 @@ const formVacio: CreateProveedorPayload = {
   estado: 'NORMAL',
 };
 
+type FiltrosProveedor = {
+  rubro: string;
+  nombre: string;
+  codigo: string;
+  nombre_fantasia: string;
+  ciudad: string;
+  cuit: string;
+  estado: string;
+};
+
+const FILTROS_VACIOS: FiltrosProveedor = { rubro: '', nombre: '', codigo: '', nombre_fantasia: '', ciudad: '', cuit: '', estado: '' };
+
+/** Filtros de texto de Visualizar, en el orden en que se muestran (Rubro va antes y Estado después). */
+const FILTROS_TEXTO: Array<[keyof FiltrosProveedor, string]> = [
+  ['nombre', 'Razón Social'],
+  ['codigo', 'Código'],
+  ['nombre_fantasia', 'Nombre de Fantasía'],
+  ['ciudad', 'Ciudad'],
+  ['cuit', 'CUIT'],
+];
+
+const CLASE_FILTRO = 'w-full border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500';
+
+/** Minúsculas y sin acentos, para que "loberia" encuentre "Lobería". */
+const normalizar = (s?: string | null): string =>
+  (s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+
+const soloDigitos = (s?: string | null): string => (s ?? '').replace(/\D/g, '');
+
 export default function ProveedoresPage() {
   const [vistaActiva, setVistaActiva] = useState<'visualizar' | 'info' | 'nuevo' | 'eliminar' | 'editar'>('nuevo');
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
-  const [filtroGrupo, setFiltroGrupo] = useState('');
+  const [borradorFiltros, setBorradorFiltros] = useState<FiltrosProveedor>(FILTROS_VACIOS);
+  const [filtros, setFiltros] = useState<FiltrosProveedor>(FILTROS_VACIOS);
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState('');
   const [formData, setFormData] = useState<CreateProveedorPayload>(formVacio);
@@ -64,9 +94,15 @@ export default function ProveedoresPage() {
     new Set(proveedores.map((p) => p.rubro).filter((r): r is string => Boolean(r)))
   );
 
-  const proveedoresFiltrados = filtroGrupo
-    ? proveedores.filter((p) => p.rubro === filtroGrupo)
-    : proveedores;
+  const proveedoresFiltrados = proveedores.filter((p) =>
+    (filtros.rubro === '' || p.rubro === filtros.rubro) &&
+    (filtros.estado === '' || p.estado === filtros.estado) &&
+    normalizar(p.nombre).includes(normalizar(filtros.nombre)) &&
+    normalizar(p.codigo).includes(normalizar(filtros.codigo)) &&
+    normalizar(p.nombre_fantasia).includes(normalizar(filtros.nombre_fantasia)) &&
+    normalizar(p.ciudad).includes(normalizar(filtros.ciudad)) &&
+    soloDigitos(p.cuit).includes(soloDigitos(filtros.cuit))
+  );
 
   const handleEliminar = async (p: Proveedor) => {
     if (!window.confirm('¿Eliminar el proveedor "' + p.nombre + '"? Esta acción no se puede deshacer.')) return;
@@ -206,39 +242,64 @@ export default function ProveedoresPage() {
       {vistaActiva === 'visualizar' && (
         <div className="space-y-6">
           <div className="bg-white rounded-lg shadow p-6 space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Filtrar por rubro
-              </label>
-              <div className="flex flex-row gap-3">
+            <form
+              onSubmit={(e) => { e.preventDefault(); setFiltros(borradorFiltros); setBusquedaLimpia(false); }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3"
+            >
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Rubro</label>
                 <select
-                  value={filtroGrupo}
-                  onChange={(e) => { setFiltroGrupo(e.target.value); setBusquedaLimpia(false); }}
-                  className="flex-1 min-w-0 border border-gray-300 rounded px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={borradorFiltros.rubro}
+                  onChange={(e) => setBorradorFiltros({ ...borradorFiltros, rubro: e.target.value })}
+                  className={CLASE_FILTRO}
                 >
-                  <option value="">Todos los rubros</option>
+                  <option value="">Todos</option>
                   {gruposDisponibles.map((g) => (
                     <option key={g} value={g}>{g}</option>
                   ))}
                 </select>
+              </div>
+              {FILTROS_TEXTO.map(([campo, etiqueta]) => (
+                <div key={campo}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{etiqueta}</label>
+                  <input
+                    type="text"
+                    value={borradorFiltros[campo]}
+                    onChange={(e) => setBorradorFiltros({ ...borradorFiltros, [campo]: e.target.value })}
+                    placeholder="Contiene…"
+                    className={CLASE_FILTRO}
+                  />
+                </div>
+              ))}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+                <select
+                  value={borradorFiltros.estado}
+                  onChange={(e) => setBorradorFiltros({ ...borradorFiltros, estado: e.target.value })}
+                  className={CLASE_FILTRO}
+                >
+                  <option value="">Todos</option>
+                  <option value="NORMAL">NORMAL</option>
+                  <option value="FUERA DE ESTADO">FUERA DE ESTADO</option>
+                </select>
+              </div>
+              <div className="flex items-end gap-3">
                 <button
                   type="button"
-                  onClick={() => { setFiltroGrupo(''); setBusquedaLimpia(true); }}
-                  disabled={busquedaLimpia}
-                  className="px-4 py-2 rounded font-medium text-white bg-gray-500 hover:bg-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={() => { setBorradorFiltros(FILTROS_VACIOS); setFiltros(FILTROS_VACIOS); setBusquedaLimpia(true); }}
+                  className="flex-1 px-4 py-2 rounded font-medium text-white bg-gray-500 hover:bg-gray-600 transition-colors"
                 >
                   Limpiar
                 </button>
                 <button
-                  type="button"
-                  onClick={() => setBusquedaLimpia(false)}
+                  type="submit"
                   style={{ backgroundColor: '#0062e3' }}
-                  className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
+                  className="flex-1 px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
                 >
                   Buscar
                 </button>
               </div>
-            </div>
+            </form>
 
             {error && <p className="text-red-500 text-sm">{error}</p>}
 
@@ -246,42 +307,54 @@ export default function ProveedoresPage() {
               <table className="min-w-full text-sm">
                 <thead>
                   <tr className="bg-gray-50 border-b border-gray-200">
+                    <th className="px-3 py-2 text-left font-semibold text-gray-600">Código</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Razón Social</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Teléfono</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Dirección</th>
+                    <th className="px-3 py-2 text-left font-semibold text-gray-600">N°</th>
+                    <th className="px-3 py-2 text-left font-semibold text-gray-600">C.P.</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Ciudad</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Rubro</th>
+                    <th className="px-3 py-2 text-left font-semibold text-gray-600">Horarios</th>
+                    <th className="px-3 py-2 text-left font-semibold text-gray-600">CUIT</th>
+                    <th className="px-3 py-2 text-left font-semibold text-gray-600">Estado</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {cargando && (
                     <tr>
-                      <td colSpan={5} className="px-3 py-6 text-center text-gray-400">
+                      <td colSpan={11} className="px-3 py-6 text-center text-gray-400">
                         Cargando proveedores...
                       </td>
                     </tr>
                   )}
                   {!cargando && busquedaLimpia && (
                     <tr>
-                      <td colSpan={5} className="px-3 py-6 text-center text-gray-400">
-                        Búsqueda limpia. Elegí un rubro o tocá Buscar para ver los proveedores.
+                      <td colSpan={11} className="px-3 py-6 text-center text-gray-400">
+                        Búsqueda limpia. Completá los filtros que quieras y tocá Buscar para ver los proveedores.
                       </td>
                     </tr>
                   )}
                   {!cargando && !busquedaLimpia && proveedoresFiltrados.length === 0 && (
                     <tr>
-                      <td colSpan={5} className="px-3 py-6 text-center text-gray-400">
-                        No hay proveedores cargados.
+                      <td colSpan={11} className="px-3 py-6 text-center text-gray-400">
+                        {proveedores.length === 0 ? 'No hay proveedores cargados.' : 'Ningún proveedor coincide con los filtros.'}
                       </td>
                     </tr>
                   )}
                   {!cargando && !busquedaLimpia && proveedoresFiltrados.map((p) => (
                     <tr key={p.id} className="hover:bg-gray-50">
+                      <td className="px-3 py-2">{p.codigo || '-'}</td>
                       <td className="px-3 py-2">{p.nombre}</td>
                       <td className="px-3 py-2">{p.telefono || '-'}</td>
                       <td className="px-3 py-2">{p.direccion || '-'}</td>
+                      <td className="px-3 py-2">{p.numero || '-'}</td>
+                      <td className="px-3 py-2">{p.codigo_postal || '-'}</td>
                       <td className="px-3 py-2">{p.ciudad || '-'}</td>
                       <td className="px-3 py-2">{p.rubro || '-'}</td>
+                      <td className="px-3 py-2">{p.horarios || '-'}</td>
+                      <td className="px-3 py-2 whitespace-nowrap">{p.cuit || '-'}</td>
+                      <td className="px-3 py-2 whitespace-nowrap">{p.estado || '-'}</td>
                     </tr>
                   ))}
                 </tbody>
