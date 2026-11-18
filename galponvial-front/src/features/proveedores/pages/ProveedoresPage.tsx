@@ -339,7 +339,7 @@ export default function ProveedoresPage() {
                       <td className="px-3 py-2">{p.codigo || '-'}</td>
                       <td className="px-3 py-2">{p.nombre}</td>
                       <td className="px-3 py-2">{p.nombre_fantasia || '-'}</td>
-                      <td className="px-3 py-2">{p.telefono || '-'}</td>
+                      <td className="px-3 py-2 whitespace-nowrap">{p.telefono ? (p.codigo_area ? '(' + p.codigo_area + ') ' : '') + p.telefono : '-'}</td>
                       <td className="px-3 py-2">{p.direccion || '-'}</td>
                       <td className="px-3 py-2">{p.numero || '-'}</td>
                       <td className="px-3 py-2">{p.codigo_postal || '-'}</td>
