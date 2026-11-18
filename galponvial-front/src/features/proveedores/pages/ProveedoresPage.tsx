@@ -24,7 +24,7 @@ const formVacio: CreateProveedorPayload = {
 };
 
 export default function ProveedoresPage() {
-  const [vistaActiva, setVistaActiva] = useState<'visualizar' | 'info' | 'nuevo' | 'eliminar' | 'editar'>('visualizar');
+  const [vistaActiva, setVistaActiva] = useState<'visualizar' | 'info' | 'nuevo' | 'eliminar' | 'editar'>('nuevo');
   const [proveedores, setProveedores] = useState<Proveedor[]>([]);
   const [filtroGrupo, setFiltroGrupo] = useState('');
   const [cargando, setCargando] = useState(false);
@@ -160,11 +160,19 @@ export default function ProveedoresPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-4">Proveedores</h1>
         <div className="flex flex-row gap-3">
           <button
+            onClick={() => setVistaActiva('nuevo')}
+            style={{ backgroundColor: '#0062e3' }}
+            className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
+          >
+            Nuevo Proveedor
+          </button>
+
+          <button
             onClick={() => setVistaActiva('visualizar')}
             style={{ backgroundColor: '#0062e3' }}
             className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
           >
-            Visualizar Proveedores
+            Visualizar Proveedor
           </button>
 
           <button
@@ -173,14 +181,6 @@ export default function ProveedoresPage() {
             className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
           >
             Info del Proveedor
-          </button>
-
-          <button
-            onClick={() => setVistaActiva('nuevo')}
-            style={{ backgroundColor: '#0062e3' }}
-            className="px-4 py-2 rounded font-medium text-white transition-colors hover:opacity-90"
-          >
-            + Nuevo Proveedor
           </button>
           {esAdmin && (
             <button
