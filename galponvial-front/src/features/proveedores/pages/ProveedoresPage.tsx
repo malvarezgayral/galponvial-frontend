@@ -309,6 +309,7 @@ export default function ProveedoresPage() {
                   <tr className="bg-gray-50 border-b border-gray-200">
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Código</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Razón Social</th>
+                    <th className="px-3 py-2 text-left font-semibold text-gray-600">Nombre de Fantasía</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Teléfono</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">Dirección</th>
                     <th className="px-3 py-2 text-left font-semibold text-gray-600">N°</th>
@@ -323,21 +324,21 @@ export default function ProveedoresPage() {
                 <tbody className="divide-y divide-gray-100">
                   {cargando && (
                     <tr>
-                      <td colSpan={11} className="px-3 py-6 text-center text-gray-400">
+                      <td colSpan={12} className="px-3 py-6 text-center text-gray-400">
                         Cargando proveedores...
                       </td>
                     </tr>
                   )}
                   {!cargando && busquedaLimpia && (
                     <tr>
-                      <td colSpan={11} className="px-3 py-6 text-center text-gray-400">
+                      <td colSpan={12} className="px-3 py-6 text-center text-gray-400">
                         Búsqueda limpia. Completá los filtros que quieras y tocá Buscar para ver los proveedores.
                       </td>
                     </tr>
                   )}
                   {!cargando && !busquedaLimpia && proveedoresFiltrados.length === 0 && (
                     <tr>
-                      <td colSpan={11} className="px-3 py-6 text-center text-gray-400">
+                      <td colSpan={12} className="px-3 py-6 text-center text-gray-400">
                         {proveedores.length === 0 ? 'No hay proveedores cargados.' : 'Ningún proveedor coincide con los filtros.'}
                       </td>
                     </tr>
@@ -346,6 +347,7 @@ export default function ProveedoresPage() {
                     <tr key={p.id} className="hover:bg-gray-50">
                       <td className="px-3 py-2">{p.codigo || '-'}</td>
                       <td className="px-3 py-2">{p.nombre}</td>
+                      <td className="px-3 py-2">{p.nombre_fantasia || '-'}</td>
                       <td className="px-3 py-2">{p.telefono || '-'}</td>
                       <td className="px-3 py-2">{p.direccion || '-'}</td>
                       <td className="px-3 py-2">{p.numero || '-'}</td>
