@@ -11,7 +11,6 @@ const TIPO_DNI_OPTIONS = ["DNI", "LC", "LE"];
 const SECRETARIA_OPTIONS: string[] = ["Infraestructura, Obras y Servicios Públicos"];
 const DIRECCION_OPTIONS: string[] = ["Dirección de Mantenimiento Vial"];
 export const TIPO_CARGO_OPTIONS: string[] = ["Chofer"];
-const AREA_ESPECIFICA_OPTIONS: string[] = ["Mejoramiento de caminos para acceso a Escuelas Rurales"];
 
 interface HistorialAcademicoSalud {
   estudiosAlcanzados: string;
@@ -362,7 +361,7 @@ export default function RegistroAdministrativoForm({
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Secretaría a cargo</label>
+          <label className="text-sm font-medium text-gray-700">Jurisdicción</label>
           <select
             value={form.secretariaACargo}
             onChange={(e) => updateField("secretariaACargo", e.target.value)}
@@ -377,7 +376,7 @@ export default function RegistroAdministrativoForm({
           </select>
         </div>
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Dirección a cargo</label>
+          <label className="text-sm font-medium text-gray-700">Dependencia</label>
           <select
             value={form.direccionACargo}
             onChange={(e) => updateField("direccionACargo", e.target.value)}
@@ -400,21 +399,6 @@ export default function RegistroAdministrativoForm({
           >
             <option value="">Seleccionar...</option>
             {TIPO_CARGO_OPTIONS.map((opt) => (
-              <option key={opt} value={opt}>
-                {opt}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-gray-700">Área específica</label>
-          <select
-            value={form.areaEspecifica}
-            onChange={(e) => updateField("areaEspecifica", e.target.value)}
-            className="border border-gray-300 rounded px-3 py-2 text-base bg-white"
-          >
-            <option value="">Seleccionar...</option>
-            {AREA_ESPECIFICA_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
               </option>

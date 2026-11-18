@@ -182,8 +182,8 @@ export default function HistorialRegistroAdministrativo({
                 <th className="text-left px-4 py-3 font-medium">Tipo DNI</th>
                 <th className="text-left px-4 py-3 font-medium">Número DNI</th>
                 <th className="text-left px-4 py-3 font-medium">Categoría actual</th>
-                <th className="text-left px-4 py-3 font-medium">Secretaría a cargo</th>
-                <th className="text-left px-4 py-3 font-medium">Dirección a cargo</th>
+                <th className="text-left px-4 py-3 font-medium">Jurisdicción</th>
+                <th className="text-left px-4 py-3 font-medium">Dependencia</th>
                 <th className="text-left px-4 py-3 font-medium">Fecha de ingreso</th>
                 <th className="text-left px-4 py-3 font-medium">Situación de revista</th>
               </tr>
