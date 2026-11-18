@@ -76,7 +76,7 @@ export const EditVehiculoModal: React.FC<EditVehiculoModalProps> = ({
    */
   const validateForm = (): { isValid: boolean; errors: Record<string, string> } => {
     const errors: Record<string, string> = {};
-    const requiredFields = ['codigo', 'nombre', 'marca', 'modelo', 'tipo_vehiculo', 'status', 'dependencia'];
+    const requiredFields = ['codigo', 'nombre', 'marca', 'modelo', 'anio', 'tipo_vehiculo', 'status', 'dependencia'];
     const requiredAdditionalFields = ['numero_motor', 'numero_chasis', 'tipo_combustible', 'patente', 'licencia_conductor', 'licencia_categoria', 'licencia_clase', 'licencia_vencimiento', 'color', 'seguro_empresa', 'poliza', 'jurisdiccion'];
 
     for (const field of requiredFields) {
