@@ -273,6 +273,7 @@ export default function ListadoRegistroAdministrativo({
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Lic. conducir — período</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Comprobante conducir</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Unidad a cargo — desde</th>
+            <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Unidad a cargo — hasta</th>
             <th className="text-left px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Situación de revista</th>
             <th className="text-right px-3 py-2 font-medium text-gray-600 whitespace-nowrap">Acciones</th>
           </tr>
@@ -663,6 +664,18 @@ export default function ListadoRegistroAdministrativo({
                     />
                   ) : (
                     fmtFecha(r.unidadACargoDesde) || '—'
+                  )}
+                </td>
+                <td className="px-3 py-2 whitespace-nowrap">
+                  {editando ? (
+                    <input
+                      type="date"
+                      value={fila.unidadACargoHasta}
+                      onChange={(e) => updateBorrador('unidadACargoHasta', e.target.value)}
+                      className={inputClass}
+                    />
+                  ) : (
+                    fmtFecha(r.unidadACargoHasta) || '—'
                   )}
                 </td>
                 <td className="px-3 py-2 align-top" style={editando ? { minWidth: 170 } : undefined}>

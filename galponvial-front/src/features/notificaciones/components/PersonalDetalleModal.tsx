@@ -55,6 +55,7 @@ const CAMPOS_REGISTRO: Campo[] = [
   ['licConducirDesde', 'Licencia de conducir: desde'],
   ['licConducirHasta', 'Licencia de conducir: hasta'],
   ['unidadACargoDesde', 'Unidad a cargo: desde'],
+  ['unidadACargoHasta', 'Unidad a cargo: hasta'],
   ['plantaPermanenteDesde', 'Planta permanente: desde'],
   ['temporarioMensualizadoDesde', 'Temporario (mensualizado): desde'],
   ['destajistaDesde', 'Destajista: desde'],
