@@ -65,6 +65,7 @@ export interface RegistroAdministrativoFormData {
   licenciaAnual: LicenciaAnual;
   licenciaConducir: LicenciaConducir;
   unidadACargoDesde: string;
+  unidadACargoHasta: string;
   situacionRevista: SituacionRevista;
 }
 
@@ -106,6 +107,7 @@ const emptyForm: RegistroAdministrativoFormData = {
     comprobante: [],
   },
   unidadACargoDesde: "",
+  unidadACargoHasta: "",
   situacionRevista: {
     plantaPermanenteDesde: "",
     temporarioMensualizadoDesde: "",
@@ -596,6 +598,15 @@ export default function RegistroAdministrativoForm({
               type="date"
               value={form.unidadACargoDesde}
               onChange={(e) => updateField("unidadACargoDesde", e.target.value)}
+              className="border border-gray-300 rounded px-3 py-2 text-base"
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">Período hasta</label>
+            <input
+              type="date"
+              value={form.unidadACargoHasta}
+              onChange={(e) => updateField("unidadACargoHasta", e.target.value)}
               className="border border-gray-300 rounded px-3 py-2 text-base"
             />
           </div>

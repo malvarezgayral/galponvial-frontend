@@ -58,6 +58,7 @@ export interface RegistroAdministrativoDto {
   licConducirDesde?: string | null;
   licConducirHasta?: string | null;
   unidadACargoDesde?: string | null;
+  unidadACargoHasta?: string | null;
   plantaPermanenteDesde?: string | null;
   temporarioMensualizadoDesde?: string | null;
   destajistaDesde?: string | null;
@@ -165,6 +166,7 @@ export function registroToPayload(
     licConducirDesde: f.licenciaConducir.periodoDesde,
     licConducirHasta: f.licenciaConducir.periodoHasta,
     unidadACargoDesde: f.unidadACargoDesde,
+    unidadACargoHasta: f.unidadACargoHasta,
     plantaPermanenteDesde: f.situacionRevista.plantaPermanenteDesde,
     temporarioMensualizadoDesde: f.situacionRevista.temporarioMensualizadoDesde,
     destajistaDesde: f.situacionRevista.destajistaDesde,
@@ -216,6 +218,7 @@ export function registroToForm(
       comprobante: [],
     },
     unidadACargoDesde: s(d.unidadACargoDesde).slice(0, 10),
+    unidadACargoHasta: s(d.unidadACargoHasta).slice(0, 10),
     situacionRevista: {
       plantaPermanenteDesde: s(d.plantaPermanenteDesde).slice(0, 10),
       temporarioMensualizadoDesde: s(d.temporarioMensualizadoDesde).slice(0, 10),
