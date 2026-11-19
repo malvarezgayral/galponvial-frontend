@@ -152,7 +152,8 @@ export interface UsuarioVehiculoRelacion {
     fecha_alta: string;
     fecha_baja: string | null;
     usuarioRoles: RolAsignado[];
-  };
+  } | null;
+  chofer?: { dni: string; nombre: string; apellido: string } | null;
   vehiculo: {
     id_vehiculo: number;
     codigo: string;
