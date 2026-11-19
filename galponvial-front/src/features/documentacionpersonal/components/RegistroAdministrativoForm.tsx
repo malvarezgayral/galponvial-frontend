@@ -1,5 +1,5 @@
 import { useJurisdicciones, dependenciasPorNombre } from "@/shared/hooks/useJurisdicciones";
-import { useState } from "react";
+import { useState, useId } from "react";
 
 const ACCEPTED_FILE_TYPES =
   ".pdf,.jpg,.jpeg,.png,.doc,.docx,application/pdf,image/jpeg,image/png,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document";
@@ -140,7 +140,7 @@ interface FileInputProps {
 
 export function FileInput({ label, files, onChange }: FileInputProps) {
   const [error, setError] = useState<string | null>(null);
-  const inputId = `file-${label.replace(/\s+/g, "-").toLowerCase()}`;
+  const inputId = "file-" + useId();
 
   const handleFiles = (fileList: FileList | null) => {
     if (!fileList || fileList.length === 0) return;
