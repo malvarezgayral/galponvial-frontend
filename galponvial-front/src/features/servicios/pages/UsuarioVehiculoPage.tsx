@@ -1,3 +1,4 @@
+import type { ChoferAsignable } from '../components/AsignarForm';
 import React, { useState, useEffect } from 'react';
 import { usuarioVehiculoService } from '../services/usuarioVehiculoService';
 import type { UsuarioVehiculoRelacion, UsuarioVehiculoResponse } from '../types';
@@ -6,7 +7,6 @@ import { ConfirmarDesasignarModal } from '../components/ConfirmarDesasignarModal
 import { ConfirmarAsignarModal } from '../components/ConfirmarAsignarModal';
 import { AsignarForm } from '../components/AsignarForm';
 import { Button } from '@/shared/ui/Button';
-import type { User } from '@/features/usuarios/types';
 import { useAdminPermissions } from '../../usuarios/hooks/useAdminPermissions';
 
 type FeedbackType = 'success' | 'error' | null;
@@ -24,13 +24,20 @@ interface VehiculoOption {
 
 interface AsignarState {
   vehiculo: VehiculoOption | null;
-  usuario: User | null;
+  usuario: ChoferAsignable | null;
 }
 
 /**
  * Page for managing usuario-vehículo relationships
  * Shows a table with all relationships and allows viewing details, unassigning, and assigning new ones
  */
+const nombreConductor = (r: UsuarioVehiculoRelacion): string =>
+  r.usuario
+    ? r.usuario.nombre + ' ' + r.usuario.apellido
+    : r.chofer
+      ? r.chofer.nombre + ' ' + r.chofer.apellido
+      : String(r.id_usuario);
+
 const UsuarioVehiculoPage: React.FC = () => {
   const { isSuperAdmin } = useAdminPermissions();
   const [relaciones, setRelaciones] = useState<UsuarioVehiculoRelacion[]>([]);
@@ -105,7 +112,7 @@ const UsuarioVehiculoPage: React.FC = () => {
       // Success feedback
       setFeedback({
         type: 'success',
-        message: `La relación entre ${relacionParaDesasignar.usuario.nombre} ${relacionParaDesasignar.usuario.apellido} y ${relacionParaDesasignar.vehiculo.nombre} ha sido desasignada exitosamente.`,
+        message: `La relación entre ${nombreConductor(relacionParaDesasignar)} y ${relacionParaDesasignar.vehiculo.nombre} ha sido desasignada exitosamente.`,
       });
 
       // Close modal and refetch data
@@ -140,7 +147,7 @@ const UsuarioVehiculoPage: React.FC = () => {
     setRelacionParaDesasignar(null);
   };
 
-  const handleAsignarClick = (vehiculo: VehiculoOption, usuario: User) => {
+  const handleAsignarClick = (vehiculo: VehiculoOption, usuario: ChoferAsignable) => {
     setAsignarState({ vehiculo, usuario });
     setShowConfirmAsignarModal(true);
   };
@@ -264,10 +271,10 @@ const UsuarioVehiculoPage: React.FC = () => {
                         {relacion.vehiculo.nombre}
                       </td>
                       <td className="px-6 py-4 text-sm text-[var(--color-text-primary)]">
-                        {relacion.usuario.nombre} {relacion.usuario.apellido}
+                        {relacion.usuario ? relacion.usuario.nombre + ' ' + relacion.usuario.apellido : relacion.chofer ? relacion.chofer.nombre + ' ' + relacion.chofer.apellido : '—'}
                       </td>
                       <td className="px-6 py-4 text-sm text-[var(--color-text-primary)]">
-                        {relacion.usuario.dni}
+                        {relacion.usuario?.dni ?? relacion.chofer?.dni ?? relacion.id_usuario}
                       </td>
                       <td className="px-6 py-4 text-sm text-[var(--color-text-primary)]">
                         {new Date(relacion.fecha_desde).toLocaleDateString('es-AR')}
@@ -345,7 +352,7 @@ const UsuarioVehiculoPage: React.FC = () => {
           onCancel={handleCancelarDesasignar}
           isLoading={desasignando}
           vehiculoNombre={relacionParaDesasignar.vehiculo.nombre}
-          usuarioNombre={`${relacionParaDesasignar.usuario.nombre} ${relacionParaDesasignar.usuario.apellido}`}
+          usuarioNombre={`${nombreConductor(relacionParaDesasignar)}`}
         />
       )}
 

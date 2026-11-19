@@ -20,6 +20,8 @@ export const DetallesRelacionModal: React.FC<DetallesRelacionModalProps> = ({
 
   const vehiculo = relacion.vehiculo;
   const usuario = relacion.usuario;
+  const chofer = relacion.chofer ?? null;
+  const SIN_USUARIO = 'Sin usuario del sistema';
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -105,37 +107,37 @@ export const DetallesRelacionModal: React.FC<DetallesRelacionModalProps> = ({
               <div>
                 <p className="text-sm text-[var(--color-text-secondary)]">DNI</p>
                 <p className="font-semibold text-[var(--color-text-primary)]">
-                  {usuario.dni}
+                  {usuario ? usuario.dni : (chofer?.dni ?? relacion.id_usuario)}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-[var(--color-text-secondary)]">Nombre</p>
                 <p className="font-semibold text-[var(--color-text-primary)]">
-                  {usuario.nombre}
+                  {usuario ? usuario.nombre : (chofer?.nombre ?? '—')}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-[var(--color-text-secondary)]">Apellido</p>
                 <p className="font-semibold text-[var(--color-text-primary)]">
-                  {usuario.apellido}
+                  {usuario ? usuario.apellido : (chofer?.apellido ?? '—')}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-[var(--color-text-secondary)]">Email</p>
                 <p className="font-semibold text-[var(--color-text-primary)]">
-                  {usuario.email}
+                  {usuario ? usuario.email : SIN_USUARIO}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-[var(--color-text-secondary)]">Estado</p>
                 <p className="font-semibold text-[var(--color-text-primary)]">
-                  {usuario.isActive ? 'Activo' : 'Inactivo'}
+                  {usuario ? (usuario.isActive ? 'Activo' : 'Inactivo') : SIN_USUARIO}
                 </p>
               </div>
               <div>
                 <p className="text-sm text-[var(--color-text-secondary)]">Fecha de Alta</p>
                 <p className="font-semibold text-[var(--color-text-primary)]">
-                  {new Date(usuario.fecha_alta).toLocaleDateString('es-AR')}
+                  {usuario ? new Date(usuario.fecha_alta).toLocaleDateString('es-AR') : SIN_USUARIO}
                 </p>
               </div>
             </div>
