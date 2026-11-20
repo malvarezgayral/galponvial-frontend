@@ -7,20 +7,21 @@ import { marcarComoLeida, marcarTipoComoLeido, eliminarNotificacion } from "../s
 import { useAdminPermissions } from "@/features/usuarios/hooks/useAdminPermissions";
 import { ValidPermissions } from "@/features/usuarios/types";
 
+// Ordenadas alfabéticamente por label
 const TABS: { key: Tab; label: string }[] = [
-  { key: "service", label: "Service" },
-  { key: "reparacion", label: "Reparación" },
+  { key: "almacen", label: "Almacén" },
+  { key: "combustible-carro", label: "Carro de Combustible" },
+  { key: "chats", label: "Chats" },
+  { key: "combustible", label: "Combustible" },
   { key: "compras", label: "Compras" },
   { key: "incidentes", label: "Incidentes" },
-  { key: "personal", label: "Personal" },
-  { key: "recordatorio", label: "Recordatorios" },
-  { key: "combustible", label: "Combustible" },
-  { key: "proveedores", label: "Proveedores" },
   { key: "lubricentro", label: "Lubricentro" },
-  { key: "combustible-carro", label: "Carro de Combustible" },
   { key: "privada", label: "Mensajes Privados" },
-  { key: "chats", label: "Chats" },
-  { key: "almacen", label: "Almacén" },
+  { key: "personal", label: "Personal" },
+  { key: "proveedores", label: "Proveedores" },
+  { key: "recordatorio", label: "Recordatorios" },
+  { key: "reparacion", label: "Reparación" },
+  { key: "service", label: "Service" },
 ];
 
 // Tabs visibles para un admin acotado a Almacén (sin acceso global all:read/all:write)
@@ -87,7 +88,7 @@ export default function NotificacionesPage() {
     return base.filter((t) => puede(t.key));
   }, [esAdminAcotadoAlmacen, isSuperAdmin, hasFullAccess, hasPermission]);
 
-  const [tab, setTab] = useState<Tab>(tabsVisibles[0]?.key ?? "service");
+  const [tab, setTab] = useState<Tab>(tabsVisibles.find((t) => t.key === "service")?.key ?? tabsVisibles[0]?.key ?? "service");
   const { notificaciones, loading, error, recargar } = useNotificaciones(tab);
   const labelActual = tabsVisibles.find((t) => t.key === tab)?.label ?? "";
   const [detalle, setDetalle] = useState<{ tipo: string; id: number } | null>(null);
