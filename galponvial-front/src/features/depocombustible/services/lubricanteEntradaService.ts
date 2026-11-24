@@ -28,6 +28,19 @@ export interface LubricanteHistorialItem {
   createdAt: string;
 }
 
+/** Renglón de Eliminar/Editar Lubricante: el back ya dice qué puede hacer el usuario. */
+export interface LubricanteCargaItem {
+  id: number;
+  fecha: string;
+  tipo: string;
+  nroRemito: string | null;
+  cantidad: number;
+  cantidadSalida: number;
+  creadoPor: string | null;
+  puedeEditar: boolean;
+  puedeEliminar: boolean;
+}
+
 export const lubricanteEntradaService = {
   crear: async (registros: LubricanteEntradaItemPayload[]): Promise<unknown> => {
     const { data } = await apiClient.post('/lubricante-entrada', { registros });
@@ -62,5 +75,19 @@ export const lubricanteEntradaService = {
   obtenerHistorial: async (): Promise<LubricanteHistorialItem[]> => {
     const { data } = await apiClient.get<LubricanteHistorialItem[]>('/lubricante-entrada/historial');
     return Array.isArray(data) ? data : [];
+  },
+
+  obtenerCargas: async (): Promise<LubricanteCargaItem[]> => {
+    const { data } = await apiClient.get<LubricanteCargaItem[]>('/lubricante-entrada/cargas');
+    return Array.isArray(data) ? data : [];
+  },
+
+  actualizar: async (id: number, payload: LubricanteEntradaItemPayload): Promise<unknown> => {
+    const { data } = await apiClient.put(`/lubricante-entrada/${id}`, payload);
+    return data;
+  },
+
+  eliminar: async (id: number): Promise<void> => {
+    await apiClient.delete(`/lubricante-entrada/${id}`);
   },
 };
