@@ -306,7 +306,7 @@ export default function DepoCombustiblePage() {
           </div>
           <div className="flex flex-col gap-4">
             <div className="h-9 flex items-end">
-              <h2 className="text-xl font-bold text-gray-900 whitespace-nowrap">Creación y stock de Lubricantes</h2>
+              <h2 className="text-3xl font-bold text-gray-900 whitespace-nowrap">Creación y stock de Lubricantes</h2>
             </div>
             <div className="flex flex-nowrap gap-2">
               {puedeEscribir && (
