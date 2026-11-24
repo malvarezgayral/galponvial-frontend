@@ -12,6 +12,7 @@ import { CHOFERES } from "../../servicios/choferes";
 import AgregarLubricantePanel from "../components/AgregarLubricantePanel";
 import StockLubricantePanel from "../components/StockLubricantePanel";
 import ListadoStockLubricantePanel from "../components/ListadoStockLubricantePanel";
+import EditarLubricantePanel from "../components/EditarLubricantePanel";
 import { lubricanteEntradaService } from "../services/lubricanteEntradaService";
 
 // Opciones del desplegable "Dirección". Completar cuando se definan.
@@ -41,7 +42,7 @@ const filaNuevaVacia = (id: number): FilaNueva => ({
   observaciones: "",
 });
 
-type Vista = "lubricantes" | "listado-lubricantes" | "historial-lubricantes" | "agregar-lubricante" | "stock" | "listado-stock";
+type Vista = "lubricantes" | "listado-lubricantes" | "historial-lubricantes" | "agregar-lubricante" | "editar-lubricante" | "stock" | "listado-stock";
 
 export default function DepoCombustiblePage() {
   const { user } = useAppStore();
@@ -319,6 +320,16 @@ export default function DepoCombustiblePage() {
                   Agregar Lubricante
                 </button>
               )}
+              {puedeEscribir && (
+                <button
+                  onClick={() => setVista("editar-lubricante")}
+                  className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
+                    vista === "editar-lubricante" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+                  }`}
+                >
+                  Eliminar/Editar Lubricante
+                </button>
+              )}
               <button
                 onClick={() => setVista("listado-stock")}
                 className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
@@ -354,6 +365,10 @@ export default function DepoCombustiblePage() {
 
       {vista === "agregar-lubricante" && puedeEscribir && (
         <AgregarLubricantePanel />
+      )}
+
+      {vista === "editar-lubricante" && puedeEscribir && (
+        <EditarLubricantePanel />
       )}
 
       {vista === "lubricantes" && puedeEscribir && (
