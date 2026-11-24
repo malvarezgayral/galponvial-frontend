@@ -270,61 +270,73 @@ export default function DepoCombustiblePage() {
   return (
     <div className="space-y-6">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Lubricentro</h1>
-
-        <div className="flex flex-nowrap gap-2 overflow-x-auto mt-4">
-          {puedeEscribir && (
-            <button
-              onClick={() => setVista("lubricantes")}
-              className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
-                vista === "lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
-              }`}
-            >
-              Registro de Lubricantes
-            </button>
-          )}
-          <button
-            onClick={() => setVista("listado-lubricantes")}
-            className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
-              vista === "listado-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
-            }`}
-          >
-            Control de Lubricantes
-          </button>
-          <button
-            onClick={() => setVista("historial-lubricantes")}
-            className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
-              vista === "historial-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
-            }`}
-          >
-            Historial de Lubricantes
-          </button>
-          {puedeEscribir && (
-            <button
-              onClick={() => setVista("agregar-lubricante")}
-              className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
-                vista === "agregar-lubricante" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
-              }`}
-            >
-              Agregar Lubricante
-            </button>
-          )}
-          <button
-            onClick={() => setVista("listado-stock")}
-            className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
-              vista === "listado-stock" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
-            }`}
-          >
-            Listado Stock de Lubricantes
-          </button>
-          <button
-            onClick={() => setVista("stock")}
-            className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
-              vista === "stock" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
-            }`}
-          >
-            Stock Lubricantes (Consumo)
-          </button>
+        <div className="flex flex-nowrap gap-2 overflow-x-auto">
+          <div className="flex flex-col gap-4">
+            <div className="h-9 flex items-end">
+              <h1 className="text-3xl font-bold text-gray-900">Lubricentro</h1>
+            </div>
+            <div className="flex flex-nowrap gap-2">
+              {puedeEscribir && (
+                <button
+                  onClick={() => setVista("lubricantes")}
+                  className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
+                    vista === "lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+                  }`}
+                >
+                  Registro de Lubricantes
+                </button>
+              )}
+              <button
+                onClick={() => setVista("listado-lubricantes")}
+                className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
+                  vista === "listado-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+                }`}
+              >
+                Control de Lubricantes
+              </button>
+              <button
+                onClick={() => setVista("historial-lubricantes")}
+                className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
+                  vista === "historial-lubricantes" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+                }`}
+              >
+                Historial de Lubricantes
+              </button>
+            </div>
+          </div>
+          <div className="flex flex-col gap-4">
+            <div className="h-9 flex items-end">
+              <h2 className="text-xl font-bold text-gray-900 whitespace-nowrap">Creación y stock de Lubricantes</h2>
+            </div>
+            <div className="flex flex-nowrap gap-2">
+              {puedeEscribir && (
+                <button
+                  onClick={() => setVista("agregar-lubricante")}
+                  className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
+                    vista === "agregar-lubricante" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+                  }`}
+                >
+                  Agregar Lubricante
+                </button>
+              )}
+              <button
+                onClick={() => setVista("listado-stock")}
+                className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
+                  vista === "listado-stock" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+                }`}
+              >
+                Listado Stock de Lubricantes
+              </button>
+              <button
+                onClick={() => setVista("stock")}
+                className={`px-3 py-2 whitespace-nowrap rounded-lg text-white font-medium transition-colors ${
+                  vista === "stock" ? "bg-[#0062e3]" : "bg-gray-400 hover:bg-gray-500"
+                }`}
+              >
+                Stock Lubricantes (Consumo)
+              </button>
+            </div>
+          </div>
         </div>
 
         {!puedeEscribir && (
