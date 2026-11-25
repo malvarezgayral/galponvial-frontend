@@ -37,8 +37,6 @@ export default function TiposLubricantePanel({ onCantidad }: Props) {
   const esSuper = isSuperAdmin();
   const [tipos, setTipos] = useState<LubricanteTipoItem[]>([]);
   const [cargando, setCargando] = useState(true);
-  const [nuevo, setNuevo] = useState("");
-  const [agregando, setAgregando] = useState(false);
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [borrador, setBorrador] = useState("");
   const [guardando, setGuardando] = useState(false);
@@ -58,22 +56,6 @@ export default function TiposLubricantePanel({ onCantidad }: Props) {
       .finally(() => setCargando(false));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const agregar = async () => {
-    const nombre = normalizar(nuevo);
-    if (nombre === "") return alert("Escribí el nombre del lubricante.");
-    try {
-      setAgregando(true);
-      await lubricanteEntradaService.crearTipo(nombre);
-      setNuevo("");
-      await recargar();
-    } catch (err) {
-      console.error("Error al agregar el tipo de lubricante:", err);
-      alert(mensajeError(err, "No se pudo agregar el tipo de lubricante."));
-    } finally {
-      setAgregando(false);
-    }
-  };
 
   const empezarEdicion = (t: LubricanteTipoItem) => {
     setEditandoId(t.id);
@@ -130,29 +112,6 @@ export default function TiposLubricantePanel({ onCantidad }: Props) {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <input
-          type="text"
-          maxLength={100}
-          placeholder="Nombre del lubricante nuevo"
-          value={nuevo}
-          onChange={(e) => setNuevo(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") agregar();
-          }}
-          className={`${inputCls} max-w-xs`}
-        />
-        <button
-          type="button"
-          onClick={agregar}
-          disabled={agregando}
-          className="px-4 py-1.5 text-sm font-medium text-white bg-[#0062e3] rounded hover:bg-blue-700 disabled:opacity-50"
-        >
-          {agregando ? "Agregando..." : "Agregar tipo"}
-        </button>
-        <span className="text-xs text-gray-500">Se ordena solo, alfabéticamente.</span>
-      </div>
-
       <div className="bg-white rounded-xl shadow border border-gray-200 overflow-x-auto">
         <table className="min-w-full text-sm">
           <thead>
@@ -166,7 +125,7 @@ export default function TiposLubricantePanel({ onCantidad }: Props) {
             {tipos.length === 0 && (
               <tr>
                 <td colSpan={3} className="px-3 py-6 text-center text-gray-500">
-                  Todavía no hay tipos de lubricante. Agregá el primero arriba.
+                  Todavía no hay tipos de lubricante.
                 </td>
               </tr>
             )}
