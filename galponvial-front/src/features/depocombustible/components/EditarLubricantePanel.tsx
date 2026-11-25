@@ -35,6 +35,15 @@ export default function EditarLubricantePanel() {
   const [borrador, setBorrador] = useState<Borrador | null>(null);
   const [guardando, setGuardando] = useState(false);
 
+  const [tipos, setTipos] = useState<string[]>([]);
+
+  useEffect(() => {
+    lubricanteEntradaService
+      .obtenerTipos()
+      .then(setTipos)
+      .catch((err) => console.error("Error al cargar los tipos de lubricante:", err));
+  }, []);
+
   useEffect(() => {
     lubricanteEntradaService
       .obtenerCargas()
@@ -143,7 +152,7 @@ export default function EditarLubricantePanel() {
                   <input type="date" value={borrador.fecha} onChange={(e) => cambiar("fecha", e.target.value)} className={inputCls} />
                 </td>
                 <td className="px-3 py-2">
-                  <input type="text" maxLength={100} value={borrador.tipo} onChange={(e) => cambiar("tipo", e.target.value)} className={inputCls} />
+                  <select value={borrador.tipo} onChange={(e) => cambiar("tipo", e.target.value)} className={inputCls}><option value="">— Seleccionar —</option>{tipos.map((t) => <option key={t} value={t}>{t}</option>)}</select>
                 </td>
                 <td className="px-3 py-2">
                   <input type="text" inputMode="numeric" maxLength={50} placeholder="Solo números" value={borrador.nroRemito} onChange={(e) => cambiar("nroRemito", e.target.value)} className={inputCls} />

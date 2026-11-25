@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { lubricanteEntradaService } from "../services/lubricanteEntradaService";
 
 type Fila = {
@@ -24,6 +24,15 @@ const thCls = "px-3 py-3 text-left font-semibold text-gray-600";
 export default function AgregarLubricantePanel() {
   const [filas, setFilas] = useState<Fila[]>([filaVacia()]);
   const [guardando, setGuardando] = useState(false);
+
+  const [tipos, setTipos] = useState<string[]>([]);
+
+  useEffect(() => {
+    lubricanteEntradaService
+      .obtenerTipos()
+      .then(setTipos)
+      .catch((err) => console.error("Error al cargar los tipos de lubricante:", err));
+  }, []);
 
   const actualizar = (id: number, cambios: Partial<Fila>) =>
     setFilas((prev) => prev.map((f) => (f.id === id ? { ...f, ...cambios } : f)));
@@ -94,13 +103,16 @@ export default function AgregarLubricantePanel() {
                 />
               </td>
               <td className="px-3 py-2">
-                <input
-                  type="text"
-                  placeholder="Tipo de lubricante"
+                <select
                   value={fila.tipo}
                   onChange={(e) => actualizar(fila.id, { tipo: e.target.value })}
                   className={`${inputCls} w-48`}
-                />
+                >
+                  <option value="">— Seleccionar —</option>
+                  {tipos.map((t) => (
+                    <option key={t} value={t}>{t}</option>
+                  ))}
+                </select>
               </td>
               <td className="px-3 py-2">
                 <input
