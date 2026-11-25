@@ -12,7 +12,7 @@ import { CHOFERES } from "../../servicios/choferes";
 import AgregarLubricantePanel from "../components/AgregarLubricantePanel";
 import StockLubricantePanel from "../components/StockLubricantePanel";
 import ListadoStockLubricantePanel from "../components/ListadoStockLubricantePanel";
-import EditarLubricantePanel from "../components/EditarLubricantePanel";
+import EliminarEditarLubricantePanel from "../components/EliminarEditarLubricantePanel";
 import { lubricanteEntradaService } from "../services/lubricanteEntradaService";
 
 // Opciones del desplegable "Dirección". Completar cuando se definan.
@@ -368,7 +368,7 @@ export default function DepoCombustiblePage() {
       )}
 
       {vista === "editar-lubricante" && puedeEscribir && (
-        <EditarLubricantePanel />
+        <EliminarEditarLubricantePanel />
       )}
 
       {vista === "lubricantes" && puedeEscribir && (

@@ -41,6 +41,16 @@ export interface LubricanteCargaItem {
   puedeEliminar: boolean;
 }
 
+/** Renglón de la pestaña "Tipos de lubricante": el back dice cuánto se usa y qué se puede hacer. */
+export interface LubricanteTipoItem {
+  id: number;
+  nombre: string;
+  usoCargas: number;
+  usoSalidas: number;
+  puedeEditar: boolean;
+  puedeEliminar: boolean;
+}
+
 export const lubricanteEntradaService = {
   crear: async (registros: LubricanteEntradaItemPayload[]): Promise<unknown> => {
     const { data } = await apiClient.post('/lubricante-entrada', { registros });
@@ -89,5 +99,24 @@ export const lubricanteEntradaService = {
 
   eliminar: async (id: number): Promise<void> => {
     await apiClient.delete(`/lubricante-entrada/${id}`);
+  },
+
+  obtenerTiposDetalle: async (): Promise<LubricanteTipoItem[]> => {
+    const { data } = await apiClient.get<LubricanteTipoItem[]>('/lubricante-entrada/tipos/detalle');
+    return Array.isArray(data) ? data : [];
+  },
+
+  crearTipo: async (nombre: string): Promise<unknown> => {
+    const { data } = await apiClient.post('/lubricante-entrada/tipos', { nombre });
+    return data;
+  },
+
+  actualizarTipo: async (id: number, nombre: string): Promise<unknown> => {
+    const { data } = await apiClient.put(`/lubricante-entrada/tipos/${id}`, { nombre });
+    return data;
+  },
+
+  eliminarTipo: async (id: number): Promise<void> => {
+    await apiClient.delete(`/lubricante-entrada/tipos/${id}`);
   },
 };
