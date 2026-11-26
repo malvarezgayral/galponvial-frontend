@@ -21,6 +21,9 @@ const inputCls =
   "border border-gray-300 rounded-md px-2 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500";
 const thCls = "px-3 py-3 text-left font-semibold text-gray-600";
 
+/** Igual que el back: sin espacios de más ("  sae  40 " pasa a "sae 40"). */
+const normalizar = (s: string) => s.trim().replace(/\s+/g, " ");
+
 export default function AgregarLubricantePanel() {
   const [filas, setFilas] = useState<Fila[]>([filaVacia()]);
   const [guardando, setGuardando] = useState(false);
@@ -33,6 +36,12 @@ export default function AgregarLubricantePanel() {
       .then(setTipos)
       .catch((err) => console.error("Error al cargar los tipos de lubricante:", err));
   }, []);
+
+  /** El tipo de la lista que coincide con lo escrito, sin importar mayúsculas ni espacios. */
+  const tipoDeLista = (escrito: string) => {
+    const clave = normalizar(escrito).toLowerCase();
+    return tipos.find((t) => t.toLowerCase() === clave);
+  };
 
   const actualizar = (id: number, cambios: Partial<Fila>) =>
     setFilas((prev) => prev.map((f) => (f.id === id ? { ...f, ...cambios } : f)));
@@ -64,12 +73,16 @@ export default function AgregarLubricantePanel() {
       await lubricanteEntradaService.crear(
         pendientes.map((f) => ({
           fecha: f.fecha,
-          tipo: f.tipo.trim(),
+          tipo: normalizar(f.tipo),
           nroRemito: f.nroRemito || undefined,
           cantidad: Number(f.cantidad),
         }))
       );
       setFilas([filaVacia()]);
+      lubricanteEntradaService
+        .obtenerTipos()
+        .then(setTipos)
+        .catch((err) => console.error("Error al cargar los tipos de lubricante:", err));
       alert("Registros guardados correctamente.");
     } catch (err) {
       console.error("Error al guardar las entradas de lubricante:", err);
@@ -103,16 +116,26 @@ export default function AgregarLubricantePanel() {
                 />
               </td>
               <td className="px-3 py-2">
-                <select
+                <input
+                  type="text"
+                  list="tipos-lubricante"
+                  maxLength={100}
+                  placeholder="Escribí el tipo"
                   value={fila.tipo}
                   onChange={(e) => actualizar(fila.id, { tipo: e.target.value })}
+                  onBlur={() => {
+                    const existente = tipoDeLista(fila.tipo);
+                    if (existente && existente !== fila.tipo) {
+                      actualizar(fila.id, { tipo: existente });
+                    }
+                  }}
                   className={`${inputCls} w-48`}
-                >
-                  <option value="">— Seleccionar —</option>
-                  {tipos.map((t) => (
-                    <option key={t} value={t}>{t}</option>
-                  ))}
-                </select>
+                />
+                {normalizar(fila.tipo) !== "" && !tipoDeLista(fila.tipo) && (
+                  <p className="mt-1 w-48 text-xs text-amber-700">
+                    No está en la lista. Al guardar se crea como tipo nuevo.
+                  </p>
+                )}
               </td>
               <td className="px-3 py-2">
                 <input
@@ -149,6 +172,11 @@ export default function AgregarLubricantePanel() {
           ))}
         </tbody>
       </table>
+      <datalist id="tipos-lubricante">
+        {tipos.map((t) => (
+          <option key={t} value={t} />
+        ))}
+      </datalist>
       <div className="p-4 flex gap-3">
         <button
           onClick={agregarFila}
